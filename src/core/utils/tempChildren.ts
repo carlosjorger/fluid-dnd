@@ -122,8 +122,11 @@ export const addTempChild = <T>(
   if (parent.isSameNode(droppable)) {
     setSizes(child, distances.height, distances.width);
   }
-  observeMutation(
-    updateChildAfterCreated(child, droppable, distances),
+  const observer = observeMutation(
+    ()=>{
+      updateChildAfterCreated(child, droppable, distances)
+      observer.disconnect()
+    },
     droppable,
     {
       childList: true,

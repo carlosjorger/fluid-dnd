@@ -4,9 +4,10 @@ export const observeMutation = (
   options?: MutationObserverInit
 ) => {
   const observe = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
+    if (mutations.length > 0) {
+      const mutation = mutations[0];
       callback(observe, mutation);
-    });
+    }
   });
   observe.observe(element, options);
   return observe

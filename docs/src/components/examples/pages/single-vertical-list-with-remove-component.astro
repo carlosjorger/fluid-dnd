@@ -5,6 +5,7 @@ import Accordion from "@/components/Accordion.astro";
 import {getI18N} from '@/i18n/index.ts';  
 
 const { currentLocale } = Astro;
+const { framework } = Astro.props;
 const i18n = getI18N({ currentLocale });
 const verticalList=`
 <script setup lang="ts">
@@ -43,7 +44,7 @@ const fileName = 'SingleVerticalListOfPokemons.vue';
 ---
 <ExampleLayout title={i18n.SINGLE_VERTICAL_LIST_WITH_REMOVE}>
   <SingleVerticalListOfPokemons client:load />
-   <Accordion  buttonText={i18n.CODE_MESSAGE} code={verticalList} fileName={fileName}/>
+   <Accordion  buttonText={i18n.CODE_MESSAGE} code={verticalList} fileName={fileName} lang={framework}/>
 </ExampleLayout>
 
 <style>

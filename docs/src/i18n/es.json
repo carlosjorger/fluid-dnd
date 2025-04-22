@@ -8,5 +8,7 @@
   "SINGLE_HORIZONTAL_LIST": "Lista horizontal",
   "SINGLE_HORIZONTAL_LIST_AUTOSCROLL": "Lista horizontal en un scroller",
   "GROUP_HORIZONTAL_GROUP": "Grupo de listas horizontales",
-  "CODE_MESSAGE": "código Vue + Tailwind"
+  "CODE_MESSAGE": "código Vue",
+  "VUE_CODE_MESSAGE": "código Vue",
+  "SVELTE_CODE_MESSAGE": "código Svelte"
 }

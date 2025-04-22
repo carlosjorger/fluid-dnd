@@ -5,10 +5,11 @@ import { Code } from "@astrojs/starlight/components";
 interface Props {
    code: string;
    buttonText:string;
-   fileName:string
+   fileName:string;
+   lang: string;
 }
-const {code,buttonText, fileName}=Astro.props
+const {code,buttonText, fileName, lang}=Astro.props
 ---
 <AccordionVue client:load buttonText={buttonText} >
-       <Code code={code} title={fileName} lang="vue" />
+       <Code code={code} title={fileName} lang={lang} />
 </AccordionVue>

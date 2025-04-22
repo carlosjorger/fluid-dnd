@@ -8,5 +8,7 @@
   "SINGLE_HORIZONTAL_LIST": "Horizontal list",
   "SINGLE_HORIZONTAL_LIST_AUTOSCROLL": "Horizontal list on a scroller",
   "GROUP_HORIZONTAL_GROUP": "Group of horizontal lists",
-  "CODE_MESSAGE": "Vue + Tailwind code"
+  "CODE_MESSAGE": "Vue code",
+  "VUE_CODE_MESSAGE": "Vue code",
+  "SVELTE_CODE_MESSAGE": "Svelte code"
 }

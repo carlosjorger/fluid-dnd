@@ -8,9 +8,11 @@
         handlerClass?: string;
         hasRemove?: boolean;
         index: number;
+        class?: string;
         removeEvent?: (index: number) => void
     }
-    const { pokemon, handlerClass, hasRemove, index, removeEvent }:Props = $props();
+    const props: Props = $props();
+    const { pokemon, handlerClass, hasRemove, index, removeEvent } = props;
     const remove = (index: number) => {};
     const removeEventNotUndefined = $derived(removeEvent ?? remove)
     const pokeColor = {
@@ -97,6 +99,7 @@
         pokeColor[pokemon.name],
         darkPokeColor[pokemon.name],
         pokemon.name,
+        props.class,
     ]}
     data-index={index}
   >

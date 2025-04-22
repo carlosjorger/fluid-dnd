@@ -1,48 +1,84 @@
 ---
-import SingleHorizontalListOfPokemons from "@/components/examples/vue/SingleHorizontalListOfPokemons.vue";
+import SingleHorizontalListOfPokemonsVue from "@/components/examples/vue/SingleHorizontalListOfPokemons.vue";
+import SingleHorizontalListOfPokemonsSvelte from "@/components/examples/svelte/SingleHorizontalListOfPokemons.svelte";
+
 import ExampleLayout from "@/components/examples/ExampleLayout.astro";
 import Accordion from "@/components/Accordion.astro";
 import {getI18N} from '@/i18n/index.ts';  
 
 const { currentLocale } = Astro;
+const { framework } = Astro.props;
 const i18n = getI18N({ currentLocale });
-const horizontalList=`
-<script setup lang="ts">
-import { ref } from "vue";
-import { useDragAndDrop } from "fluid-dnd/vue";
-import type { Pokemon } from "./Pokemon";
-import PokemonComponent from "./PokemonComponent.vue";
-import { fetchPokemons } from "@/server/pokemonServer";
+const horizontalListVueCode=`
+  <script setup lang="ts">
+  import { ref } from "vue";
+  import { useDragAndDrop } from "fluid-dnd/vue";
+  import type { Pokemon } from "./Pokemon";
+  import PokemonComponent from "./PokemonComponent.vue";
+  import { fetchPokemons } from "@/server/pokemonServer";
 
-const pokemons = ref([] as Pokemon[]);
-pokemons.value = await fetchPokemons(3);
-const [ parent ] = useDragAndDrop(pokemons, { 
-  direction: "horizontal",
-  draggingClass: "dragging-pokemon",
-});
-</script>
-<template>
+  const pokemons = ref([] as Pokemon[]);
+  pokemons.value = await fetchPokemons(3);
+  const [ parent ] = useDragAndDrop(pokemons, { 
+    direction: "horizontal",
+    draggingClass: "dragging-pokemon",
+  });
+  </script>
+  <template>
+    <div class="flex max-sm:justify-center items-start">
+      <div
+        ref="parent"
+        class="bg-gray-200/60 border-solid border-black/40 rounded-2xl border-4 p-4 max-sm:p-2 flex flex-row overflow-auto gap-2 max-sm:gap-1"
+      >
+        <PokemonComponent
+          class="min-w-44 max-sm:min-w-32"
+          v-for="(pokemon, index) in pokemons"
+          :key="pokemon.name"
+          :index="index"
+          :pokemon="pokemon"
+        />
+      </div>
+    </div>
+  </template>
+  `
+const horizontalListSvelteCode=`
+  <script lang="ts">
+  import { useDragAndDrop } from "fluid-dnd/svelte";
+  import type { Pokemon } from "./Pokemon";
+  import PokemonComponent from "./PokemonComponent.svelte";
+  import { fetchPokemons } from "@/server/pokemonServer";
+
+  let pokemons = $state([] as Pokemon[]);
+  fetchPokemons(9).then((newPokemons) => {
+      pokemons.push(...newPokemons);
+  });
+  const [ parent ] = useDragAndDrop(pokemons, {
+    direction: "horizontal",
+    draggingClass: "dragging-pokemon",
+  });
+  </script>
   <div class="flex max-sm:justify-center items-start">
     <div
-      ref="parent"
+      use:parent
       class="bg-gray-200/60 border-solid border-black/40 rounded-2xl border-4 p-4 max-sm:p-2 flex flex-row overflow-auto gap-2 max-sm:gap-1"
     >
+    {#each pokemons as pokemon, index (pokemon.name)}
       <PokemonComponent
-        class="min-w-44 max-sm:min-w-32"
-        v-for="(pokemon, index) in pokemons"
-        :key="pokemon.name"
-        :index="index"
-        :pokemon="pokemon"
+        index={index}
+        pokemon={pokemon}
       />
+    {/each}
     </div>
   </div>
-</template>
-`
-const fileName = 'SingleHorizontalListOfPokemons.vue';
+  `
+const code = framework === 'vue' ? horizontalListVueCode : horizontalListSvelteCode;
+const fileName = `SingleHorizontalListOfPokemons.${framework}`;
+const buttonText = framework === 'vue' ? i18n.VUE_CODE_MESSAGE : i18n.SVELTE_CODE_MESSAGE;
 ---
 <ExampleLayout title={i18n.SINGLE_HORIZONTAL_LIST}>
-  <SingleHorizontalListOfPokemons client:load />
-   <Accordion  buttonText={i18n.CODE_MESSAGE} code={horizontalList} fileName={fileName}/>
+  {framework === 'vue' && <SingleHorizontalListOfPokemonsVue client:load />}
+  {framework === 'svelte' && <SingleHorizontalListOfPokemonsSvelte client:load />}
+   <Accordion buttonText={buttonText} code={code} fileName={fileName} lang={framework}/>
 </ExampleLayout>
 
 

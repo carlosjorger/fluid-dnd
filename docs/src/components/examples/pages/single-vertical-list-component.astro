@@ -13,7 +13,6 @@ interface Props {
 const { currentLocale } = Astro;
 const { framework } = Astro.props;
 const i18n = getI18N({ currentLocale });
-const isVue = framework === 'vue';
 const verticalList=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -44,12 +43,43 @@ const [ parent ] = useDragAndDrop(pokemons,{
   </div>
 </template>
 `
-const fileName = 'SingleVerticalListOfPokemons.vue';
+const verticalListSvelteCode=`
+  <script lang="ts">
+  import { useDragAndDrop } from "fluid-dnd/svelte";
+  import type { Pokemon } from "./Pokemon";
+  import PokemonComponent from "./PokemonComponent.svelte";
+  import { fetchPokemons } from "@/server/pokemonServer";
+
+  let pokemons = $state([] as Pokemon[]);
+  fetchPokemons(9).then((newPokemons) => {
+      pokemons.push(...newPokemons);
+  });
+  const [ parent ] = useDragAndDrop(pokemons, {
+    draggingClass: "dragging-pokemon",
+  });
+  </script>
+  <div class="flex max-sm:justify-center items-start">
+    <div
+      use:parent
+      class="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
+    >
+    {#each pokemons as pokemon, index (pokemon.name)}
+      <PokemonComponent
+        index={index}
+        pokemon={pokemon}
+      />
+    {/each}
+    </div>
+  </div>
+  `
+const code = framework === 'vue' ? verticalList : verticalListSvelteCode;
+const fileName = `SingleVerticalListOfPokemons.${framework}`;
+const buttonText = framework === 'vue' ? i18n.VUE_CODE_MESSAGE : i18n.SVELTE_CODE_MESSAGE;
 ---
 <ExampleLayout title={i18n.SINGLE_VERTICAL_LIST}>
-  {isVue && <SingleVerticalListOfPokemonsVue client:load />}
+  {framework === 'vue' && <SingleVerticalListOfPokemonsVue client:load />}
   {framework === 'svelte' && <SingleVerticalListOfPokemonsSvelte client:load />}
-   <Accordion  buttonText={i18n.CODE_MESSAGE} code={verticalList} fileName={fileName}/>
+   <Accordion  buttonText={buttonText} code={code} fileName={fileName} lang={framework}/>
 </ExampleLayout>
 
 <style>

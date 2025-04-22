@@ -9,10 +9,17 @@ import getTranslationByDragging from "./translate/GetTranslationByDraggingAndEve
 import { scrollPercent } from "./scroll";
 import { TEMP_CHILD_CLASS } from ".";
 import { addClass, getClassesSelector } from "./dom/classList";
+import { IsHTMLElement } from "./touchDevice";
 
 const START_DRAG_EVENT = "startDrag";
 const timingFunction = "cubic-bezier(0.2, 0, 0, 1)";
-
+const DELAY_TIME = 50;
+export const isTempElement = (element: Node) => {
+  if (!IsHTMLElement(element)) {
+    return false
+  }
+  return element.classList.contains(TEMP_CHILD_CLASS)
+}
 const getDistance = (
   droppable: HTMLElement,
   draggedElement: HTMLElement,
@@ -181,7 +188,7 @@ export const removeTempChildrens = (
     setSizes(tempChildElement, 0, 0);
     setTimeout(() => {
       tempChild.parentNode?.removeChild(tempChild);
-    }, animationDuration);
+    }, animationDuration +  DELAY_TIME);
   });
 };
 
@@ -196,10 +203,10 @@ export const removeTempChild = (
     if (isAnimated) {
       setSizes(tempChildElement, 0, 0);
       setTimeout(() => {
-        if (parent.contains(lastChild)) {
-          parent.removeChild(lastChild);
+        if (parent.contains(tempChildElement)) {
+          parent.removeChild(tempChildElement);
         }
-      }, animationDuration);
+      }, animationDuration + DELAY_TIME);
     } else {
       parent.removeChild(lastChild);
     }

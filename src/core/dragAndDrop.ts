@@ -7,6 +7,7 @@ import ConfigHandler from "./configHandler";
 import { observeMutation } from "./utils/observer";
 import { addClass } from "./utils/dom/classList";
 import { DROPPABLE_CLASS } from "./utils/classes";
+import { isTempElement } from "./utils/tempChildren";
 
 export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher: HandlerPublisher, config?: Config<T>, indexAttr: string ='index' ) {
     let removeAtFromElements = [] as ((index: number) => void)[];
@@ -35,13 +36,19 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
         removeAtFromElements = removeAtFromElementList;
         insertAtFromElements = insertAtFromElementList;
     };
+    const childrenMutationFilter = (mutation: MutationRecord) => {
+        const addedNodes = mutation.addedNodes.values().filter((element) => !isTempElement(element)).toArray();
+        const removedNodes = mutation.removedNodes.values().filter((element) => !isTempElement(element)).toArray();
+        return addedNodes.length > 0 || removedNodes.length > 0
+    };
     const observeChildrens = (parent: HTMLElement) => {
         observeMutation(
           () => {
             makeChildrensDraggable(parent)
           },
           parent,
-          { childList: true }
+          { childList: true },
+          childrenMutationFilter
         );
     };
     const makeDroppable = (parent: HTMLElement) => {

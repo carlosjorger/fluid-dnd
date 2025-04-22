@@ -3,7 +3,7 @@ export const isTouchEvent = (
 ): event is TouchEvent => window.TouchEvent && event instanceof TouchEvent;
 
 export const IsHTMLElement = (
-  element: Element | undefined
+  element: Element| Node | undefined
 ): element is HTMLElement => element instanceof HTMLElement;
 
 export const IsMouseEvent = (

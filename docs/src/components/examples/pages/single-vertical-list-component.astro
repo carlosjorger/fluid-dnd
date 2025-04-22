@@ -12,7 +12,6 @@ interface Props {
 }
 const { currentLocale } = Astro;
 const { framework } = Astro.props;
-console.log(framework);
 const i18n = getI18N({ currentLocale });
 const isVue = framework === 'vue';
 const verticalList=`

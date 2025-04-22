@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useDragAndDrop } from "fluid-dnd/vue";
-import type { Pokemon } from "./Pokemon";
+import type { Pokemon } from "../Pokemon";
 import PokemonComponent from "@/components/examples/vue/PokemonComponent.vue";
 import { fetchPokemons } from "@/server/pokemonServer";
 
 const pokemons = ref([] as Pokemon[]);
 pokemons.value = await fetchPokemons(9);
-const [ parent,_, removeEvent ] = useDragAndDrop(pokemons, {
-  removingClass: "removed",
-  delayBeforeRemove: 300,
+const handlerSelector = ".pokemon-handler";
+const [ parent ] = useDragAndDrop(pokemons, {
+  handlerSelector,
+  draggingClass: "dragging-pokemon",
 });
 </script>
 <template>
@@ -23,8 +24,7 @@ const [ parent,_, removeEvent ] = useDragAndDrop(pokemons, {
         :key="pokemon.name"
         :index="index"
         :pokemon="pokemon"
-        has-remove
-        :removeEvent
+        handler-class="pokemon-handler"
       />
     </div>
   </div>
@@ -34,5 +34,8 @@ const [ parent,_, removeEvent ] = useDragAndDrop(pokemons, {
   :not(a, strong, em, del, span, input, code)
   + :not(a, strong, em, del, span, input, code, :where(.not-content *)) {
   margin-top: 0rem !important;
+}
+.pokemon-handler {
+  width: 0.625rem;
 }
 </style>

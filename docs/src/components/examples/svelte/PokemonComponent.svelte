@@ -11,8 +11,7 @@
         class?: string;
         removeEvent?: (index: number) => void
     }
-    const props: Props = $props();
-    const { pokemon, handlerClass, hasRemove, index, removeEvent } = props;
+    const { pokemon, handlerClass, hasRemove, index, removeEvent, ...props }: Props = $props();
     const remove = (index: number) => {};
     const removeEventNotUndefined = $derived(removeEvent ?? remove)
     const pokeColor = {
@@ -94,6 +93,7 @@
     } as const;
 </script>
 <div
+    data-index={index}
     class={[
         "rounded-xl border-solid border-black/40 border-4 mb-4 max-sm:mb-0.5 max-lg:mb-1 dark:text-gray-100 text-gray-800 pokemon bg-no-repeat p-0.5 max-sm:border-2",
         pokeColor[pokemon.name],
@@ -101,7 +101,6 @@
         pokemon.name,
         props.class,
     ]}
-    data-index={index}
   >
   <div class="p-2 max-sm:text-xs max-sm:p-0.5">
     <div class="flex flex-row items-center justify-between">
@@ -125,11 +124,11 @@
     {/each}
   </div>
   {#if hasRemove}
-  <div class="px-1 mx-2 py-1 cursor-pointer">
-    <button onclick={()=>{removeEventNotUndefined(index)}}>
-        <Trash color="red"  />
-    </button>
-  </div>
+    <div class="px-1 mx-2 py-1">
+      <button class="cursor-pointer bg-inherit" onclick={()=>{removeEventNotUndefined(index)}}>
+          <Trash color="red"  />
+      </button>
+    </div>
   {/if}
 </div>
 <style>

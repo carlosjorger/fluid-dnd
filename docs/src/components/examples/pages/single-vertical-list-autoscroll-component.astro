@@ -1,13 +1,10 @@
 ---
-import SingleVerticalListOfPokemonsAutoscroll from "@/components/examples/vue/SingleVerticalListOfPokemonsAutoscroll.vue";
-import ExampleLayout from "@/components/examples/ExampleLayout.astro";
-import {getI18N} from '@/i18n/index.ts';  
-import Accordion from "@/components/Accordion.astro";
+import SingleVerticalListOfPokemonsAutoscrollVue from "@/components/examples/vue/SingleVerticalListOfPokemonsAutoscroll.vue";
+import SingleVerticalListOfPokemonsAutoscrollSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemonsAutoscroll.svelte";
+import PageComponent from "./shared/page-component.astro";
 
-const { currentLocale } = Astro;
 const { framework } = Astro.props;
-const i18n = getI18N({ currentLocale });
-const verticalList=`
+const vueCode=`
 <script setup lang="ts">
 import { ref } from "vue";
 import { useDragAndDrop } from "fluid-dnd/vue";
@@ -36,12 +33,45 @@ const [ parent ] = useDragAndDrop(pokemons,{
     </div>
   </div>
 </template>`
-const fileName = 'SingleVerticalListOfPokemonsAutoscroll.vue';
+const svelteCode = `
+<script lang="ts">
+import { useDragAndDrop } from "fluid-dnd/svelte";
+import type { Pokemon } from "../Pokemon";
+import PokemonComponent from "@/components/examples/svelte/PokemonComponent.svelte";
+import { fetchPokemons } from "@/server/pokemonServer";
+
+const pokemons = ([] as Pokemon[]);
+fetchPokemons(9).then((newPokemons) => {
+    pokemons.push(...newPokemons);
+});
+const [ parent ] = useDragAndDrop(pokemons, {
+  draggingClass: "dragging-pokemon",
+});
+</script>
+<div class="flex max-sm:justify-center items-start">
+  <div
+    use:parent
+    class="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block overflow-auto max-h-[33rem]"
+  >
+  {#each pokemons as pokemon, index (pokemon.name)}
+    <PokemonComponent
+      index={index}
+      pokemon={pokemon}
+    />
+  {/each}
+  </div>
+</div>
+`
+const fileName = 'SingleVerticalListOfPokemonsAutoscroll';
 
 ---
-<ExampleLayout title={i18n.SINGLE_VERTICAL_LIST_AUTOSCROLL} >
-  <SingleVerticalListOfPokemonsAutoscroll client:load />
-   <Accordion  buttonText={i18n.CODE_MESSAGE} code={verticalList} fileName={fileName} lang={framework}/>
-</ExampleLayout>
 
 
+<PageComponent framework={framework} vueCode={vueCode} svelteCode={svelteCode} fileName={fileName}>
+  <fragment slot="vue">
+    <SingleVerticalListOfPokemonsAutoscrollVue client:load />
+  </fragment>
+  <fragment slot="svelte">
+    <SingleVerticalListOfPokemonsAutoscrollSvelte client:load />
+  </fragment>
+</PageComponent>

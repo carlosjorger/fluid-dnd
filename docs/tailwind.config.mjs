@@ -19,12 +19,14 @@ const gray = {
   800: "#24272f",
   900: "#17181c",
 };
+const inherit ='inherit'
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
     extend: {
       colors: { accent, gray },
+      backgroundColor: {inherit}
     },
     colors: {
       accent,

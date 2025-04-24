@@ -1,1 +1,27 @@
-<!-- TODO: creaet template for all page components -->
+---
+import { getI18N } from '@/i18n';
+import type { FRAMEWORKS_TYPE } from '@/types';
+import ExampleLayout from '../../ExampleLayout.astro';
+import Accordion from '@/components/Accordion.astro';
+
+
+interface Props {
+  framework: FRAMEWORKS_TYPE;
+  vueCode: string;
+  svelteCode: string;
+  fileName: string;
+}
+
+const { currentLocale } = Astro;
+const { framework, vueCode, svelteCode, fileName} = Astro.props;
+const i18n = getI18N({ currentLocale });
+
+const code = framework === 'vue' ? vueCode : svelteCode;
+const fileNameWithExtension = `${fileName}.${framework}`;
+const buttonText = framework === 'vue' ? i18n.VUE_CODE_MESSAGE : i18n.SVELTE_CODE_MESSAGE;
+--- 
+<ExampleLayout title={i18n.SINGLE_VERTICAL_LIST}>
+    {framework === 'vue' && <slot name="vue" />}
+    {framework === 'svelte' && <slot name="svelte" />}
+     <Accordion  buttonText={buttonText} code={code} fileName={fileNameWithExtension} lang={framework}/>
+  </ExampleLayout>

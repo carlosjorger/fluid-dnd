@@ -6,7 +6,7 @@ import PokemonComponent from "./PokemonComponent.vue";
 import { fetchPokemons } from "@/server/pokemonServer";
 
 const pokemons = ref([] as Pokemon[]);
-pokemons.value = await fetchPokemons(9);
+pokemons.value = await fetchPokemons(3);
 const [ parent ] = useDragAndDrop(pokemons, {
   draggingClass: "dragging-pokemon",
 });

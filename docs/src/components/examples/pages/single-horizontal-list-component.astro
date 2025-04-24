@@ -1,14 +1,9 @@
 ---
 import SingleHorizontalListOfPokemonsVue from "@/components/examples/vue/SingleHorizontalListOfPokemons.vue";
 import SingleHorizontalListOfPokemonsSvelte from "@/components/examples/svelte/SingleHorizontalListOfPokemons.svelte";
+import PageComponent from "./shared/page-component.astro";
 
-import ExampleLayout from "@/components/examples/ExampleLayout.astro";
-import Accordion from "@/components/Accordion.astro";
-import {getI18N} from '@/i18n/index.ts';  
-
-const { currentLocale } = Astro;
 const { framework } = Astro.props;
-const i18n = getI18N({ currentLocale });
 const horizontalListVueCode=`
   <script setup lang="ts">
   import { ref } from "vue";
@@ -49,7 +44,7 @@ const horizontalListSvelteCode=`
   import { fetchPokemons } from "@/server/pokemonServer";
 
   let pokemons = $state([] as Pokemon[]);
-  fetchPokemons(9).then((newPokemons) => {
+  fetchPokemons(3).then((newPokemons) => {
       pokemons.push(...newPokemons);
   });
   const [ parent ] = useDragAndDrop(pokemons, {
@@ -71,14 +66,14 @@ const horizontalListSvelteCode=`
     </div>
   </div>
   `
-const code = framework === 'vue' ? horizontalListVueCode : horizontalListSvelteCode;
-const fileName = `SingleHorizontalListOfPokemons.${framework}`;
-const buttonText = framework === 'vue' ? i18n.VUE_CODE_MESSAGE : i18n.SVELTE_CODE_MESSAGE;
+const fileName = `SingleHorizontalListOfPokemons`;
 ---
-<ExampleLayout title={i18n.SINGLE_HORIZONTAL_LIST}>
-  {framework === 'vue' && <SingleHorizontalListOfPokemonsVue client:load />}
-  {framework === 'svelte' && <SingleHorizontalListOfPokemonsSvelte client:load />}
-   <Accordion buttonText={buttonText} code={code} fileName={fileName} lang={framework}/>
-</ExampleLayout>
 
-
+<PageComponent framework={framework} vueCode={horizontalListVueCode} svelteCode={horizontalListSvelteCode} fileName={fileName}> 
+  <fragment slot="vue"> 
+    <SingleHorizontalListOfPokemonsVue client:load />
+  </fragment>
+  <fragment slot="svelte">
+    <SingleHorizontalListOfPokemonsSvelte client:load />
+  </fragment>
+</PageComponent>

@@ -1,8 +1,8 @@
 import type { Pokemon, PokemonLink } from "../components/examples/Pokemon";
 import { ref, type Ref } from "vue";
 
-export const fetchPokemons = async (limit: number, offset: number = 0, notIncluded: Ref<Pokemon[]>= ref([])) => {
-  const finalLimit = limit + notIncluded.value.length
+export const fetchPokemons = async (limit: number, offset: number = 0, notIncluded:Pokemon[]= []) => {
+  const finalLimit = limit + notIncluded.length
   const pokemons = [] as Pokemon[];
   const { results } = await fetch(
     `https://pokeapi.co/api/v2/pokemon/?limit=${finalLimit}&offset=${offset}`
@@ -12,7 +12,7 @@ export const fetchPokemons = async (limit: number, offset: number = 0, notInclud
 
   for (const result of results) {
     const pokemon = await fetch(result.url).then<Pokemon>((res) => res.json());
-    if (notIncluded.value.some(p => p.name === pokemon.name)) {
+    if (notIncluded.some(p => p.name === pokemon.name)) {
       continue;
     }
     pokemons.push(pokemon);

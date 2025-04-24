@@ -1,18 +1,13 @@
 ---
 import SingleVerticalListOfPokemonsVue from "@/components/examples/vue/SingleVerticalListOfPokemons.vue";
 import SingleVerticalListOfPokemonsSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemons.svelte";
-
-import ExampleLayout from "@/components/examples/ExampleLayout.astro";
-import Accordion from "@/components/Accordion.astro";
-import {getI18N} from '@/i18n/index.ts';  
 import { type FRAMEWORKS_TYPE } from "@/types";
+import PageComponent from "./shared/page-component.astro";
 
 interface Props {
   framework: FRAMEWORKS_TYPE;
 }
-const { currentLocale } = Astro;
 const { framework } = Astro.props;
-const i18n = getI18N({ currentLocale });
 const verticalList=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -22,7 +17,7 @@ import PokemonComponent from "./PokemonComponent.vue";
 import { fetchPokemons } from "@/server/pokemonServer";
 
 const pokemons = ref([] as Pokemon[]);
-pokemons.value = await fetchPokemons(9);
+pokemons.value = await fetchPokemons(3);
 const [ parent ] = useDragAndDrop(pokemons,{
   draggingClass: "dragging-pokemon"
 });
@@ -51,7 +46,7 @@ const verticalListSvelteCode=`
   import { fetchPokemons } from "@/server/pokemonServer";
 
   let pokemons = $state([] as Pokemon[]);
-  fetchPokemons(9).then((newPokemons) => {
+  fetchPokemons(3).then((newPokemons) => {
       pokemons.push(...newPokemons);
   });
   const [ parent ] = useDragAndDrop(pokemons, {
@@ -72,15 +67,16 @@ const verticalListSvelteCode=`
     </div>
   </div>
   `
-const code = framework === 'vue' ? verticalList : verticalListSvelteCode;
-const fileName = `SingleVerticalListOfPokemons.${framework}`;
-const buttonText = framework === 'vue' ? i18n.VUE_CODE_MESSAGE : i18n.SVELTE_CODE_MESSAGE;
+const fileName = 'SingleVerticalListOfPokemons';
 ---
-<ExampleLayout title={i18n.SINGLE_VERTICAL_LIST}>
-  {framework === 'vue' && <SingleVerticalListOfPokemonsVue client:load />}
-  {framework === 'svelte' && <SingleVerticalListOfPokemonsSvelte client:load />}
-   <Accordion  buttonText={buttonText} code={code} fileName={fileName} lang={framework}/>
-</ExampleLayout>
+<PageComponent framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} fileName={fileName}>
+  <fragment slot="vue">
+    <SingleVerticalListOfPokemonsVue client:load />
+  </fragment>
+  <fragment slot="svelte">
+    <SingleVerticalListOfPokemonsSvelte client:load />
+  </fragment>
+</PageComponent>
 
 <style>
  select {

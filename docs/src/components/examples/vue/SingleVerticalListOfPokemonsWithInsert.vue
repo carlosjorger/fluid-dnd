@@ -7,7 +7,7 @@ import { fetchPokemons } from "@/server/pokemonServer";
 
 const pokemons = ref([] as Pokemon[]);
 watch(pokemons,async()=>{
-  pokemonsToSelected.value = await fetchPokemons(10,0, pokemons)
+  pokemonsToSelected.value = await fetchPokemons(10,0, pokemons.value)
 },{
   deep: true
 })

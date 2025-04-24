@@ -1,13 +1,10 @@
 ---
-import GroupOfHorizontalListOfPokemons from "@/components/examples/vue/GroupOfHorizontalListOfPokemons.vue";
-import ExampleLayout from "@/components/examples/ExampleLayout.astro";
-import Accordion from "@/components/Accordion.astro";
-import {getI18N} from '@/i18n/index.ts';  
+import GroupOfHorizontalListOfPokemonsVue from "@/components/examples/vue/GroupOfHorizontalListOfPokemons.vue";
+import GroupOfHorizontalListOfPokemonsSvelte from "@/components/examples/svelte/GroupOfHorizontalListOfPokemons.svelte";
+import PageComponent from "./shared/page-component.astro";
 
-const { currentLocale } = Astro;
 const { framework } = Astro.props;
-const i18n = getI18N({ currentLocale });
-const horizontalLists=`
+const horizontalListsVueCode=`
 <script setup lang="ts">
 import { ref } from "vue";
 import { useDragAndDrop } from "fluid-dnd/vue";
@@ -84,9 +81,98 @@ const [ parent3 ] = useDragAndDrop(pokemon3G, {
   </div>
 </template>
 `
-const fileName = 'GroupOfHorizontalListOfPokemons.vue';
+const horizontalListSvelteCode =`<script lang="ts">
+  import { useDragAndDrop } from "fluid-dnd/svelte";
+  import type { Pokemon } from "../Pokemon";
+  import PokemonComponent from "@/components/examples/svelte/PokemonComponent.svelte";
+  import { fetchPokemons } from "@/server/pokemonServer";
+
+  const pokemons = $state([] as Pokemon[]);
+  fetchPokemons(9).then((newPokemons)=>{
+    pokemons.push(...newPokemons);
+  });
+
+  const pokemon2G = $state([] as Pokemon[]);
+  fetchPokemons(9, 151).then((newPokemons)=>{
+    pokemon2G.push(...newPokemons);
+  });
+
+  const pokemon3G = $state([] as Pokemon[]);
+  fetchPokemons(9, 251).then((newPokemons)=>{
+    pokemon3G.push(...newPokemons);
+  });
+
+  const [ parent ] = useDragAndDrop(pokemons, {
+    droppableGroup: "group",
+    direction: "horizontal",
+    draggingClass: "dragging-pokemon",
+    droppableClass:'hover'
+  });
+  const [ parent2 ] = useDragAndDrop(pokemon2G, {
+    droppableGroup: "group",
+    direction: "horizontal",
+    draggingClass: "dragging-pokemon",
+    droppableClass:'hover'
+  });
+
+  const [ parent3 ] = useDragAndDrop(pokemon3G, {
+    droppableGroup: "group",
+    direction: "horizontal",
+    draggingClass: "dragging-pokemon",
+    droppableClass:'hover'
+
+  });
+</script>
+<div
+  class="flex max-sm:justify-center flex-col gap-4 max-sm:gap-0.5 items-start"
+>
+  <div
+    use:parent
+    class="pokemon-generation bg-gray-200/60 border-solid w-full border-black/40 rounded-2xl border-4 max-lg:p-1 p-4 max-sm:p-0.5 max-sm:border-2 flex flex-row overflow-x-auto gap-2 max-sm:gap-1"
+  >
+  {#each pokemons as pokemon, index (pokemon.name)}
+    <PokemonComponent
+      class="min-w-44 max-sm:min-w-32"
+      index={index}
+      pokemon={pokemon}
+    />
+    
+  {/each}
+  </div>
+  <div
+    use:parent2
+    class="pokemon-generation bg-gray-200/60 border-solid w-full border-black/40 rounded-2xl border-4 max-lg:p-1 p-4 max-sm:p-0.5 max-sm:border-2 flex flex-row overflow-x-auto gap-2 max-sm:gap-1"
+  >
+    {#each pokemon2G as pokemon, index (pokemon.name)}
+      <PokemonComponent
+        class="min-w-44 max-sm:min-w-32"
+        index={index}
+        pokemon={pokemon}
+      />
+      
+    {/each}
+  </div>
+  <div
+    use:parent3
+    class="pokemon-generation bg-gray-200/60 border-solid w-full border-black/40 rounded-2xl border-4 max-lg:p-1 p-4 max-sm:p-0.5 max-sm:border-2 flex flex-row overflow-x-auto gap-2 max-sm:gap-1"
+  >
+    {#each pokemon3G as pokemon, index (pokemon.name)}
+      <PokemonComponent
+        class="min-w-44 max-sm:min-w-32"
+        index={index}
+        pokemon={pokemon}
+      />
+      
+    {/each}
+  </div>
+</div>`
+const fileName = 'GroupOfHorizontalListOfPokemons';
 ---
-<ExampleLayout title={i18n.GROUP_HORIZONTAL_GROUP}>
-  <GroupOfHorizontalListOfPokemons client:load />
-   <Accordion  buttonText={i18n.CODE_MESSAGE} code={horizontalLists} fileName={fileName} lang={framework}/>
-</ExampleLayout>
+<PageComponent framework={framework} vueCode={horizontalListsVueCode} svelteCode={horizontalListSvelteCode} fileName={fileName}> 
+  <fragment slot="vue"> 
+    <GroupOfHorizontalListOfPokemonsVue client:load />
+  </fragment>
+  <fragment slot="svelte">
+    <GroupOfHorizontalListOfPokemonsSvelte client:load />
+  </fragment>
+</PageComponent>

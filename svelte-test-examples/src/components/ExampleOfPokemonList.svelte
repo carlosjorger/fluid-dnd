@@ -1,5 +1,4 @@
 <script lang="ts">
-import { onMounted, ref } from "vue";
 import PokemonComponent from "./PokemonComponent.svelte";
 
 import { fetchPokemons } from "../../../docs/src/server/pokemonServer.ts";

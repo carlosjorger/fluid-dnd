@@ -5,7 +5,7 @@
     import { fetchPokemons } from "@/server/pokemonServer";
     
     let pokemons = $state([] as Pokemon[]);
-    fetchPokemons(9).then((newPokemons) => {
+    fetchPokemons(3).then((newPokemons) => {
         pokemons.push(...newPokemons);
     });
     const [ parent ] = useDragAndDrop(pokemons, {

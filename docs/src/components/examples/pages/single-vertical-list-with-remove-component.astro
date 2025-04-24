@@ -1,12 +1,9 @@
 ---
-import SingleVerticalListOfPokemons from "@/components/examples/vue/SingleVerticalListOfPokemonsWithRemove.vue";
-import ExampleLayout from "@/components/examples/ExampleLayout.astro";
-import Accordion from "@/components/Accordion.astro";
-import {getI18N} from '@/i18n/index.ts';  
+import SingleVerticalListOfPokemonsVue from "@/components/examples/vue/SingleVerticalListOfPokemonsWithRemove.vue";
+import SingleVerticalListOfPokemonsSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemonsWithRemove.svelte";
+import PageComponent from "./shared/page-component.astro";
 
-const { currentLocale } = Astro;
 const { framework } = Astro.props;
-const i18n = getI18N({ currentLocale });
 const verticalList=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -40,13 +37,48 @@ const [ parent,_, removeEvent ] = useDragAndDrop(pokemons, {
   </div>
 </template>
 `
+const verticalListSvelteCode = `
+<script lang="ts">
+import { useDragAndDrop } from "fluid-dnd/svelte";
+import type { Pokemon } from "../Pokemon";
+import PokemonComponent from "@/components/examples/svelte/PokemonComponent.svelte";
+import { fetchPokemons } from "@/server/pokemonServer";
+
+const pokemons = $state([] as Pokemon[]);
+fetchPokemons(9).then((newPokemons)=>{
+  pokemons.push(...newPokemons);
+});
+const [ parent,_, removeEvent ] = useDragAndDrop(pokemons, {
+  removingClass: "removed",
+  delayBeforeRemove: 300,
+});
+</script>
+<div class="flex max-sm:justify-center items-start">
+  <div
+    use:parent
+    class="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
+  >
+    {#each pokemons as pokemon, index (pokemon.name)}
+      <PokemonComponent
+        index={index}
+        pokemon={pokemon}
+        has-remove
+        removeEvent={removeEvent}
+      />
+    {/each}
+  </div>
+</div>
+`
 const fileName = 'SingleVerticalListOfPokemons.vue';
 ---
-<ExampleLayout title={i18n.SINGLE_VERTICAL_LIST_WITH_REMOVE}>
-  <SingleVerticalListOfPokemons client:load />
-   <Accordion  buttonText={i18n.CODE_MESSAGE} code={verticalList} fileName={fileName} lang={framework}/>
-</ExampleLayout>
-
+<PageComponent framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} fileName={fileName}>
+  <fragment slot="vue">
+    <SingleVerticalListOfPokemonsVue client:load />
+  </fragment>
+  <fragment slot="svelte">
+    <SingleVerticalListOfPokemonsSvelte client:load />
+  </fragment>
+</PageComponent>
 <style>
  select {
     background-color: auto !important;

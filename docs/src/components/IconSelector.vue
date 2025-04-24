@@ -3,6 +3,7 @@
       <button 
         class="selector-input flex min-w-28 px-2.5 py-1.5 pr-3 relative items-center justify-between rounded-lg cursor-pointer transition-all duration-200 ease-in-out bg-[#FFFFFF] hover:bg-[#f7fafc] hover:border-gray-900 border-[1px] border-solid border-gray-300 dark:border-gray-700 dark:text-gray-300 dark:bg-gray-900 dark:hover:border-gray-200 dark:hover:bg-gray-800/50"
         @click="(()=>toggleDropdown())"
+        v-clickOutside="clickOutside"
       >
         <div class="flex items-center gap-2">
           <IconComponent :option="selectedOption"/>
@@ -27,10 +28,10 @@
   </template>
   
 <script  setup lang="ts">
-  import { ref } from 'vue';
+  import { ref} from 'vue';
   import IconComponent from './icons/IconComponent.vue';
   import arrowDown from './icons/arrowDown.vue';
-
+  import { vClickOutside } from '@/directives/clickOutside';
   interface SelectOption {
     value: string | number;
     label: string;
@@ -46,7 +47,6 @@
         options.every(opt => opt.value !== undefined && opt.label)
     }
   })
-
   const emit = defineEmits<{
     (e: 'update:modelValue', value: string | number): void
   }>()
@@ -56,7 +56,9 @@
   const selectedOption = ref<SelectOption>(
     props.options.find(opt => opt.value === model.value) || props.options[0]
   );
-
+  const clickOutside = () =>  {
+    isOpen.value = false;
+  }
   const toggleDropdown = () => {
     isOpen.value = !isOpen.value;
   };
@@ -67,17 +69,3 @@
     isOpen.value = false;
   };
 </script>
-  
-<style scoped>
-  
-  /* .dropdown-icon {
-    width: 16px;
-    height: 16px;
-    color: #718096;
-    transition: transform 0.2s ease;
-  }
-  
-  .icon-selector[aria-expanded="true"] .dropdown-icon {
-    transform: rotate(180deg);
-  } */
-  </style>

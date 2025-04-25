@@ -9,6 +9,7 @@ async function getGitHubStarsNoAuth(owner:string, repo:string  ) {
     // This uses the public API with limited requests (60/hour)
     const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
     const data = await response.json();
+    console.log(data)
     return data.stargazers_count;
   } catch (error) {
     console.error('Error fetching GitHub stars:', error);
@@ -16,6 +17,7 @@ async function getGitHubStarsNoAuth(owner:string, repo:string  ) {
   }
 }
 const githubStars = await getGitHubStarsNoAuth("carlosjorger", "fluid-dnd")
+console.log(githubStars)
 const githubRepo = "https://github.com/carlosjorger/fluid-dnd"
 
 ---

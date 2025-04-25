@@ -7,6 +7,7 @@ import svelte from "@astrojs/svelte";
 
 const site = "https://fluid-dnd.netlify.app/";
 // TODO: add pr to starlight https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#showcase
+// TODO: add badge of github stars
 const getSidebar = (framework) => [
   {
     label: "Introduction",
@@ -158,14 +159,14 @@ export default defineConfig({
     },
     customCss: process.env.NO_GRADIENTS ? [] : ["/src/assets/landing.css"],
     social: [
-      { icon: 'github', label: 'GitHub', href: "https://github.com/carlosjorger/fluid-dnd" },
-      { icon: 'linkedin', label: 'Linkedin', href: "https://github.com/carlosjorger" },
+      { icon: 'linkedin', label: 'Linkedin', href: "https://www.linkedin.com/in/carlosjorger/" },
       { icon: 'x.com', label: 'X', href: "https://x.com/carcu_ps" },
     ],
     routeMiddleware: './src/middlewares/frameworkSidebaMiddleWare.ts',
     components: {
       Pagination: './src/components/Sidebar.astro',
       SiteTitle: "./src/components/CustomTitle.astro",
+      SocialIcons:'./src/components/overrides/CustomSocialIcons.astro',
     },
   
     head: [

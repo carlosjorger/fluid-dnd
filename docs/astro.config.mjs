@@ -7,7 +7,6 @@ import svelte from "@astrojs/svelte";
 
 const site = "https://fluid-dnd.netlify.app/";
 // TODO: add pr to starlight https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#showcase
-// TODO: add badge of github stars
 const getSidebar = (framework) => [
   {
     label: "Introduction",
@@ -119,6 +118,13 @@ const getSidebar = (framework) => [
         link: `/${framework}/guides/listinsert/`,
         translations: {
           es: "Insertar en listas",
+        },
+      },
+      {
+        label: "OnDrag events",
+        link: `/${framework}/guides/ondrag/`,
+        translations: {
+          es: "Eventos OnDrag",
         },
       },
     ],

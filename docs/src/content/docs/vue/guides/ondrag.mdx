@@ -1,0 +1,78 @@
+---
+title: OnDrag events
+description: A guide on how to use Fluid DnD calling onDragStart and onDragEnd events.
+---
+
+import OnDragEvents from "@/components/vue/OnDragEvents.vue";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+With **Fluid DnD** you can create events when you start dragging an element (`onDragStart`) or when it is dropped (`onDragEnd`).\
+We'll define group of lists and add `onDragStart` and `onDragEnd` events that toggle `marked-droppable` class on **droppables** using a reference of the parent of those (`droppableGroup`):
+
+export const highlightsListOfNumbers = ["onDragStart", "onDragEnd"];
+
+export const listOfNumbers = `<script setup lang="ts">
+...
+const droppableGroup = useTemplateRef('droppableGroup')
+function onDragStart(){
+  const droppables = droppableGroup.value?.querySelectorAll('.droppable-group-group1')??[]
+  for (const droppable of [...droppables]) {
+    droppable.classList.toggle('marked-droppable',true)
+  }
+}
+function onDragEnd (){
+  const droppables = droppableGroup.value?.querySelectorAll('.droppable-group-group1')??[]
+  for (const droppable of [...droppables]) {
+    droppable.classList.toggle('marked-droppable',false)
+  }
+}
+
+const list1 = ref([1, 2, 3, 4]);
+const [ parent1 ] = useDragAndDrop(list1, {
+  droppableGroup: "group1",
+  onDragStart,
+  onDragEnd,
+});
+...
+const list2 = ref([5, 6, 7, 8]);
+const [ parent2 ] = useDragAndDrop(list2, {
+  droppableGroup: "group1",
+  direction: "horizontal",
+  onDragStart,
+  onDragEnd,
+});
+</script>`;
+
+<Code code={listOfNumbers} lang="vue" mark={highlightsListOfNumbers} />
+
+### Creating the view
+
+After, we'll create the two lists on the view and passing the `droppableGroup` reference:
+
+export const listOfNumbersDraggable = `
+<template>
+  <div ref="droppableGroup" class="group-list">
+    <ul ref="parent1" class="number-list">
+        <!-- ... -->
+    </ul>
+    <div ref="parent2" class="number-list-h">
+        <!-- ... -->
+    </div>
+  </div>
+</template>
+<style>
+ ...
+</style>
+`;
+
+export const highlightsDraggable = ["droppableGroup"];
+
+<Code code={listOfNumbersDraggable} lang="vue" mark={highlightsDraggable} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <OnDragEvents client:load  />
+</div>

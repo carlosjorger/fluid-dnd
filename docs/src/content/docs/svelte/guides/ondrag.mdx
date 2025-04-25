@@ -1,0 +1,71 @@
+---
+title: OnDrag events
+description: A guide on how to use Fluid DnD calling onDragStart and onDragEnd events.
+---
+
+import OnDragEvents from "@/components/svelte/OnDragEvents.svelte";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+With **Fluid DnD** you can create events when you start dragging an element (`onDragStart`) or when it is dropped (`onDragEnd`).\
+We'll define group of lists and add `onDragStart` and `onDragEnd` events that toggle `marked-droppable` class on **droppables** using a reference of the parent of those (`droppableGroup`):
+
+export const highlightsListOfNumbers = ["onDragStart", "onDragEnd"];
+
+export const listOfNumbers = `<script lang="ts">
+...
+let droppableGroup = $state<HTMLElement>(null)
+function onDragStart(){
+  const droppables = droppableGroup?.querySelectorAll('.droppable-group-group1')??[]
+  for (const droppable of [...droppables]) {
+    droppable.classList.toggle('marked-droppable',true)
+  }
+}
+function onDragEnd (){
+  const droppables = droppableGroup?.querySelectorAll('.droppable-group-group1')??[]
+  for (const droppable of [...droppables]) {
+    droppable.classList.toggle('marked-droppable',false)
+  }
+}
+const [ parent1 ] = useDragAndDrop<number>(list, {
+  droppableGroup: "group1",
+  onDragStart,
+  onDragEnd,
+});
+
+const list2 = $state([6, 7, 8, 9, 10]);
+const [ parent2 ] = useDragAndDrop(list2, { 
+  droppableGroup: "group1",
+  direction: "horizontal",
+  onDragStart,
+  onDragEnd,
+});
+</script>`;
+
+<Code code={listOfNumbers} lang="svelte" mark={highlightsListOfNumbers} />
+
+### Creating the view
+
+After, we'll create the two lists on the view and passing the `droppableGroup` reference:
+
+export const listOfNumbersDraggable = `
+<div bind:this={droppableGroup}  class="group-list">
+  <ul use:parent1 class="number-list">
+      <!-- ... -->
+  </ul>
+  <div use:parent2 class="number-list-h">
+      <!-- ... -->
+  </div>
+</div>
+`;
+
+export const highlightsDraggable = ["droppableGroup"];
+
+<Code code={listOfNumbersDraggable} lang="svelte" mark={highlightsDraggable} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <OnDragEvents client:load  />
+</div>

@@ -66,7 +66,6 @@ export interface DragStartEventData<T> {
      * A function that returns whether a given element of the list is draggable.
      */
     isDraggable?: (element: HTMLElement) => boolean;
-    // TODO: add doc for onDragStart and onDragEnd
     /**
      * A function that returns whether a given element of the list is draggable.
      */

@@ -128,6 +128,9 @@ const getSidebar = (framework) => [
   },
 ];
 export default defineConfig({
+  vite: {
+    envPrefix: 'GITHUB_', // Makes env vars available to Vite
+  },
   site: "https://fluid-dnd.netlify.app/",
   redirects: {
     '/': '/vue'

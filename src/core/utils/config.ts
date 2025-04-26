@@ -1,9 +1,10 @@
-import { ListCondig } from "..";
+import { DragEndEventData, DragStartEventData, ListCondig, MapFrom } from "..";
 import {
   Config,
   CoreConfig,
   VERTICAL,
 } from "..";
+import { DroppableConfig } from "../configHandler";
 import { DRAGGABLE_CLASS } from "./classes";
 
 export const getConfig = <T>(listCondig: ListCondig<T>,
@@ -25,7 +26,10 @@ export const getConfig = <T>(listCondig: ListCondig<T>,
   const onGetValue = (index: number)=> {
     return listCondig.getValue(index)
   };
-  
+
+  const defaultMapFrom = <K>(object: T)=>{
+    return object as unknown as K
+  }
   return {
     direction: config?.direction ?? VERTICAL,
     handlerSelector: config?.handlerSelector ?? DRAGGABLE_CLASS,
@@ -43,6 +47,23 @@ export const getConfig = <T>(listCondig: ListCondig<T>,
     removingClass: config?.removingClass ?? "removing",
     insertingFromClass: config?.insertingFromClass ?? 'from-inserting',
     delayBeforeRemove: config?.delayBeforeRemove ?? 200,
-    delayBeforeInsert: config?.delayBeforeInsert ?? 200
+    delayBeforeInsert: config?.delayBeforeInsert ?? 200,
+    mapFrom: config?.mapFrom??defaultMapFrom,
   };
 };
+export const MapConfig = <T>(coreConfig:DroppableConfig<any>, mapFrom: MapFrom<T>): CoreConfig<any>=>{
+  const { config, droppable } = coreConfig
+  const { onInsertEvent, onDragEnd} = config
+  const mapOnInsertEvent = (index: number, value: T) =>{
+    return onInsertEvent(index, mapFrom(value, droppable));
+  }
+  const mapOnDragEnd = (eventData: DragEndEventData<T>) => {
+    const {index, value} = eventData
+    onDragEnd({index, value: mapFrom(value, droppable)})
+  }
+  return {
+    ...config,
+    onDragEnd: mapOnDragEnd,
+    onInsertEvent: mapOnInsertEvent
+  }
+}

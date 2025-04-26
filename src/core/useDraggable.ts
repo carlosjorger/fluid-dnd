@@ -190,7 +190,8 @@ export default function useDraggable<T>(
       droppableGroupClass, 
       parent, 
       setTransformDragEvent, 
-      changeDroppable
+      changeDroppable,
+      config.mapFrom
     );
   
   const toggleDroppableClass = (isOutside:boolean) =>{

@@ -8,6 +8,7 @@ export interface ListCondig<T>{
     getValue: (index: number) => T
     insertToListEmpty: (config: CoreConfig<T>, index: number, value: T) => void
 }
+export type MapFrom<T> = (object: T, droppable:Element) => unknown;
 export interface DragStartEventData<T> {
     index: number;
     element: Element;
@@ -82,6 +83,10 @@ export interface DragStartEventData<T> {
      * The duration of the animations in milisecond.
      */
     animationDuration?: number;
+    /**
+     * Map value when is passed from the current list to another.
+     */
+    mapFrom?: MapFrom<T>;
   }
   /**
    * onDrop event function.
@@ -154,4 +159,5 @@ export interface DragStartEventData<T> {
     onInsertEvent: OnInsertEvent<T>;
     onGetLegth: OnGetLength;
     onGetValue: OnGetValue<T>;
+    mapFrom: MapFrom<T>;
   };

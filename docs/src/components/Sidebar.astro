@@ -1,20 +1,5 @@
 ---
 import Default from '@astrojs/starlight/components/Sidebar.astro';
-
-// Get the first part of the file path, i.e. "site/setup" would return "site"
-// const firstPathSegment = Astro.props.slug.split('/')[0];
-// Filter out groups that don’t include links to the current sub directory
-// Astro.props.sidebar = Astro.props.sidebar.filter(
-// 	(group) =>
-// 		group.type === 'group' &&
-// 		group.entries.some(
-// 			(entry) => entry.type === 'link' && entry.href.startsWith('/' + firstPathSegment)
-// 		)
-// );
-// console.log(Astro.props)
-if (Astro.props.sidebar) {
-    console.log(Astro.props.sidebar,'------------------------------------------------------------------------------')
-}
 ---
 
 <Default {...Astro.props}><slot /></Default>

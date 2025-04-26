@@ -4,6 +4,8 @@ import { draggableIsOutside } from "./GetStyles";
 import { IsHTMLElement } from "./touchDevice";
 import { setEventWithInterval } from "./SetStyles";
 import { getClassesSelector } from "./dom/classList";
+import { MapConfig } from "./config";
+import { MapFrom } from "..";
 
 export class DroppableConfigurator<T>{
   initial: DroppableConfig<any> | undefined;
@@ -13,19 +15,22 @@ export class DroppableConfigurator<T>{
   private groupClass: string | null;
   private dragEvent: () => void;
   private changeDroppable: (newdDroppableConfig: DroppableConfig<T> | undefined, oldDroppableConfig: DroppableConfig<T> | undefined) => void
-
+  private  mapFrom: MapFrom<T>;
   constructor(
     draggableElement: HTMLElement,
     droppableGroupClass: string | null,
     parent: HTMLElement,
     setTransformDragEvent: () => void,
-    changeDroppable: (newdDroppableConfig: DroppableConfig<T> | undefined, oldDroppableConfig: DroppableConfig<T> | undefined) => void) {
+    changeDroppable: (newdDroppableConfig: DroppableConfig<T> | undefined, oldDroppableConfig: DroppableConfig<T> | undefined) => void, 
+    mapFrom: MapFrom<T>
+  ) {
     this.parent = parent;
     this.draggableElement = draggableElement;
     this.groupClass = droppableGroupClass;
     this.dragEvent = setTransformDragEvent;
-    this.initial = parent? ConfigHandler.getConfig(parent): undefined;
-    this.changeDroppable = changeDroppable
+    this.mapFrom = mapFrom;
+    this.initial = parent? this.getConfigFrom(parent): undefined;
+    this.changeDroppable = changeDroppable;
   }
   private getDraggableAncestor(
     clientX: number,
@@ -94,6 +99,16 @@ export class DroppableConfigurator<T>{
   private setOnScroll(droppable: Element) {
     setEventWithInterval(droppable, "onscroll",()=> { this.onScrollEvent() });
   }
+  getConfigFrom(element: Element) {
+    const config = ConfigHandler.getConfig(element);
+    if (!config) {
+      return undefined
+    }
+    return {
+      ...config,
+      config: MapConfig(config, this.mapFrom)
+    }
+  }
   getCurrentConfig(event: DragMouseTouchEvent) {
     const currentElement = this.draggableElement;
     if (
@@ -107,12 +122,12 @@ export class DroppableConfigurator<T>{
     }
     const currentDroppable = this.getCurrent(currentElement, event);
     if (!currentDroppable) {
-      return ConfigHandler.getConfig(this.parent);
+      return this.getConfigFrom(this.parent);
     }
     if (IsHTMLElement(currentDroppable) && !currentDroppable.onscroll) {
       this.setOnScroll(currentDroppable);
     }
-    return ConfigHandler.getConfig(currentDroppable);
+    return this.getConfigFrom(currentDroppable);
   }
   updateConfig(event: DragMouseTouchEvent) {
     const oldDroppableConfig = this.current;

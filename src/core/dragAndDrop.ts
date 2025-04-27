@@ -39,13 +39,13 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
     const childrenMutationFilter = (mutation: MutationRecord) => {
         const addedNodes = mutation.addedNodes.values().filter((element) => !isTempElement(element)).toArray();
         const removedNodes = mutation.removedNodes.values().filter((element) => !isTempElement(element)).toArray();
-        console.log(addedNodes, removedNodes)
         return addedNodes.length > 0 || removedNodes.length > 0
     };
     const observeChildrens = (parent: HTMLElement) => {
         observeMutation(
           () => {
-            // TODO: why is called when is used handlers
+            // TODO: Optimize drag and drop of groups over time
+            // timeout is greater when the time pass
             makeChildrensDraggable(parent)
           },
           parent,

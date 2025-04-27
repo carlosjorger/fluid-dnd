@@ -1,3 +1,4 @@
+// @ts-ignore  
 import { Ref, ref, watch } from "vue";
 import { Config } from "../core";
 import HandlerPublisher from "../core/HandlerPublisher";
@@ -16,7 +17,7 @@ import { dragAndDrop } from "../index";
 const handlerPublisher = new HandlerPublisher()
 export default function useDragAndDrop<T>(items: Ref<T[]>, config?: Config<T>) {
   const parent = ref<HTMLElement | undefined>();
-  var listCondig = new VueListCondig(items, parent)
+  var listCondig = new VueListCondig<T>(items, parent)
 
   const [removeAt, insertAt, onChangeParent] = dragAndDrop(listCondig, handlerPublisher, config)
  

@@ -1,4 +1,4 @@
-import { DragEndEventData, DragStartEventData, ListCondig, MapFrom } from "..";
+import { DragEndEventData, ListCondig, MapFrom } from "..";
 import {
   Config,
   CoreConfig,

@@ -1,5 +1,6 @@
 import { CoreConfig } from "../../core";
 import { ListCondig } from "../../core";
+// @ts-ignore  
 import { Ref } from "vue";
 import { getLength, getValue, onInsertEventOnList, removeAtEventOnList } from "./DropMethods";
 import { insertToListEmpty } from "../../core/utils/events/emitEvents";

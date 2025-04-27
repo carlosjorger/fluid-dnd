@@ -29,7 +29,7 @@ export class DroppableConfigurator<T>{
     this.groupClass = droppableGroupClass;
     this.dragEvent = setTransformDragEvent;
     this.mapFrom = mapFrom;
-    this.initial = parent? this.getConfigFrom(parent): undefined;
+    this.initial = parent? ConfigHandler.getConfig(parent): undefined;
     this.changeDroppable = changeDroppable;
   }
   private getDraggableAncestor(
@@ -100,13 +100,13 @@ export class DroppableConfigurator<T>{
     setEventWithInterval(droppable, "onscroll",()=> { this.onScrollEvent() });
   }
   getConfigFrom(element: Element) {
-    const config = ConfigHandler.getConfig(element);
-    if (!config) {
+    const coreConfig = ConfigHandler.getConfig(element);
+    if (!coreConfig) {
       return undefined
     }
     return {
-      ...config,
-      config: MapConfig(config, this.mapFrom)
+      ...coreConfig,
+      config: MapConfig(coreConfig, this.mapFrom)
     }
   }
   getCurrentConfig(event: DragMouseTouchEvent) {

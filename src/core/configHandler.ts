@@ -21,7 +21,6 @@ export default class ConfigHandler {
       scroll,
     });
     ConfigHandler.configs = configs;
-    console.log(ConfigHandler.configs.length)
   }
   static removeObsoleteConfigs = () => {
     const notObsoltete = ConfigHandler.configs.filter(({ droppable }) =>

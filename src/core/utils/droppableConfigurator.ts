@@ -104,6 +104,9 @@ export class DroppableConfigurator<T>{
     if (!coreConfig) {
       return undefined
     }
+    if (element.isSameNode(this.parent)) {
+      return coreConfig
+    }
     return {
       ...coreConfig,
       config: MapConfig(coreConfig, this.mapFrom)

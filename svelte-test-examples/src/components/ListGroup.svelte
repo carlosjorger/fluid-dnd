@@ -24,7 +24,7 @@ const MapMinifiedItemToItem = (item:MinifiedItem) => {
   return {
       id: item.id,
       value: item.label,
-      is_visible: true,
+      is_visible: false,
   }  
 }
 const [ parent1 ] = useDragAndDrop<Item>(list, {
@@ -62,7 +62,7 @@ const [ parent2 ] = useDragAndDrop<MinifiedItem>(list2, {
   <ul use:parent1 class="number-list">
     {#each list as  element, index (element.id) }
       <li class="number" data-index={index}>
-        { element.value }
+        { element.value } {element.is_visible}
       </li>
     {/each}
 

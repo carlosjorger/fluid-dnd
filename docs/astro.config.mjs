@@ -127,6 +127,13 @@ const getSidebar = (framework) => [
           es: "Eventos OnDrag",
         },
       },
+      {
+        label: "Map values",
+        link: `/${framework}/guides/mapvalues/`,
+        translations: {
+          es: "Mapear valores",
+        },
+      },
     ],
     translations: {
       es: "Guía",

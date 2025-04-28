@@ -99,6 +99,7 @@ export default function useDraggable<T>(
   };
   
   const setCssStyles = () => {
+    // TODO: call this function in useDroppable
     AddCssStylesToElement(document.body, [
       `.${DRAGGABLE_CLASS}{touch-action:manipulation;user-select:none;box-sizing:border-box!important;-webkit-user-select:none;}`,
       `.${HANDLER_CLASS}{pointer-events:auto!important;}`,

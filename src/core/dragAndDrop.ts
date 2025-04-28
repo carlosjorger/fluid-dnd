@@ -44,8 +44,6 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
     const observeChildrens = (parent: HTMLElement) => {
         observeMutation(
           () => {
-            // TODO: Optimize drag and drop of groups over time
-            // timeout is greater when the time pass
             makeChildrensDraggable(parent)
           },
           parent,

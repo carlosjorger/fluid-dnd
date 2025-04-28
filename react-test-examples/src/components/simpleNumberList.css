@@ -1,0 +1,12 @@
+.number-list{
+    background-color: #314158;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.number{
+    background-color: #90a1b9;
+    color: aliceblue;
+}

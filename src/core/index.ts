@@ -1,7 +1,7 @@
 export type DraggableElement =
   | { index: number; draggableId: string }
   | { index: number };
-export interface ListCondig<T>{
+export type ListCondig<T>= {
     removeAtEvent: (index: number) => T | undefined;
     insertEvent: (index: number, value: T) => void;
     getLength: () => number,

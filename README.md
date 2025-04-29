@@ -16,7 +16,7 @@
 </div>
 
 Fluid DnD is a [**fluid**, **agnostic** and **versatil** drag and drop
-library for lists with support for Vue 3 and Svelte](https://fluid-dnd.netlify.app/). It's a**lightweight** tool ~7 Kb (gzip) with no depenencies.
+library for lists with support for Vue 3, react and Svelte](https://fluid-dnd.netlify.app/). It's a**lightweight** tool ~7 Kb (gzip) with no depenencies.
 
 <img src="https://github.com/user-attachments/assets/b350f9a4-7dd7-40ca-ae3f-ecca166a9081" width="100%"/>
 

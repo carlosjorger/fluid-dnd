@@ -12,7 +12,6 @@ import { isTempElement } from "./utils/tempChildren";
 export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher: HandlerPublisher, config?: Config<T>, indexAttr: string ='index' ) {
     let removeAtFromElements = [] as ((index: number) => void)[];
     let insertAtFromElements = [] as ((index: number, value: T) => void)[];
-
     const coreConfig = getConfig(listCondig, config)
       
     const removeAt = (index: number) => {
@@ -60,7 +59,7 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
             coreConfig
         );
     };
-    const onChangeParent = (parent: HTMLElement | undefined) => {
+    const onChangeParent = (parent: HTMLElement | null | undefined) => {
         if (!parent) {
             return;
         }

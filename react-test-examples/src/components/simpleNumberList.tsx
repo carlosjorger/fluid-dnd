@@ -1,30 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 import  './simpleNumberList.css';
+import useDragAndDrop from '../../../src/react/useDragAndDrop';
 const NumberList: React.FC = () => {
-  const [numbers, setNumbers] = useState<number[]>([1, 2, 3]);
-
+  const [parent, numbers, _, insertAt, removeAt] = useDragAndDrop<number, HTMLUListElement>([1, 2, 3],{
+    delayBeforeInsert: 250,
+    removingClass: "removed",
+  });
   const addNumber = () => {
-    setNumbers([...numbers, numbers.length + 1]);
+    insertAt(numbers.length, numbers.length+1);
   };
-
-  const removeNumber = () => {
-    if (numbers.length > 0) {
-      setNumbers(numbers.slice(0, -1));
-    }
-  };
-
+  const removeNumber = (index: number) => {
+    removeAt(index);
+  }
   return (
     <div>
       <h2>Simple Number List</h2>
-      <ul className='number-list'>
-        {numbers.map((number) => (
-          <li className='number' key={number}>
+      <ul ref={parent} className='number-list'>
+        {numbers.map((number, index) => (
+          <li className='number' data-index={index} key={number}>
             {number}
+            <button className='remove-button' onClick={() => removeNumber(index)}>x</button>
           </li>
         ))}
       </ul>
       <button onClick={addNumber}>Add Number</button>
-      <button onClick={removeNumber}>Remove Number</button>
     </div>
   );
 };

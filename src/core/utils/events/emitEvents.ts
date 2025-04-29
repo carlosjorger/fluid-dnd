@@ -99,10 +99,10 @@ export default function useEmitEvents<T>(
     startInserting()
     setTimeout(() => {
       onInsertEvent(targetIndex, value)
-      removeTempChild(parent, 0, true);
       onFinishInsertElement(targetIndex, droppable, currentConfig)
       removeElementDraggingStyles(draggedElement);
       removeTranslateFromSiblings(draggedElement, parent);
+      removeTempChild(parent, 0, true);
     }, delayBeforeInsert);
   }
   
@@ -510,7 +510,7 @@ const onFinishInsertElement = <T>(targetIndex:number, droppable: HTMLElement, co
       childList:true,
     })
   }
-export const insertToListEmpty = <T>(config: CoreConfig<T>, droppable: HTMLElement | undefined ,targetIndex: number,  value: T) => { 
+export const insertToListEmpty = <T>(config: CoreConfig<T>, droppable: HTMLElement | undefined | null ,targetIndex: number,  value: T) => { 
   if (!droppable) {
     return
   }

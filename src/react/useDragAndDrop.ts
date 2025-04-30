@@ -20,6 +20,6 @@ export default function useDragAndDrop<T, E extends HTMLElement>( items: T[], co
   const [removeAt, insertAt, onChangeParent] = dragAndDrop(listCondig, handlerPublisher, config, 'data-index')
   useEffect(() => {
     onChangeParent(parent.current);
-  }, [itemsState.length])  
+  }, [itemsState.length])
   return [parent, itemsState, setItemsState ,insertAt, removeAt] as const;
 }

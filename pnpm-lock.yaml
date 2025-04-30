@@ -17,6 +17,9 @@ importers:
       '@types/react':
         specifier: ^18.3.20
         version: 18.3.20
+      '@types/react-dom':
+        specifier: ^19.1.2
+        version: 19.1.2(@types/react@18.3.20)
       '@vitejs/plugin-vue':
         specifier: ^4.5.2
         version: 4.6.2(vite@5.4.16(@types/node@20.17.28))(vue@3.5.13(typescript@5.8.2))
@@ -494,6 +497,11 @@ packages:
 
   '@types/prop-types@15.7.14':
     resolution: {integrity: sha512-gNMvNH49DJ7OJYv+KAKn0Xp45p8PLl6zo2YnvDIbTd4J6MER2BmWN49TG7n9LvkyihINxeKW8+3bfS2yDC9dzQ==}
+
+  '@types/react-dom@19.1.2':
+    resolution: {integrity: sha512-XGJkWF41Qq305SKWEILa1O8vzhb3aOo3ogBlSmiqNko/WmRb6QIaweuZCXjKygVDXpzXb5wyxKTSOsmkuqj+Qw==}
+    peerDependencies:
+      '@types/react': ^19.0.0
 
   '@types/react@18.3.20':
     resolution: {integrity: sha512-IPaCZN7PShZK/3t6Q87pfTkRm6oLTd4vztyoj+cbHUF1g3FfVb2tFIL79uCRKEfv16AhqDMBywP2VW3KIZUvcg==}
@@ -1975,6 +1983,10 @@ snapshots:
       undici-types: 6.19.8
 
   '@types/prop-types@15.7.14': {}
+
+  '@types/react-dom@19.1.2(@types/react@18.3.20)':
+    dependencies:
+      '@types/react': 18.3.20
 
   '@types/react@18.3.20':
     dependencies:

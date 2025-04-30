@@ -1,0 +1,18 @@
+.pokemon {
+    margin-top: 0rem !important;
+    background-image: url("../assets/pokemon-bg.svg");
+}
+.remove {
+    cursor: pointer;
+}
+.pokemon-group{
+    display: flex;
+    gap: 5px;
+}
+.pokemon-list{
+    width: 45%;
+    background-color: darkgray;
+    display: block;
+    overflow: auto;
+    height: 600px;
+}

@@ -379,9 +379,9 @@ export default function useEmitEvents<T>(
     removeStytes(element, parent, droppable, () => {
       removeClass(element, DROPPING_CLASS)
       if (positionOnSourceDroppable != undefined) {
-        const value = onRemoveAtEvent(positionOnSourceDroppable);
+        const value = onRemoveAtEvent(positionOnSourceDroppable, true);
         if (value != undefined) {
-          onInsertEvent(targetIndex, value);
+          onInsertEvent(targetIndex, value, true);
           onDragEnd({ value, index: targetIndex})
         }
         manageDraggingClass(element)

@@ -68,6 +68,7 @@
     "@types/node": "^20.12.5",
     "@vitejs/plugin-vue": "^4.5.2",
     "@types/react": "^18.3.20",
+    "@types/react-dom": "^19.1.2",
     "jsdom": "^24.0.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",

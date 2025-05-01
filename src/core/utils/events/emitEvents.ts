@@ -99,10 +99,10 @@ export default function useEmitEvents<T>(
     startInserting()
     setTimeout(() => {
       onInsertEvent(targetIndex, value)
-      removeTempChild(parent, 0, true);
       onFinishInsertElement(targetIndex, droppable, currentConfig)
       removeElementDraggingStyles(draggedElement);
       removeTranslateFromSiblings(draggedElement, parent);
+      removeTempChild(parent, 0, true);
     }, delayBeforeInsert);
   }
   
@@ -379,9 +379,9 @@ export default function useEmitEvents<T>(
     removeStytes(element, parent, droppable, () => {
       removeClass(element, DROPPING_CLASS)
       if (positionOnSourceDroppable != undefined) {
-        const value = onRemoveAtEvent(positionOnSourceDroppable);
+        const value = onRemoveAtEvent(positionOnSourceDroppable, true);
         if (value != undefined) {
-          onInsertEvent(targetIndex, value);
+          onInsertEvent(targetIndex, value, true);
           onDragEnd({ value, index: targetIndex})
         }
         manageDraggingClass(element)
@@ -510,7 +510,7 @@ const onFinishInsertElement = <T>(targetIndex:number, droppable: HTMLElement, co
       childList:true,
     })
   }
-export const insertToListEmpty = <T>(config: CoreConfig<T>, droppable: HTMLElement | undefined ,targetIndex: number,  value: T) => { 
+export const insertToListEmpty = <T>(config: CoreConfig<T>, droppable: HTMLElement | undefined | null ,targetIndex: number,  value: T) => { 
   if (!droppable) {
     return
   }

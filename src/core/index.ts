@@ -1,9 +1,9 @@
 export type DraggableElement =
   | { index: number; draggableId: string }
   | { index: number };
-export interface ListCondig<T>{
-    removeAtEvent: (index: number) => T | undefined;
-    insertEvent: (index: number, value: T) => void;
+export type ListCondig<T>= {
+    removeAtEvent: (index: number, sync?:boolean) => T | undefined;
+    insertEvent: (index: number, value: T, sync?:boolean) => void;
     getLength: () => number,
     getValue: (index: number) => T
     insertToListEmpty: (config: CoreConfig<T>, index: number, value: T) => void
@@ -97,8 +97,8 @@ export interface DragStartEventData<T> {
     destination: DraggableElement
   ) => void;
   
-  export type OnRemoveAtEvent<T> = (index: number) => T | undefined;
-  export type OnInsertEvent<T> = (index: number, value: T) => void;
+  export type OnRemoveAtEvent<T> = (index: number, sync?: boolean) => T | undefined;
+  export type OnInsertEvent<T> = (index: number, value: T, sync?: boolean) => void;
   export type OnGetLength = () => number;
   export type OnGetValue<T> = (index: number) => T;
   

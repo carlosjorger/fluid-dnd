@@ -2,7 +2,7 @@ import { getConfig } from "./utils/config";
 import { ListCondig } from ".";
 import { Config } from ".";
 import useDroppable from "./useDroppable";
-import HandlerPublisher from "@/core/HandlerPublisher";
+import HandlerPublisher from "./HandlerPublisher";
 import ConfigHandler from "./configHandler";
 import { observeMutation } from "./utils/observer";
 import { addClass } from "./utils/dom/classList";
@@ -12,7 +12,6 @@ import { isTempElement } from "./utils/tempChildren";
 export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher: HandlerPublisher, config?: Config<T>, indexAttr: string ='index' ) {
     let removeAtFromElements = [] as ((index: number) => void)[];
     let insertAtFromElements = [] as ((index: number, value: T) => void)[];
-
     const coreConfig = getConfig(listCondig, config)
       
     const removeAt = (index: number) => {
@@ -60,7 +59,7 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
             coreConfig
         );
     };
-    const onChangeParent = (parent: HTMLElement | undefined) => {
+    const onChangeParent = (parent: HTMLElement | null | undefined) => {
         if (!parent) {
             return;
         }
@@ -70,5 +69,6 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
         makeChildrensDraggable(parent)
         ConfigHandler.removeObsoleteConfigs();
     }
+    // TODO: On mobile devices, when trying to drag an element in a scrollable area, the scroll moves as well, and when drag and drop is activated, the element automatically shifts.
     return [removeAt, insertAt, onChangeParent] as const
 }

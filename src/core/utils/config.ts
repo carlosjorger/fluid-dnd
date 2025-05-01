@@ -11,12 +11,12 @@ export const getConfig = <T>(listCondig: ListCondig<T>,
   config?: Config<T>
 ): CoreConfig<T> => {
   
-  const onRemoveAtEvent =(index: number) =>{
-    return listCondig.removeAtEvent(index)
+  const onRemoveAtEvent =(index: number, sync?: boolean) =>{
+    return listCondig.removeAtEvent(index, sync)
   };
   
-  const onInsertEvent = (index: number, value: T) =>{
-    return listCondig.insertEvent(index, value)
+  const onInsertEvent = (index: number, value: T, sync?: boolean) =>{
+    return listCondig.insertEvent(index, value, sync)
   };
   
   const onGetLegth =()=>{
@@ -55,7 +55,7 @@ export const MapConfig = <T>(coreConfig:DroppableConfig<any>, mapFrom: MapFrom<T
   const { config, droppable } = coreConfig
   const { onInsertEvent, onDragEnd} = config
   const mapOnInsertEvent = (index: number, value: T) =>{
-    return onInsertEvent(index, mapFrom(value, droppable));
+    return onInsertEvent(index, mapFrom(value, droppable), true);
   }
   const mapOnDragEnd = (eventData: DragEndEventData<T>) => {
     const {index, value} = eventData

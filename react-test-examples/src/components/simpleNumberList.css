@@ -1,0 +1,37 @@
+.group-container{
+    display: flex;
+    gap: 5px;
+}
+.number-list{
+    background-color: #314158;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    min-height: 90px;
+    min-width: 100px;   
+}
+.number{
+    background-color: #90a1b9;
+    color: aliceblue;
+    transition: opacity 200ms ease;
+    opacity: 1;
+    text-align: start;
+    padding-left: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.remove-button{
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+.number.removed{
+    opacity: 0;
+}
+.number.from-inserting{
+    opacity: 0;
+ }

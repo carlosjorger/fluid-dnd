@@ -2,7 +2,7 @@ import { getConfig } from "./utils/config";
 import { ListCondig } from ".";
 import { Config } from ".";
 import useDroppable from "./useDroppable";
-import HandlerPublisher from "@/core/HandlerPublisher";
+import HandlerPublisher from "./HandlerPublisher";
 import ConfigHandler from "./configHandler";
 import { observeMutation } from "./utils/observer";
 import { addClass } from "./utils/dom/classList";

@@ -19,6 +19,7 @@ export default defineConfig({
       entry: {
         vue: path.resolve(__dirname, 'src/vue/index.ts'),
         svelte: path.resolve(__dirname, 'src/svelte/index.ts'),
+        react: path.resolve(__dirname, 'src/react/index.ts'),
         index: path.resolve(__dirname, "src/index.ts")
       },
       name: "FluidDnd",
@@ -28,11 +29,12 @@ export default defineConfig({
       }
     },
     rollupOptions: {
-      external: ["vue", 'svelte'],
+      external: ["vue", 'svelte', 'react', 'react-dom'],
       output: {
         globals: {
           vue: "Vue",
-          svelte: 'svelte'
+          svelte: 'svelte',
+          react: 'react'
         },
       },
     },

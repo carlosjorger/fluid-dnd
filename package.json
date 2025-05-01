@@ -1,7 +1,7 @@
 {
   "name": "fluid-dnd",
   "version": "1.1.2-beta.0",
-  "description": "An agnostic drag and drop library to sort all kind of lists. With current support for vue 3, react and svelte",
+  "description": "An agnostic drag and drop library to sort all kind of lists. With current support for vue, react and svelte",
   "type": "module",
   "homepage": "https://fluid-dnd.netlify.app",
   "repository": {
@@ -37,7 +37,7 @@
   "types": "./index.d.ts",
   "scripts": {
     "dev": "cd my-test-examples && vite",
-    "build": "vite build && vue-tsc --emitDeclarationOnly",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest"
   },

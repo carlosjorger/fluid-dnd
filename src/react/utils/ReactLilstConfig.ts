@@ -1,6 +1,7 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import { CoreConfig, ListCondig } from "../../core";
 import { insertToListEmpty as insertToListEmptyEvent } from "../../core/utils/events/emitEvents";
+// @ts-ignore  
 import { flushSync } from "react-dom";
 
 export function useReactListConfig<T,E extends HTMLElement>(items: T[], parent: RefObject<E>){

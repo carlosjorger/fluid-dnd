@@ -2,8 +2,13 @@
 import SingleHorizontalListOfPokemonsAutoscrollVue from "@/components/examples/vue/SingleHorizontalListOfPokemonsAutoscroll.vue";
 import SingleHorizontalListOfPokemonsAutoscrollSvelte from "@/components/examples/svelte/SingleHorizontalListOfPokemonsAutoscroll.svelte";
 import PageComponent from "./shared/page-component.astro";
+import { getI18N } from "@/i18n";
 
+const { currentLocale } = Astro;
 const { framework } = Astro.props;
+
+const i18n = getI18N({ currentLocale });
+
 const horizontalListVueCode=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -68,7 +73,7 @@ const [ parent ] = useDragAndDrop(pokemons, {
 const fileName = 'SingleHorizontalListOfPokemonsAutoscroll';
 ---
 
-<PageComponent framework={framework} vueCode={horizontalListVueCode} svelteCode={horizontalListSvelteCode} fileName={fileName}> 
+<PageComponent title={i18n.SINGLE_HORIZONTAL_LIST_AUTOSCROLL} framework={framework} vueCode={horizontalListVueCode} svelteCode={horizontalListSvelteCode} reactCode="" fileName={fileName}> 
   <fragment slot="vue"> 
     <SingleHorizontalListOfPokemonsAutoscrollVue client:load />
   </fragment>

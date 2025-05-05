@@ -2,8 +2,13 @@
 import GroupOfHorizontalListOfPokemonsVue from "@/components/examples/vue/GroupOfHorizontalListOfPokemons.vue";
 import GroupOfHorizontalListOfPokemonsSvelte from "@/components/examples/svelte/GroupOfHorizontalListOfPokemons.svelte";
 import PageComponent from "./shared/page-component.astro";
+import { getI18N } from "@/i18n";
 
+const { currentLocale } = Astro;
 const { framework } = Astro.props;
+
+const i18n = getI18N({ currentLocale });
+
 const horizontalListsVueCode=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -168,7 +173,7 @@ const horizontalListSvelteCode =`<script lang="ts">
 </div>`
 const fileName = 'GroupOfHorizontalListOfPokemons';
 ---
-<PageComponent framework={framework} vueCode={horizontalListsVueCode} svelteCode={horizontalListSvelteCode} fileName={fileName}> 
+<PageComponent title={i18n.GROUP_HORIZONTAL_GROUP} framework={framework} vueCode={horizontalListsVueCode} svelteCode={horizontalListSvelteCode} reactCode="''" fileName={fileName}> 
   <fragment slot="vue"> 
     <GroupOfHorizontalListOfPokemonsVue client:load />
   </fragment>

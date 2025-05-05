@@ -2,8 +2,13 @@
 import SingleHorizontalListOfPokemonsVue from "@/components/examples/vue/SingleHorizontalListOfPokemons.vue";
 import SingleHorizontalListOfPokemonsSvelte from "@/components/examples/svelte/SingleHorizontalListOfPokemons.svelte";
 import PageComponent from "./shared/page-component.astro";
+import { SingleHorizontalListOfPokemons as SingleHorizontalListOfPokemonsReact} from "@/components/examples/react/SingleHorizontalListOfPokemons.tsx";
+import { getI18N } from "@/i18n";
 
+const { currentLocale } = Astro;
 const { framework } = Astro.props;
+
+const i18n = getI18N({ currentLocale });
 const horizontalListVueCode=`
   <script setup lang="ts">
   import { ref } from "vue";
@@ -66,14 +71,58 @@ const horizontalListSvelteCode=`
     </div>
   </div>
   `
+const horizontalListReactCode = `
+import { useDragAndDrop } from "fluid-dnd/react";
+import type { Pokemon } from "../Pokemon";
+import { fetchPokemons } from "@/server/pokemonServer";
+import { PokemonComponent } from "./PokemonComponent";
+import { useEffect } from "react";
+
+export const SingleHorizontalListOfPokemons: React.FC = () => {
+  const [ parent, listOfPokemons, setPokemons ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
+    direction: "horizontal",
+    draggingClass: "dragging-pokemon",
+  });
+  useEffect(() => { 
+      const fetchPokemonse = async () => {
+          const newPokemons = await fetchPokemons(3);
+          setPokemons(newPokemons);
+      }
+      fetchPokemonse();
+  }, [])
+
+  return (
+    <div className="flex max-sm:justify-center items-start">
+      <div
+        ref={parent}
+        className="bg-gray-200/60 border-solid border-black/40 rounded-2xl border-4 p-4 max-sm:p-2 flex flex-row overflow-auto gap-2 max-sm:gap-1"
+      >
+        {
+          listOfPokemons.map((pokemon, index) => (
+            <PokemonComponent
+              key={pokemon.name}
+              index={index}
+              pokemon={pokemon}
+            />
+          ))
+        }
+      </div>
+    </div>
+  )
+}
+
+`
 const fileName = `SingleHorizontalListOfPokemons`;
 ---
 
-<PageComponent framework={framework} vueCode={horizontalListVueCode} svelteCode={horizontalListSvelteCode} fileName={fileName}> 
+<PageComponent title={i18n.SINGLE_VERTICAL_LIST} framework={framework} vueCode={horizontalListVueCode} svelteCode={horizontalListSvelteCode} reactCode={horizontalListReactCode} fileName={fileName}> 
   <fragment slot="vue"> 
     <SingleHorizontalListOfPokemonsVue client:load />
   </fragment>
   <fragment slot="svelte">
     <SingleHorizontalListOfPokemonsSvelte client:load />
+  </fragment>
+  <fragment slot="react">
+    <SingleHorizontalListOfPokemonsReact client:load />
   </fragment>
 </PageComponent>

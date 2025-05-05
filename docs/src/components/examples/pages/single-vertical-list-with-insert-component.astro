@@ -1,14 +1,13 @@
 ---
 import SingleVerticalListOfPokemonsVue from "@/components/examples/vue/SingleVerticalListOfPokemonsWithInsert.vue";
 import SingleVerticalListOfPokemonsSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemonsWithInsert.svelte";
-import ExampleLayout from "@/components/examples/ExampleLayout.astro";
-import Accordion from "@/components/Accordion.astro";
 import {getI18N} from '@/i18n/index.ts';  
 import PageComponent from "./shared/page-component.astro";
 
 const { currentLocale } = Astro;
 const { framework } = Astro.props;
 const i18n = getI18N({ currentLocale });
+
 const verticalList=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -97,7 +96,7 @@ function insertPokemon(){
 `
 const fileName = 'SingleVerticalListOfPokemons';
 ---
-<PageComponent framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} fileName={fileName}>
+<PageComponent title={i18n.SINGLE_VERTICAL_LIST_WITH_INSERT} framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} reactCode="" fileName={fileName}>
   <fragment slot="vue">
     <SingleVerticalListOfPokemonsVue client:load />
   </fragment>

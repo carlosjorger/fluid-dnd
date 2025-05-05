@@ -2,8 +2,11 @@
 import SingleVerticalListOfPokemonsVue from "@/components/examples/vue/SingleVerticalListOfPokemonsWithRemove.vue";
 import SingleVerticalListOfPokemonsSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemonsWithRemove.svelte";
 import PageComponent from "./shared/page-component.astro";
+import { getI18N } from "@/i18n";
 
+const { currentLocale } = Astro;
 const { framework } = Astro.props;
+const i18n = getI18N({ currentLocale });
 const verticalList=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -71,7 +74,7 @@ const [ parent,_, removeEvent ] = useDragAndDrop(pokemons, {
 `
 const fileName = 'SingleVerticalListOfPokemons.vue';
 ---
-<PageComponent framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} fileName={fileName}>
+<PageComponent title={i18n.SINGLE_VERTICAL_LIST_WITH_REMOVE} framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} reactCode="" fileName={fileName}>
   <fragment slot="vue">
     <SingleVerticalListOfPokemonsVue client:load />
   </fragment>

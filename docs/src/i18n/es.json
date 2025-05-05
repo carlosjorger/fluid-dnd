@@ -1,6 +1,7 @@
 {
   "SINGLE_VERTICAL_LIST": "Lista vertical",
   "SINGLE_VERTICAL_LIST_WITH_REMOVE": "Lista vertical con remover",
+  "SINGLE_VERTICAL_LIST_WITH_INSERT": "Lista vertical con insertar",
   "SINGLE_VERTICAL_LIST_AUTOSCROLL": "Lista vertical en un scroller",
   "SINGLE_VERTICAL_IS_DRAGGABLE": "IsDraggable",
   "SINGLE_VERTICAL_WITH_HANDLER": "Lista con handlers",
@@ -10,5 +11,6 @@
   "GROUP_HORIZONTAL_GROUP": "Grupo de listas horizontales",
   "CODE_MESSAGE": "código Vue",
   "VUE_CODE_MESSAGE": "código Vue",
-  "SVELTE_CODE_MESSAGE": "código Svelte"
+  "SVELTE_CODE_MESSAGE": "código Svelte",
+  "REACT_CODE_MESSAGE": "código React"
 }

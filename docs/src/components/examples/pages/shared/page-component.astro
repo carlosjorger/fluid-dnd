@@ -9,19 +9,64 @@ interface Props {
   framework: FRAMEWORKS_TYPE;
   vueCode: string;
   svelteCode: string;
+  reactCode: string;
   fileName: string;
+  title: string
 }
 
 const { currentLocale } = Astro;
-const { framework, vueCode, svelteCode, fileName} = Astro.props;
+const { framework, vueCode, svelteCode, reactCode, fileName, title} = Astro.props;
+
+const VUE = 'vue';
+const SVELTE = 'svelte';
+const REACT = 'react';
+
 const i18n = getI18N({ currentLocale });
 
-const code = framework === 'vue' ? vueCode : svelteCode;
-const fileNameWithExtension = `${fileName}.${framework}`;
-const buttonText = framework === 'vue' ? i18n.VUE_CODE_MESSAGE : i18n.SVELTE_CODE_MESSAGE;
+
+const code = (()=>{
+  if (framework === VUE) {
+    return vueCode
+  }
+  if (framework === SVELTE) {
+    return svelteCode
+  }
+  else if (framework === REACT) {
+    return reactCode
+  }
+  return ''
+})();
+const extension = 
+    (()=>{
+    if (framework === VUE) {
+      return 'vue'
+    }
+    if (framework === SVELTE) {
+      return 'svelte'
+    }
+    else if (framework === REACT) {
+      return 'tsx'
+    }
+    return ''
+  })();
+const fileNameWithExtension = `${fileName}.${extension}`;
+const buttonText = 
+  (()=>{
+    if (framework === VUE) {
+      return i18n.VUE_CODE_MESSAGE 
+    }
+    if (framework === SVELTE) {
+      return i18n.SVELTE_CODE_MESSAGE
+    }
+    else if (framework === REACT) {
+      return i18n.REACT_CODE_MESSAGE
+    }
+    return ''
+  })();
 --- 
-<ExampleLayout title={i18n.SINGLE_VERTICAL_LIST}>
-    {framework === 'vue' && <slot name="vue" />}
-    {framework === 'svelte' && <slot name="svelte" />}
-     <Accordion  buttonText={buttonText} code={code} fileName={fileNameWithExtension} lang={framework}/>
-  </ExampleLayout>
+<ExampleLayout title={title}>
+    {framework === VUE && <slot name="vue" />}
+    {framework === SVELTE && <slot name="svelte" />}
+    {framework === REACT && <slot name="react" />}
+     <Accordion  buttonText={buttonText} code={code} fileName={fileNameWithExtension} lang={extension}/>
+</ExampleLayout>

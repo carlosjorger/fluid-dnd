@@ -3,11 +3,16 @@ import SingleVerticalListOfPokemonsVue from "@/components/examples/vue/SingleVer
 import SingleVerticalListOfPokemonsSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemons.svelte";
 import { type FRAMEWORKS_TYPE } from "@/types";
 import PageComponent from "./shared/page-component.astro";
+import { getI18N } from "@/i18n";
 
 interface Props {
   framework: FRAMEWORKS_TYPE;
 }
+const { currentLocale } = Astro;
 const { framework } = Astro.props;
+
+const i18n = getI18N({ currentLocale });
+
 const verticalList=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -69,7 +74,7 @@ const verticalListSvelteCode=`
   `
 const fileName = 'SingleVerticalListOfPokemons';
 ---
-<PageComponent framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} fileName={fileName}>
+<PageComponent title={i18n.SINGLE_VERTICAL_LIST} framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} reactCode="" fileName={fileName}>
   <fragment slot="vue">
     <SingleVerticalListOfPokemonsVue client:load />
   </fragment>

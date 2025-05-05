@@ -2,8 +2,12 @@
 import SingleVerticalListOfPokemonsAutoscrollVue from "@/components/examples/vue/SingleVerticalListOfPokemonsAutoscroll.vue";
 import SingleVerticalListOfPokemonsAutoscrollSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemonsAutoscroll.svelte";
 import PageComponent from "./shared/page-component.astro";
+import { getI18N } from "@/i18n";
 
+const { currentLocale } = Astro;
 const { framework } = Astro.props;
+
+const i18n = getI18N({ currentLocale });
 const vueCode=`
 <script setup lang="ts">
 import { ref } from "vue";
@@ -67,7 +71,7 @@ const fileName = 'SingleVerticalListOfPokemonsAutoscroll';
 ---
 
 
-<PageComponent framework={framework} vueCode={vueCode} svelteCode={svelteCode} fileName={fileName}>
+<PageComponent title={i18n.SINGLE_VERTICAL_LIST_AUTOSCROLL} framework={framework} vueCode={vueCode} svelteCode={svelteCode} reactCode="" fileName={fileName}>
   <fragment slot="vue">
     <SingleVerticalListOfPokemonsAutoscrollVue client:load />
   </fragment>

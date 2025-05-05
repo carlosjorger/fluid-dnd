@@ -1,7 +1,5 @@
-import type { Prop } from "vue"
-
 interface Props{
-  className: string,
+  className?: string,
 }
 export const Handler: React.FC<Props> = ({ className }) => {
   return (

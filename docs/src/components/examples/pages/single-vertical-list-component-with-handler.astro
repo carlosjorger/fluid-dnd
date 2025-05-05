@@ -1,9 +1,7 @@
 ---
 import SingleVerticalListOfPokemonsVue from "@/components/examples/vue/SingleVerticalListOfPokemonsWithHandler.vue";
 import SingleVerticalListOfPokemonsSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemonsWithHandler.svelte";
-import ExampleLayout from "@/components/examples/ExampleLayout.astro";
 import {getI18N} from '@/i18n/index.ts';  
-import Accordion from "@/components/Accordion.astro";
 import PageComponent from "./shared/page-component.astro";
 
 const { currentLocale } = Astro;
@@ -83,7 +81,7 @@ const [ parent ] = useDragAndDrop(pokemons, {
 const fileName = 'SingleVerticalListOfPokemonsWithHandler';
 ---
 
-<PageComponent framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} fileName={fileName}>
+<PageComponent title={i18n.SINGLE_VERTICAL_WITH_HANDLER} framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} reactCode="" fileName={fileName}>
   <fragment slot="vue">
     <SingleVerticalListOfPokemonsVue client:load />
   </fragment>

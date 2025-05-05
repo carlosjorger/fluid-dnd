@@ -5,7 +5,7 @@ description: Una guía de como usar Fluid DnD llamando los eventos onDragStart y
 import OnDragEvents from "@/components/svelte/OnDragEvents.svelte";
 import { Code } from "@astrojs/starlight/components";
 
-### List of number example
+### Ejemplo de lista de números
 
 Con **Fluid DnD** puedes crear eventos que se lancen cuando empiezas arrastrar un elemento (`onDragStart`) o cuando lo sueltas (`onDragEnd`).\
 Crearemos un grupo de listas y añadimos los eventos `onDragStart` y `onDragEnd` que alternan la clase `marked-droppable` en los **droppables** usando una referencia al padre de estos (`droppableGroup`):
@@ -62,7 +62,6 @@ export const listOfNumbersDraggable = `
 export const highlightsDraggable = ["droppableGroup"];
 
 <Code code={listOfNumbersDraggable} lang="svelte" mark={highlightsDraggable} />
-
 
 ### Resultado
 

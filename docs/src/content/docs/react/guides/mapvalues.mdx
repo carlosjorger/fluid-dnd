@@ -1,0 +1,75 @@
+---
+title: Map values between lists
+description: A guide on how to use Fluid DnD to map values between lists inside a group.
+---
+import { MapValuesGroup } from "@/components/react/MapValuesGroup.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### Group of list example
+
+With **Fluid DnD** you map values of elements between lists.\
+First, we'll define a group of lists:
+
+export const listOfNumbers = `
+...
+const list = ([
+  { id: "1", value: "Carcu", is_visible: true },
+  { id: "2", value: "Rodri", is_visible: true },
+  { id: "3", value: "Mbappe", is_visible: true },
+]);
+const [ parent1 ] = useDragAndDrop<Item, HTMLUListElement>(list, {
+  droppableGroup: "group1"
+});
+
+const list2 = ([
+  { id: "11", label: "Cholo" },
+  { id: "ab", label: "Popi" },
+]);
+const [ parent2 ] = useDragAndDrop<MinifiedItem, HTMLDivElement>(list2, { 
+  droppableGroup: "group1"
+});`;
+
+
+<Code code={listOfNumbers} lang="tsx"/>
+
+### Add mapFrom parameter
+
+Add the `mapFrom` parameter to the `useDragAndDrop` to map values between the lists:
+
+export const mapCondig = `
+...
+const MapItemToMinifiedItem = (item:Item) => {
+  return {
+      id: item.id,
+      label: item.value,
+    }  
+}
+const MapMinifiedItemToItem = (item:MinifiedItem) => {
+  return {
+      id: item.id,
+      value: item.label,
+      is_visible: true,
+  }  
+}
+const [ parent1 ] = useDragAndDrop<Item, HTMLUListElement>(list, {
+  ...
+  mapFrom : (item:Item) => {
+    return MapItemToMinifiedItem(item)
+  },
+});
+const [ parent2 ] = useDragAndDrop<MinifiedItem, HTMLDivElement>(list2, { 
+  ...
+  mapFrom : (item:MinifiedItem) => {
+    return MapMinifiedItemToItem(item)
+  },
+});`;
+
+export const highlightsMapCondig = ["MapItemToMinifiedItem", "MapMinifiedItemToItem","mapFrom"];
+
+<Code code={mapCondig} lang="tsx" mark={highlightsMapCondig} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <MapValuesGroup client:load  />
+</div>

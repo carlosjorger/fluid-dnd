@@ -1,0 +1,60 @@
+---
+title: List on a scroll container
+description: A guide to use Fluid DnD to make autoscroll on a list.
+---
+
+import {SingleVerticalListWithAutoscroll} from "@/components/react/SingleVerticalListWithAutoscroll.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+If you have a large list of elements with a scroll, you can easily navigate through the list.
+First, we're going to create a large list of numbers:
+
+export const listOfNumbers = `
+  export const SingleVerticalListWithAutoscroll: React.FC = () => {
+    const [ parent, listValue ] = useDragAndDrop<number, HTMLUListElement>([...Array(20).keys()]);
+    // ...
+  `;
+
+<Code code={listOfNumbers} lang="tsx" />
+
+### Using useDragAndDrop
+
+We're going to make `parent` element scrollable:
+
+export const highlightsDnD = ['number-list','overflow: auto;'];
+
+export const listOfNumberInsideDnD = `
+return (
+        <ul ref={parent} className="number-list">
+            {listValue.map((element, index) => (
+                <li className="number" data-index={index} key={element}>
+                    {element}
+                </li>
+            ))}
+        </ul>
+    )
+};
+`;
+
+<Code code={listOfNumberInsideDnD} lang="tsx" mark={highlightsDnD} />
+
+export const styles = `
+.number-list {
+    display: block;
+    padding-inline: 10px;
+    overflow: auto;
+    height: 300px;
+}
+`
+
+<Code code={styles} lang="css" mark={highlightsDnD} />
+
+### Preview
+
+This is what you got as a result:
+
+<div class="p-8 bg-[var(--sl-color-gray-6)] h-96">
+  <SingleVerticalListWithAutoscroll client:load />
+</div>

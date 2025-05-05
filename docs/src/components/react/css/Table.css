@@ -1,0 +1,26 @@
+table {
+    display: table !important;
+    background-color: var(--sl-color-gray-1);
+    width: 400px;
+}
+table thead {
+    color: var(--sl-color-gray-6);
+}
+table tbody tr {
+    margin-top: 0 !important;
+    background-color: var(--sl-color-gray-7, var(--sl-color-gray-6));
+    transition-property: color, background-color;
+    transition-duration: 250ms;
+}
+table tbody tr td {
+    margin-top: 0;
+    border: 0;
+    width: 33.3%;
+}
+.drag-row {
+    background-color: var(--sl-color-text-accent) !important;
+    color: var(--sl-color-text-invert);
+    transition-property: color, background-color;
+    transition-duration: 250ms;
+    display: table;
+}

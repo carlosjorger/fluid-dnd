@@ -1,0 +1,47 @@
+---
+title: Single horizontal list
+description: A guide to use Fluid DnD with a single horizontal list.
+---
+
+import {SingleHorizontalList} from "@/components/react/SingleHorizontalList.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+In this example we'll use **Fluid DnD** for sorting a horizontal list.
+First, we're going to create a list of numbers and adding the property `direction` with value `horizontal`:
+
+export const highlightsListOfNumbers = ['direction: "horizontal"'];
+
+
+export const listOfNumbers = `export const SingleHorizontalList: React.FC = () => {
+  const [ parent, listValue ] = useDragAndDrop<number, HTMLDivElement>([1, 2, 3, 4, 5],{
+      direction: "horizontal"
+  });`;
+
+<Code code={listOfNumbers} lang="tsx" mark={highlightsListOfNumbers}/>
+
+### Creating the view
+
+export const highlightsDnD = ['direction="horizontal"','.number-list'];
+
+export const listOfNumberInsideDnD = `
+return (
+        <div ref={parent} className="number-list">
+            {listValue.map((element, index) => (
+                <div className="number" data-index={index} key={element}>
+                    {element}
+                </div>
+            ))}
+        </div>
+    )
+};
+`;
+
+<Code code={listOfNumberInsideDnD} lang="tsx" mark={highlightsDnD} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <SingleHorizontalList client:load />
+</div>

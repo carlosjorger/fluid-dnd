@@ -1,0 +1,62 @@
+---
+title: List with inputs
+description: A guide to use Fluid DnD to adding forms and inputs.
+---
+
+import {SingleVerticalPersonList} from "@/components/react/SingleVerticalPersonList.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+To showing how to use **Fluid DnD** for sorting a list with editable data.
+First, we're going to create a list of people:
+
+export const listOfPeople = `
+export const SingleVerticalPersonList: React.FC = () => {
+    const [ parent, listValue, setList ] = useDragAndDrop<Person, HTMLUListElement>([
+        { number: 1, name: "Carlos", edit: false },
+        { number: 2, name: "Jorge", edit: false },
+        { number: 3, name: "Ivis", edit: false },
+    ]);
+`;
+
+<Code code={listOfPeople} lang="tsx" />
+
+Next, create a list of people on the view and pass the attributes `value` and `checkbox` to be modified with `onChange` event handler, which calls the functions `handleNameChange` and `handleEditChange` functions:
+
+
+export const highlights = [`onChange`, `checked`, `value`, `handleNameChange`, `handleEditChange`];	
+
+export const listOfNumbersHTML = `
+    const handleNameChange = (number:number, name: string) => {
+      setList(listValue.map(item => 
+        item.number === number ? { ...item, name } : item
+      ));
+    };
+    const handleEditChange = (number:number, edit: boolean) => {
+      setList(listValue.map(item => 
+        item.number === number ? { ...item, edit } : item
+      ));
+    };
+    return (
+        <ul ref={parent} className="person-list p-8 bg-[var(--sl-color-gray-6)]">
+            {listValue.map((person, index) => (
+              <li className="person" data-index={index} key={person.number}>
+                    <input type="text" value={person.name} disabled={!person.edit} 
+                    onChange={(e) => handleNameChange(person.number, e.target.value)}/>
+                    <input type="checkbox" checked={person.edit} 
+                    onChange={() => handleEditChange(person.number, !person.edit)}/> 
+              </li>
+            ))}
+        </ul>
+    )
+};
+`;
+
+<Code code={listOfNumbersHTML} mark={highlights} lang="tsx" />
+
+### Review
+
+<div class="pl-8">
+  <SingleVerticalPersonList client:load />
+</div>

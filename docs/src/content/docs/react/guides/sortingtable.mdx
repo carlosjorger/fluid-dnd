@@ -1,0 +1,83 @@
+---
+title: Sorting tables
+description: A guide on how to use Fluid DnD for sort tables.
+---
+
+import { SortingTable } from "@/components/react/SortingTable.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### Table with person data
+
+To showing how to use **Fluid DnD** for sorting a table.
+First, we're going to create a table with person data:
+
+export const listOfNumbers = `
+export const SortingTable: React.FC = () => {
+    type Person = {
+      name: string;
+      age: number;
+      alias: string;
+    };
+    const [ parent, listValue, setList ] = useDragAndDrop<Person, HTMLTableSectionElement>([
+      { name: "Carlos", age: 26, alias: "Carli" },
+      { name: "Jorgito", age: 34, alias: "Pipo" },
+      { name: "Ivis", age: 68, alias: "Mamá" },
+    ]);
+ `;
+
+<Code code={listOfNumbers} lang="tsx" />
+
+## Creating the view
+
+Next, create a table on the view section:
+
+export const tableView = `
+return (
+      <table className="table-auto border-collapse">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Alias</th>
+        </tr>
+      </thead>
+      <tbody ref={parent}>
+        {listValue.map((person, index) => (
+          <tr className="person" data-index={index} key={person.name}>
+            <td>{ person.name }</td>
+            <td>{ person.age }</td>
+            <td>{ person.alias }</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    )
+};
+`;
+
+<Code code={tableView} lang="tsx" />
+
+export const cssCode = `
+table tbody tr td {
+  width: 33.3%;
+}
+.drag-row {
+  background-color: var(--sl-color-text-accent) !important;
+  color: var(--sl-color-text-invert);
+  display: table;
+}
+
+`
+
+<Code code={cssCode} lang="css"/>
+
+:::caution
+Set a fixed width to `tr` and `td` elements because it maintains the proportion of the columns when the row is dragged.
+Set display property to `table` to `drag-row` class selector treating the dragged row as a table.
+:::
+
+### Preview
+
+<div class="pl-8">
+  <SortingTable client:load />
+</div>

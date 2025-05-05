@@ -1,0 +1,115 @@
+---
+title: Insert on list
+description: A guide on how to use Fluid DnD to remove elements from a list.
+---
+
+import {ListWithInsert} from "@/components/react/ListWithInsert.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+To showing how to use **Fluid DnD** for inserting elements to a list.
+First, we're going to create a list and extract the `insertAt` function from `useDragAndDrop`:
+
+export const listOfNumbers = `
+export const ListWithInsert: React.FC<Props> = ({insertingFromClass , delayBeforeInsert}) => {
+  const [ parent, listValue, ,insertAt ] = useDragAndDrop<number, HTMLUListElement>([]);
+`;
+
+export const highlightsListOfNumbers = ["insertAt"];
+
+
+<Code code={listOfNumbers} lang="tsx" mark={highlightsListOfNumbers} />
+
+### Creating the view
+
+After, we’ll create the list with an add button that call `insertAt`:
+
+export const highlightsDroppable = ['<button','button>',"insertAt"];
+
+export const listOfNumbersDroppable = `
+    return (
+      <>
+        <ul ref={parent} className="number-list p-8 bg-[var(--sl-color-gray-6)]">
+            {listValue.map((element, index) => (
+                <li className="number" data-index={index} key={element}>
+                    {element}
+                </li>
+            ))}
+        </ul>
+        <button className="insert-button mx-5 bg-slate-100 rounded-2xl w-12" onClick={()=>insertAt(listValue.length, listValue.length)}>+</button>
+      </>
+    )
+};
+`;
+
+<Code code={listOfNumbersDroppable} lang="tsx" mark={highlightsDroppable} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <ListWithInsert client:load />
+</div>
+
+## Add inserting Class
+
+You can add the css class setted when an element is inserted using the parameter `insertingFromClass`:
+
+export const listOfNumbersWithRemovingClass = `
+// ...
+
+const [ parent, listValue, ,insertAt   ] = useDragAndDrop<number, HTMLUListElement>([],{
+  insertingFromClass: "inserting"
+});
+`;
+export const highlightsRemovingClass = ["insertingFromClass",'inserting'];
+
+<Code code={listOfNumbersWithRemovingClass} lang="tsx" mark={highlightsRemovingClass}/>
+
+### Changing styles
+
+After, we’ll add the `inserting` styles and transition when the class is setted:
+
+export const highlightsStylesRemovingClass = ["inserting","transition"];
+
+export const stylesRemovingClass = `
+.number{
+  /*
+      ...
+  */
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+.number.inserting{
+  opacity: 0;
+}
+`;
+
+<Code code={stylesRemovingClass} lang="css" mark={highlightsStylesRemovingClass} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <ListWithInsert insertingFromClass="inserting" client:load  />
+</div>
+
+
+## Add delay before insert
+
+You can add the amount of delay time in miliseconds before inserting the element (the default is 200 miliseconds):
+
+export const listOfNumbersDelay = `
+// ...
+const [ parent, listValue, ,insertAt   ] = useDragAndDrop<number, HTMLUListElement>([],{
+  insertingFromClass: "inserting",
+  delayBeforeInsert: 800
+});>`;
+export const highlightsDelay = ["delayBeforeInsert"];
+
+<Code code={listOfNumbersDelay} lang="tsx" mark={highlightsDelay}/>
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <ListWithInsert insertingFromClass="inserting" delayBeforeInsert={800} client:load  />
+</div>

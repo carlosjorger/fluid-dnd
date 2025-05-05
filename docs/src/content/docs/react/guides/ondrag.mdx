@@ -1,0 +1,74 @@
+---
+title: OnDrag events
+description: A guide on how to use Fluid DnD calling onDragStart and onDragEnd events.
+---
+
+import { OnDragEvents } from "@/components/react/OnDragEvents.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+With **Fluid DnD** you can create events when you start dragging an element (`onDragStart`) or when it is dropped (`onDragEnd`).\
+We'll define group of lists and add `onDragStart` and `onDragEnd` events that toggle `marked-droppable` class on **droppables** using a reference of the parent of those (`droppableGroup`):
+
+export const highlightsListOfNumbers = ["onDragStart", "onDragEnd", "droppableGroup "];
+
+export const listOfNumbers = `
+//...
+const droppableGroup = useRef<HTMLDivElement>(null)
+function onDragStart(){
+  const droppables = droppableGroup.current?.querySelectorAll('.droppable-group-group1')??[]
+  for (const droppable of [...droppables]) {
+    droppable.classList.toggle('marked-droppable',true)
+  }
+}
+function onDragEnd (){
+  const droppables = droppableGroup.current?.querySelectorAll('.droppable-group-group1')??[]
+  for (const droppable of [...droppables]) {
+    droppable.classList.toggle('marked-droppable',false)
+  }
+}
+const [ parent, listValue ] = useDragAndDrop<number, HTMLUListElement>([1, 2, 3, 4, 5],{
+    droppableGroup: 'group1',
+    onDragStart,
+    onDragEnd,
+});
+const [ parent2, listValue2 ] = useDragAndDrop<number, HTMLDivElement>([6, 7, 8, 9, 10],{
+    droppableGroup: 'group1',
+    direction: "horizontal",
+    onDragStart,
+    onDragEnd,
+});
+
+`;
+
+<Code code={listOfNumbers} lang="tsx" mark={highlightsListOfNumbers} />
+
+### Creating the view
+
+After, we'll create the two lists on the view and passing the `droppableGroup` reference:
+
+export const listOfNumbersDraggable = `
+  return (
+      <div ref={droppableGroup} className="group-list bg-[var(--sl-color-gray-6)]">
+          <ul ref={parent} className="number-list">
+            <!-- ... -->
+          </ul>
+          <div ref={parent2} className="number-list-h">
+              <!-- ... -->
+          </div>
+      </div>
+  )
+};
+
+`;
+
+export const highlightsDraggable = ["droppableGroup"];
+
+<Code code={listOfNumbersDraggable} lang="tsx" mark={highlightsDraggable} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <OnDragEvents client:load  />
+</div>

@@ -1,0 +1,112 @@
+---
+title: Remove on list
+description: A guide on how to use Fluid DnD to remove elements from a list.
+---
+
+import { ListWithRemove } from "@/components/react/ListWithRemove.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+To showing how to use **Fluid DnD** for removing elements from a list.
+First, we're going to create a list and extract the `removeAt` function from `useDragAndDrop`:
+
+export const listOfNumbers = `
+export const ListWithRemove: React.FC<Props> = ({removingClass , delayBeforeRemove}) => {
+    const list = [1, 2, 3, 4, 5];
+    const [ parent, listValue,,, removeAt ] = useDragAndDrop<number, HTMLUListElement>(list);
+`;
+
+export const highlightsListOfNumbers = ["removeAt"];
+
+
+<Code code={listOfNumbers} lang="tsx" mark={highlightsListOfNumbers} />
+
+### Creating the view
+
+After, we’ll create the list with an remove button for each element that call `removeAt`:
+
+export const highlightsDroppable = ['<button','button>',"removeAt"];
+
+export const listOfNumbersDroppable = `
+    return (
+        <ul ref={parent} className="number-list p-8 bg-[var(--sl-color-gray-6)]">
+            {listValue.map((element, index) => (
+                <li className="number" data-index={index} key={element}>
+                    {element}
+                    <button className="remove-button" onClick={() => removeAt(index)}>x</button>
+                </li>
+            ))}
+        </ul>
+    )
+};
+`;
+
+<Code code={listOfNumbersDroppable} lang="tsx" mark={highlightsDroppable} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <ListWithRemove client:load />
+</div>
+
+## Add removing Class
+
+You can add the css class setted when an element is removed using the parameter `removingClass`:
+
+export const listOfNumbersWithRemovingClass = `
+const [ parent, listValue, ,, removeAt ] = useDragAndDrop<number, HTMLUListElement>(list,{
+        removingClass: "removed"
+    });
+;
+
+</script>`;
+export const highlightsRemovingClass = ["removingClass",'removed'];
+
+<Code code={listOfNumbersWithRemovingClass} lang="tsx" mark={highlightsRemovingClass}/>
+
+### Changing styles
+
+After, we’ll add the `removed` styles and transition when the class is setted:
+
+export const highlightsStylesRemovingClass = ["removed","transition"];
+
+export const stylesRemovingClass = `
+.number{
+  /*
+      ...
+  */
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+.number.removed{
+  opacity: 0;
+}
+`;
+
+<Code code={stylesRemovingClass} lang="css" mark={highlightsStylesRemovingClass} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <ListWithRemove removingClass="removed" client:load  />
+</div>
+
+## Add delay before remove
+
+You can add the amount of delay time in miliseconds before removing the element (the default is 200 miliseconds):
+
+export const listOfNumbersDelay = `
+const [ parent, listValue, ,, removeAt ] = useDragAndDrop<number, HTMLUListElement>(list,{
+  removingClass: "removed",
+  delayBeforeRemove: 800
+});`;
+export const highlightsDelay = ["delayBeforeRemove"];
+
+<Code code={listOfNumbersDelay} lang="tsx" mark={highlightsDelay}/>
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <ListWithRemove removingClass="removed" delayBeforeRemove={800} client:load  />
+</div>

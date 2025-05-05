@@ -1,0 +1,32 @@
+---
+title: Getting Started
+description: A guide to install Fluid DnD.
+---
+
+import { Tabs, TabItem, Code } from "@astrojs/starlight/components";
+
+### Installation
+
+Install **Fluid DnD** using your preferred package manager:
+
+```bash
+# with npm:
+npm i fluid-dnd
+
+# with yarn:
+yarn add fluid-dnd
+
+# with pnpm:
+pnpm i fluid-dnd
+```
+
+### Usage
+
+Import **composable** (`useDragAndDrop`):
+
+export const compositionApiCode = `
+  import { useDragAndDrop } from 'fluid-dnd/react';
+  // ...
+`;
+
+<Code code={compositionApiCode} lang="tsx" />

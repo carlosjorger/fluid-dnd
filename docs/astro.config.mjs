@@ -5,6 +5,8 @@ import tailwind from "@astrojs/tailwind";
 import netlify from "@astrojs/netlify";
 import svelte from "@astrojs/svelte";
 
+import react from "@astrojs/react";
+
 const site = "https://fluid-dnd.netlify.app/";
 // TODO: add pr to starlight https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#showcase
 const getSidebar = (framework) => [
@@ -154,7 +156,7 @@ export default defineConfig({
     description:
       "Official documentation for Fluid DnD, a fluid, agnostic and versatil drag and drop library for lists with Vue.",
     defaultLocale: "root",
-    sidebar: [ ...getSidebar('vue'),... getSidebar('svelte')],
+    sidebar: [ ...getSidebar('vue'),...getSidebar('react'),... getSidebar('svelte')],
     locales: {
       root: {
         label: "English",
@@ -200,6 +202,6 @@ export default defineConfig({
       "./src/tailwind.css",
       "./src/assets/landing.css",
     ],
-  }), vue(), tailwind({ applyBaseStyles: false }), svelte()],
+  }), vue(), tailwind({ applyBaseStyles: false }), svelte(), react({experimentalReactChildren: true,})],
   adapter: netlify(),
 });

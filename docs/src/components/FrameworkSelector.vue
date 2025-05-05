@@ -3,6 +3,7 @@
     import { ref, watch, type Component } from 'vue';
     import svelteLogo from './icons/logos/svelte.vue';
     import vueLogo from './icons/logos/vue.vue';
+    import reactLogo from './icons/logos/react.vue';
     import IconSelector from './IconSelector.vue';
     import { getFrameworkFromUrl } from '@/utils/frameworkConfig';
 
@@ -18,6 +19,11 @@
             value: FRAMEWORKS_TYPES.vue,
             label: 'Vue',
             icon: vueLogo
+        },
+        {
+            value: FRAMEWORKS_TYPES.react,
+            label: 'React',
+            icon: reactLogo
         },
         {
             value: FRAMEWORKS_TYPES.svelte,

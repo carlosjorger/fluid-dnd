@@ -1,0 +1,24 @@
+.number {
+    border-style: solid;
+    padding-left: 10px;
+    padding-block: 5px;
+    margin-top: 0.25rem;
+    border-width: 2px;
+    border-color: var(--sl-color-gray-1);
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: center;
+    color: var(--sl-color-gray-2);
+  }
+  
+  .number-list {
+    display: block;
+    padding-inline: 25px;
+  }
+  .is-not-draggable {
+    background-color: var(--sl-color-gray-3);
+  }
+  .temp-child {
+    margin-top: 0 !important;
+  }

@@ -1,0 +1,95 @@
+---
+title: Dropping styles
+description: A guide to use Fluid DnD with custom dropping styles.
+---
+
+import { Code } from "@astrojs/starlight/components";
+import { DroppableStyles } from "@/components/react/DroppableStyles.tsx";
+
+
+### List of number example
+First, We'll define the `group1` group of two list and pass to `droppableClass` parameter the name of the class that is setted on a **droppable** element when a draggable element is dragged over it:
+
+export const highlightsListOfNumbers = ["droppableClass", "'droppable-hover'"];
+
+export const listOfNumbers = `
+/...
+export const DroppableStyles: React.FC = () => {
+    const [ parent, listValue ] = useDragAndDrop<number, HTMLUListElement>(
+      [1, 2, 3, 4, 5],
+      {
+        droppableGroup: 'group1',
+        droppableClass: 'droppable-hover'
+      }
+    );
+    const [ parent2, listValue2 ] = useDragAndDrop<number, HTMLDivElement>(
+      [6, 7, 8, 9, 10],
+      {
+        droppableGroup: 'group1',
+        direction: "horizontal",
+        droppableClass: 'droppable-hover'
+      }
+    );
+...
+`;
+
+<Code code={listOfNumbers} lang="tsx"  mark={highlightsListOfNumbers} />
+
+### Creating the view
+
+After, we'll create the two lists on the view:
+
+export const listOfNumbersDraggable = `
+    return (
+      <div className="group-list bg-[var(--sl-color-gray-6)]">
+          <ul ref={parent} className="number-list">
+              {listValue.map((element, index) => (
+                  <li className="number" data-index={index} key={element}>
+                      {element}
+                  </li>
+              ))}
+          </ul>
+          <div ref={parent2} className="number-list-h">
+              {listValue2.map((element, index) => (
+                  <div className="number" data-index={index} key={element}>
+                      {element}
+                  </div>
+              ))}
+          </div>
+      </div>
+    )
+};
+`;
+
+export const highlightsDraggable = ["parent", "parent2",".droppable-hover",".droppable-hover"];
+
+<Code code={listOfNumbersDraggable} lang="tsx" mark={highlightsDraggable} />
+
+export const cssCode = `
+ /*...*/
+.number-list {
+  /*...*/
+  transition: background-color 150ms ease-in;
+}
+.number-list.droppable-hover{
+  /*...*/
+  background-color: var(--sl-color-gray-3);
+}
+.number-list-h {
+  /*...*/
+  transition: background-color 150ms ease-in;
+}
+.number-list-h.droppable-hover{
+  background-color: var(--sl-color-gray-3);
+}
+`
+
+And add the `.number-list.droppable-hover` and `.number-list-h.droppable-hover` styles:
+
+<Code code={cssCode} lang="css" mark={highlightsDraggable} />
+
+### Preview
+
+<div class="pl-8">
+  <DroppableStyles client:load />
+</div>

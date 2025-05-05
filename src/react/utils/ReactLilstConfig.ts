@@ -10,6 +10,7 @@ export function useReactListConfig<T,E extends HTMLElement>(items: T[], parent: 
     useEffect(() => {
         stateRef.current = itemsState;
     }, [itemsState]);
+    // TODO: remove in react have problems in rendering
     function removeAtEvent(index: number, sync:boolean = false) {
         const deletedItem = stateRef.current[index];
         const removeCallback = () => {
@@ -52,12 +53,12 @@ export function useReactListConfig<T,E extends HTMLElement>(items: T[], parent: 
     function insertToListEmpty(config: CoreConfig<T>,index:number, value: T){ 
         insertToListEmptyEvent(config, parent.current ,index, value)
     }
-    const action:ListCondig<T> = {
+    const actions:ListCondig<T> = {
         removeAtEvent,
         insertEvent,
         getLength,
         getValue,
         insertToListEmpty
     }
-    return [itemsState, setItemsState, action] as const 
+    return [itemsState, setItemsState, actions] as const 
 }

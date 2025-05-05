@@ -1,0 +1,101 @@
+---
+title: Grupos de listas
+description: Una guía para usar Fluid DnD con un grupo de listas.
+---
+
+import { ListGroup } from "@/components/react/ListGroup.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### Ejemplo de listas de números
+
+Con **Fluid DnD** tu puedes hacer drag and drop entre dos listas o más.\
+Definiremos dos listas y pasamos al parametro `droppableGroup` el mismo nombre de grupo:
+
+export const highlightsListOfNumbers = ["droppableGroup", "group1"];
+
+export const listOfNumbers = `
+// ...
+export const ListGroup: React.FC<Props> = () => {
+    const [ parent, listValue ] = useDragAndDrop<number, HTMLUListElement>([1, 2, 3, 4, 5],{
+        droppableGroup: 'group1',
+    });
+    const [ parent2, listValue2 ] = useDragAndDrop<number, HTMLDivElement>([6, 7, 8, 9, 10],{
+        droppableGroup: 'group1',
+        direction: "horizontal",
+    });
+`;
+
+<Code code={listOfNumbers} lang="tsx" mark={highlightsListOfNumbers} />
+
+### Creando la vista
+
+Después, creamos las dos listas en la vista:
+
+export const listOfNumbersDraggable = `
+    return (
+        <div className="group-list bg-[var(--sl-color-gray-6)]">
+            <ul ref={parent} className="number-list">
+                {listValue.map((element, index) => (
+                    <li className="number" data-index={index} key={element}>
+                        {element}
+                    </li>
+                ))}
+            </ul>
+            <div ref={parent2} className="number-list-h">
+                {listValue2.map((element, index) => (
+                    <div className="number" data-index={index} key={element}>
+                        {element}
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+};
+`;
+
+export const highlightsDraggable = ["parent1", "parent2"];
+
+<Code code={listOfNumbersDraggable} lang="tsx" mark={highlightsDraggable} />
+
+### Resultado
+
+<div class="pl-8">
+  <ListGroup client:load />
+</div>
+
+## Más de un grupo
+
+Una lista puede pertenecer a más de un grupo. Tu solo puedes arrastrar elementos de una lista a otra
+si estos grupos a los cuales pertenece se encuentran en la otra lista.
+
+Ejemplo: Si la lista **A** pertenece al grupo **G1** y la lista **B** a los grupos **G1** y **G2**.
+Tu solo puede arrastrar elementos de la lista **A** a la **B** no al revés.
+
+### Ejemplo
+
+Cambiaremos el código anterior adding otro grupo:
+
+export const highlightsListOfNumbersGroups = ["group2"];
+
+export const listOfNumbersGroups = `// ...
+export const ListGroup: React.FC<Props> = () => {
+    const [ parent, listValue ] = useDragAndDrop<number, HTMLUListElement>([1, 2, 3, 4, 5],{
+        droppableGroup: 'group1',
+    });
+    const [ parent2, listValue2 ] = useDragAndDrop<number, HTMLDivElement>([6, 7, 8, 9, 10],{
+        droppableGroup: 'group1 group2',
+        direction: "horizontal",
+    });
+`;
+
+<Code
+  code={listOfNumbersGroups}
+  lang="tsx"
+  mark={highlightsListOfNumbersGroups}
+/>
+
+### Resultado
+
+<div class="pl-8">
+  <ListGroup group1="group1" group2="group1 group2" client:load  />
+</div>

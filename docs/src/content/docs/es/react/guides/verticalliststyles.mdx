@@ -1,0 +1,91 @@
+---
+title: Lista con elementos con varios estilos
+description: Una guía para usar Fluid DnD con una lista de elementos con diferentes estilos.
+---
+
+import {SingleVerticalListWithDiferentStyles} from "@/components/react/SingleVerticalListWithDiferentStyles.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### Ejemplo de lista de elementos con diferentes estilos
+
+Podemos ordernar la lista de elementos con diferentes `estilos`:
+
+export const listOfNumbers = `
+export const SingleVerticalListWithDiferentStyles: React.FC = () => {
+    type ItemWitheStyle={
+        id: string,
+        style: React.CSSProperties,
+        content: string
+    }
+    const [ parent, listValue ] = useDragAndDrop<ItemWitheStyle, HTMLUListElement>([
+        {
+            id: "1",
+            style:
+              { 
+                margin: "30px 0px", 
+                borderStyle: "solid", 
+                borderWidth: "0.8rem", 
+                padding: "5px"
+              },
+            content: "1",
+          },
+          {
+            id: "2",
+            style:
+              { 
+                margin: "20px 0px", 
+                borderStyle: "solid", 
+                borderWidth: "0.6rem", 
+                padding: "10px"
+              },
+            content: "2",
+          },
+          {
+            id: "3",
+            style:
+              {
+                margin: "10px 0px", 
+                borderStyle: "solid", 
+                borderWidth: "0.4rem", 
+                padding: "15px"
+              },  
+            content: "3",
+          },
+    ]);
+    // ...
+    `
+
+<Code code={listOfNumbers} lang="tsx" />
+
+### Usando useDragAndDrop
+
+Tu puedes pasar a cada elemento sus propios `estilos`.
+
+:::caution
+Cada elemento debe tener su propio `estilo` antes y después de cambiar su posición en la `lista` usando **Fluid DnD**. Evita stilos con **psedo-classes** como [nth-child](https://developer.mozilla.org/es/docs/Web/CSS/:nth-last-child), [nth-last-child](https://developer.mozilla.org/es/docs/Web/CSS/:nth-last-child), [nth-of-type](https://developer.mozilla.org/es/docs/Web/CSS/:nth-of-type), etc, porque añade estilos a los elementos de la lista basado en otras propiedades como la posición, número de hijos, etc.
+:::
+
+export const highlightsDnD = ['style={element.style}'];
+
+export const listOfNumberInsideDnD = `
+   return (
+        <ul ref={parent} className="block px-2 h-72">
+            {listValue.map((element, index) => (
+                <li className="border-solid pl-1 mt-1 border-2" data-index={index} key={element.id} style={element.style}>
+                    {element.content}
+                </li>
+            ))}
+        </ul>
+    )
+};
+`;
+
+<Code code={listOfNumberInsideDnD} lang="tsx" mark={highlightsDnD} />
+
+### Resultado
+
+Esto es lo que tienes como resultado:
+
+<div class="p-8 bg-[var(--sl-color-gray-6)] h-96">
+  <SingleVerticalListWithDiferentStyles client:load />
+</div>

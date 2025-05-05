@@ -1,0 +1,12 @@
+.number-list {
+    transition: background-color 150ms ease-in;
+}
+.number-list-h {
+    transition: background-color 150ms ease-in;
+}
+.number-list-h.droppable-hover {
+    background-color: var(--sl-color-gray-4);
+}
+.number-list.droppable-hover{
+    background-color: var(--sl-color-gray-4);
+}   

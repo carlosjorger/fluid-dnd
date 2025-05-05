@@ -1,0 +1,36 @@
+.number {
+    border-style: solid;
+    padding-left: 10px;
+    padding-block: 5px;
+    margin-top: 0.25rem !important;
+    border-width: 2px;
+    border-color: var(--sl-color-gray-1);
+    color: var(--sl-color-gray-2);
+    min-width: 120px;
+    width: 120px;
+  }
+.number-list {
+    display: block;
+    height: 290px;
+    overflow-y: auto;
+    background-color: var(--sl-color-gray-5);
+    padding: 1.5rem;
+    border: 2px solid transparent;
+    transition: border-color 200ms ease;
+}
+.number-list-h {
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    padding-inline: 25px;
+    margin-top: 0 !important;
+    padding: 1.5rem;
+    border: 2px solid transparent;
+    transition: border-color 200ms ease;
+}
+.temp-child {
+    margin-top: 0 !important;
+}
+.marked-droppable{
+    border: 2px solid white !important;
+}

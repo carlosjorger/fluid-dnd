@@ -429,6 +429,3 @@ export default function useDraggable<T>(
   setSlotRefElementParams(draggableElement);
   return [ removeAtFromElement, insertAtFromElement ] as const;
 }
-
-// TODO: use semantic-realese https://medium.comr/@davidkelley87/using-semantic-release-for-npm-libraries-with-github-actions-234461235fa7
-//https://github.com/iamstevendao/vue-tel-input/blob/main/.github/workflows/deploy.yml

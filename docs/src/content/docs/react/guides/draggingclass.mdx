@@ -1,0 +1,61 @@
+---
+title: Dragging styles
+description: A guide to use Fluid DnD with custom dragging styles.
+---
+
+import { ListWithDraggingStyles } from "@/components/react/ListWithDraggingStyles.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+To showing how to use **Fluid DnD** to adding dragging styles.
+First, we're going to create a list of numbers setting the value of the `draggingclass`:
+
+export const highlightsListOfNumbers = ['draggingClass','"dragging"'];
+
+export const listOfNumbers = `
+export const ListWithDraggingStyles: React.FC = () => {
+    const [ parent, listValue ] = useDragAndDrop<number, HTMLUListElement>([1, 2, 3],{
+      draggingClass: "dragging",
+    });`;
+
+<Code code={listOfNumbers} lang="tsx" mark={highlightsListOfNumbers} />
+
+### Creating the view
+
+Next, create the list of number on the view of the component and the class selector for `dragging`:
+
+export const highlights = ['dragging'];
+
+export const listOfNumbersHTML = `
+    return (
+        <ul ref={parent} className="number-list p-8 bg-[var(--sl-color-gray-6)]">
+            {listValue.map((element, index) => (
+                <li className="number" data-index={index} key={element}>
+                    {element}
+                </li>
+            ))}
+        </ul>
+    )
+};
+`;
+
+<Code code={listOfNumbersHTML} mark={highlights} lang="tsx" />
+
+export const styles = `
+.dragging {
+  transition: background-color color 150ms ease-in, color 150ms ease-in;
+  background-color: var(--sl-color-gray-1);
+  color: black;
+}
+`;
+export const stylesHighlights = ['dragging'];
+
+<Code code={styles} mark={stylesHighlights} lang="tsx" />
+
+
+### Preview
+
+<div class="pl-8">
+  <ListWithDraggingStyles client:load />
+</div>

@@ -1,0 +1,47 @@
+---
+title: isDraggable
+description: A guide to use Fluid DnD with isDraggable property.
+---
+
+import {SingleListWithIsDraggable} from "@/components/react/SingleListWithIsDraggable.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+With **Fluid DnD** you can control which element can be dragged and which not using `isDraggable` property:
+
+export const listOfNumbers = `
+export const SingleListWithIsDraggable: React.FC = () => {
+    const [ parent, listValue ] = useDragAndDrop<number, HTMLUListElement>([1, 2, 3, 4],{
+      isDraggable: (el) => !el.classList.contains("is-not-draggable"),
+    });
+    // ...
+    `;
+
+<Code code={listOfNumbers} lang="tsx" />
+
+### Creating the view
+
+After, we'll create the view and add `is-not-draggable` class to the even numbers:
+
+export const listOfNumbersDraggable = `
+    return (
+        <ul ref={parent} className="number-list p-8 bg-[var(--sl-color-gray-6)]">
+            {listValue.map((element, index) => (
+                <li className={\`number \${element % 2 == 0 ? 'is-not-draggable' : ''}\`} data-index={index} key={element}>
+                    {element}
+                </li>
+            ))}
+        </ul>
+    )
+};`;
+
+export const highlightsDraggable = ["is-not-draggable"];
+
+<Code code={listOfNumbersDraggable} lang="tsx" mark={highlightsDraggable} />
+
+### Preview
+
+<div class="pl-8">
+  <SingleListWithIsDraggable client:load />
+</div>

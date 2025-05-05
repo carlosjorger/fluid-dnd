@@ -1,0 +1,88 @@
+---
+title: Single vertical list
+description: A guide to use Fluid DnD with a single vertical list.
+---
+
+import {SingleVerticalList} from "@/components/react/SingleVerticalList.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### List of number example
+
+To showing how to use **Fluid DnD** for sorting a single list.
+First, we're going to create a list of numbers:
+
+export const listOfNumbers = `export const SingleVerticalList: React.FC = () => {
+    const [ parent, listValue ] = useDragAndDrop<number, HTMLUListElement>([1, 2, 3]);
+    // ...
+`;
+
+<Code code={listOfNumbers} lang="tsx" />
+
+Next, create a list of numbers on react component:
+
+export const listOfNumbersHTML = `
+// ...
+return (
+        <ul className="number-list">
+            {listValue.map((element, index) => (
+                <li className="number">
+                    {element}
+                </li>
+            ))}
+        </ul>
+    )
+};
+`;
+
+<Code code={listOfNumbersHTML} lang="tsx" />
+
+:::caution
+Avoid to setting _css_ `transform` property or `transitions` between diferent `transform` values to **draggable** elements because **Fluid DnD** update those properties automagically.
+:::
+
+### Adding reference to parent element
+
+First, add a reference to the created `parent` _reference_ from `useDragAndDrop`:
+
+export const highlightsDroppable = ["use:parent"];
+
+export const listOfNumbersDroppable = `
+return (
+        <ul ref={parent} className="number-list">
+            {listValue.map((element, index) => (
+                <li className="number">
+                    {element}
+                </li>
+            ))}
+        </ul>
+    )
+};
+`;
+
+<Code code={listOfNumbersDroppable} lang="svelte" mark={highlightsDroppable} />
+
+### Adding reference to children
+
+For each `<li>` element we'll pass the `data-index` **attribute** to knowing the actual position and `key` **attribute** the `element` value that uniquely identify each element:
+
+export const listOfNumbersDraggable = `
+return (
+        <ul ref={parent} className="number-list">
+            {listValue.map((element, index) => (
+                <li className="number" data-index={index} key={element}>
+                    {element}
+                </li>
+            ))}
+        </ul>
+    )
+};`;
+
+export const highlightsDraggable = ['data-index={index}','(element)'];
+
+<Code code={listOfNumbersDraggable} lang="svelte" mark={highlightsDraggable} />
+
+### Preview
+
+<div class="pl-8">
+  <SingleVerticalList client:load />
+</div>

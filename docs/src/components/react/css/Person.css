@@ -1,0 +1,18 @@
+.person {
+    border-style: solid;
+    padding-left: 5px;
+    margin-top: 0.25rem;
+    border-width: 2px;
+    border-color: var(--sl-color-gray-1);
+}
+.person input[type="text"] {
+  width: 100px;
+  margin: 10px;
+}
+.person-list {
+  display: block;
+  padding-inline: 25px;
+}
+.temp-child {
+  margin-top: 0 !important;
+}

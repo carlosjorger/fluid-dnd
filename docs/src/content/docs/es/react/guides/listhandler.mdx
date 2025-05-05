@@ -1,0 +1,47 @@
+---
+title: List with handler
+description: A guide to use Fluid DnD to adding a drag handler to a list.
+---
+
+import {SingleListWithHandler} from "@/components/react/SingleListWithHandler.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### Ejemplo de lista de números
+
+Con **Fluid DnD** no tienes que arrastrar los elementos por toda su superficie, solo pasa un **selector para el handler** a `handlerSelector` esto se usará para encontrar el handler en el elemento:
+
+export const listOfNumbers = `
+export const SingleListWithHandler: React.FC = () => {
+    const handlerSelector = ".handler";
+    const [ parent, listValue ] = useDragAndDrop<number, HTMLDivElement>([1, 2, 3, 4, 5],{
+      handlerSelector,
+    });`;
+
+<Code code={listOfNumbers} lang="tsx" />
+
+### Ejemplo de lista de números
+
+Después, crearemos la vista y añadiremos la clase `handler` a la componente `Handler`:
+
+export const listOfNumbersDraggable = `
+    return (
+        <div ref={parent} className="number-list">
+            {listValue.map((element, index) => (
+                <div className="number" style={{marginTop: "0.25rem"}} data-index={index} key={element}>
+                    <Handler className="handler" />
+                    {element}
+                </div>
+            ))}
+        </div>
+    )
+};`;
+
+export const highlightsDraggable = ["handler"];
+
+<Code code={listOfNumbersDraggable} lang="tsx" mark={highlightsDraggable} />
+
+### Resultado
+
+<div class="pl-8">
+  <SingleListWithHandler client:load />
+</div>

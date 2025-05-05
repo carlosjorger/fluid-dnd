@@ -1,0 +1,17 @@
+.number {
+    border-style: solid;
+    padding-left: 10px;
+    padding-block: 5px;
+    margin-top: 0.25rem !important;
+    border-width: 2px;
+    border-color: var(--sl-color-gray-1);
+    color: var(--sl-color-gray-2);
+    min-width: 120px;
+    width: 120px;
+}
+.vertical-list {
+    margin-top: 0 !important;
+}
+.temp-child {
+    margin-top: 0 !important;
+}

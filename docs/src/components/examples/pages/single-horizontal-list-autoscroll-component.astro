@@ -1,6 +1,8 @@
 ---
 import SingleHorizontalListOfPokemonsAutoscrollVue from "@/components/examples/vue/SingleHorizontalListOfPokemonsAutoscroll.vue";
 import SingleHorizontalListOfPokemonsAutoscrollSvelte from "@/components/examples/svelte/SingleHorizontalListOfPokemonsAutoscroll.svelte";
+import { SingleHorizontalListOfPokemonsAutoscroll as SingleHorizontalListOfPokemonsAutoscrollReact} from "@/components/examples/react/SingleHorizontalListOfPokemonsAutoscroll.tsx";
+
 import PageComponent from "./shared/page-component.astro";
 import { getI18N } from "@/i18n";
 
@@ -70,14 +72,60 @@ const [ parent ] = useDragAndDrop(pokemons, {
     {/each}
   </div>
 </div>`
+
+const horizontalListReactCode= `
+import { useDragAndDrop } from "fluid-dnd/react";
+import type { Pokemon } from "../Pokemon";
+import { fetchPokemons } from "@/server/pokemonServer";
+import { PokemonComponent } from "./PokemonComponent";
+import { useEffect } from "react";
+
+export const SingleHorizontalListOfPokemonsAutoscroll: React.FC = () => {
+  const [ parent, listOfPokemons, setPokemons ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
+    direction: "horizontal",
+    draggingClass: "dragging-pokemon",
+  });
+  useEffect(() => { 
+      const fetchPokemonse = async () => {
+          const newPokemons = await fetchPokemons(9);
+          setPokemons(newPokemons);
+      }
+      fetchPokemonse();
+  }, [])
+
+  return (
+    <div className="flex max-sm:justify-center items-start">
+      <div
+        ref={parent}
+        className="bg-gray-200/60 border-solid border-black/40 rounded-2xl border-4 p-4 max-sm:p-2 flex flex-row overflow-auto gap-2 max-sm:gap-1"
+      >
+        {
+          listOfPokemons.map((pokemon, index) => (
+            <PokemonComponent
+              key={pokemon.name}
+              className="min-w-44 max-sm:min-w-32"
+              index={index}
+              pokemon={pokemon}
+            />
+          ))
+        }
+      </div>
+    </div>
+  )
+}
+
+`
 const fileName = 'SingleHorizontalListOfPokemonsAutoscroll';
 ---
 
-<PageComponent title={i18n.SINGLE_HORIZONTAL_LIST_AUTOSCROLL} framework={framework} vueCode={horizontalListVueCode} svelteCode={horizontalListSvelteCode} reactCode="" fileName={fileName}> 
+<PageComponent title={i18n.SINGLE_HORIZONTAL_LIST_AUTOSCROLL} framework={framework} vueCode={horizontalListVueCode} svelteCode={horizontalListSvelteCode} reactCode={horizontalListReactCode} fileName={fileName}> 
   <fragment slot="vue"> 
     <SingleHorizontalListOfPokemonsAutoscrollVue client:load />
   </fragment>
   <fragment slot="svelte">
     <SingleHorizontalListOfPokemonsAutoscrollSvelte client:load />
+  </fragment>
+  <fragment slot="react">
+    <SingleHorizontalListOfPokemonsAutoscrollReact client:load />
   </fragment>
 </PageComponent>

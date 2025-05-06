@@ -78,3 +78,9 @@
 .swampert.dragging-pokemon {
     background-color: #66b7fd !important;
 }
+.pokemon-generation{
+    transition: background-color 150ms ease-in;
+}
+.pokemon-generation.hover{
+    background-color: rgb(236 238 242 / 0.8) !important;
+}

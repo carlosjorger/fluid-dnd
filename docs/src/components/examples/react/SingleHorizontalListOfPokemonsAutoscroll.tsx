@@ -4,14 +4,14 @@ import { fetchPokemons } from "@/server/pokemonServer";
 import { PokemonComponent } from "./PokemonComponent";
 import { useEffect } from "react";
 
-export const SingleHorizontalListOfPokemons: React.FC = () => {
+export const SingleHorizontalListOfPokemonsAutoscroll: React.FC = () => {
   const [ parent, listOfPokemons, setPokemons ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
     direction: "horizontal",
     draggingClass: "dragging-pokemon",
   });
   useEffect(() => { 
       const fetchPokemonse = async () => {
-          const newPokemons = await fetchPokemons(3);
+          const newPokemons = await fetchPokemons(9);
           setPokemons(newPokemons);
       }
       fetchPokemonse();

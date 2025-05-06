@@ -117,6 +117,7 @@ export const PokemonComponent: React.FC<Props> = ({pokemon, handlerClass, hasRem
                 <div key={index}>{pokemonType.type.name}</div>    
             ))
         }
+        </div>
         {hasRemove &&
             <div className="px-1 mx-2 py-1">
                 <button className="cursor-pointer bg-inherit" onClick={()=>{removeEventNotUndefined(index)}}>
@@ -124,6 +125,5 @@ export const PokemonComponent: React.FC<Props> = ({pokemon, handlerClass, hasRem
                 </button>
             </div>
          }
-  </div>
     </div>)
 }

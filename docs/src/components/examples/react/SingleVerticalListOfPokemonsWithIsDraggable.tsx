@@ -1,69 +1,4 @@
----
-import SingleVerticalListOfPokemonsVue from "@/components/examples/vue/SingleVerticalListOfPokemonsWithIsDraggable.vue";
-import SingleVerticalListOfPokemonsSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemonsWithIsDraggable.svelte";
-import { SingleVerticalListOfPokemons as SingleVerticalListOfPokemonsReact } from "@/components/examples/react/SingleVerticalListOfPokemonsWithIsDraggable";
-import PageComponent from "./shared/page-component.astro";
-import { getI18N } from "@/i18n";
-
-const { currentLocale } = Astro;
-const { framework } = Astro.props;
-
-const i18n = getI18N({ currentLocale });
-
-const verticalList=`
-<script setup lang="ts">
-import { ref } from "vue";
-import { useDragAndDrop } from "fluid-dnd/vue";
-import type { Pokemon } from "./Pokemon";
-import PokemonComponent from "./PokemonComponent.vue";
-import { fetchPokemons } from "@/server/pokemonServer";
-
-const pokemons = ref([] as Pokemon[]);
-pokemons.value = await fetchPokemons(9);
-const sizes = {
-  100: "S",
-  250: "M",
-  1200: "L",
-};
-const getSize = (weight: number) => {
-  for (const sizeLimit of Object.keys(sizes)) {
-    const limit = parseFloat(sizeLimit) as keyof typeof sizes;
-    if (weight < limit) {
-      return sizes[limit];
-    }
-  }
-};
-const [ parent ] = useDragAndDrop(pokemons, {
-  isDraggable: (el) => !el.classList.contains("is-not-draggable"),
-  draggingClass: "dragging-pokemon",
-});
-</script>
-<template>
-  <div class="flex max-sm:justify-center items-start">
-    <div
-      ref="parent"
-      class="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
-    >
-      <PokemonComponent
-        v-for="(pokemon, index) in pokemons"
-        :key="pokemon.name"
-        :index="index"
-        :pokemon="pokemon"
-        :class="{
-          'is-not-draggable': getSize(pokemon.weight) === 'L',
-        }"
-      />
-    </div>
-  </div>
-</template>
-<style>
-.is-not-draggable {
-  background-color: gray !important;
-}
-</style>
-`
-const verticalListSvelteCode=`
-<script lang="ts">
+{/* <script lang="ts">
 import { useDragAndDrop } from "fluid-dnd/svelte";
 import type { Pokemon } from "../Pokemon";
 import PokemonComponent from "@/components/examples/svelte/PokemonComponent.svelte";
@@ -105,8 +40,16 @@ const [ parent ] = useDragAndDrop(pokemons, {
     {/each}
   </div>
 </div>
-`
-const verticalListReactCode=`
+<style>
+:global(.sl-markdown-content
+  :not(a, strong, em, del, span, input, code)
+  + :not(a, strong, em, del, span, input, code, :where(.not-content *))) {
+  margin-top: 0rem !important;
+}
+:global(.is-not-draggable) {
+  background-color: gray !important;
+}
+</style> */}
 import { useDragAndDrop } from "fluid-dnd/react";
 import type { Pokemon } from "../Pokemon";
 import { fetchPokemons } from "@/server/pokemonServer";
@@ -158,17 +101,3 @@ export const SingleVerticalListOfPokemons: React.FC = () => {
     </div>
   )
 }
-`
-const fileName = 'SingleVerticalListOfPokemonsWithIsDraggable';
----
-<PageComponent title={i18n.SINGLE_VERTICAL_IS_DRAGGABLE} framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} reactCode={verticalListReactCode} fileName={fileName}>
-  <fragment slot="vue">
-    <SingleVerticalListOfPokemonsVue client:load />
-  </fragment>
-  <fragment slot="svelte">
-    <SingleVerticalListOfPokemonsSvelte client:load />
-  </fragment>
-  <fragment slot="react">
-    <SingleVerticalListOfPokemonsReact client:load />
-  </fragment>
-</PageComponent>

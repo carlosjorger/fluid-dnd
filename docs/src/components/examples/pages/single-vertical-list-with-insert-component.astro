@@ -1,6 +1,7 @@
 ---
 import SingleVerticalListOfPokemonsVue from "@/components/examples/vue/SingleVerticalListOfPokemonsWithInsert.vue";
 import SingleVerticalListOfPokemonsSvelte from "@/components/examples/svelte/SingleVerticalListOfPokemonsWithInsert.svelte";
+import { SingleVerticalListOfPokemonsWithInsert as SingleVerticalListOfPokemonsWithInsertReact } from "@/components/examples/react/SingleVerticalListOfPokemonsWithInsert.tsx";
 import {getI18N} from '@/i18n/index.ts';  
 import PageComponent from "./shared/page-component.astro";
 
@@ -94,14 +95,83 @@ function insertPokemon(){
   </div>
 </div>
 `
+const reactCode = `
+  import { useDragAndDrop } from "fluid-dnd/react";
+import type { Pokemon } from "../Pokemon";
+import { fetchPokemons } from "@/server/pokemonServer";
+import { PokemonComponent } from "./PokemonComponent";
+import { useEffect, useState } from "react";
+
+export const SingleVerticalListOfPokemonsWithInsert: React.FC = () => {
+  const [ parent, listOfPokemons, setPokemons, insertAt ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
+    draggingClass: "dragging-pokemon",
+  });
+  const [pokemonToAdd, setPokemonToAdd] = useState<Pokemon>();
+  const [pokemonsToSelected, setPokemonsToSelected] = useState<Pokemon[]>([]);
+  function insertPokemon(){
+    const lastPosition = listOfPokemons.length
+    if (pokemonToAdd) {
+      insertAt(lastPosition, pokemonToAdd)
+      setPokemonToAdd(undefined)
+    }
+  }
+  useEffect(() => { 
+      const fetchPokemonse = async () => {
+          const newPokemons = await fetchPokemons(3);
+          setPokemons(newPokemons);
+      }
+      fetchPokemonse();
+  }, [])
+  useEffect(()=>{
+    const fetchPokemonsToSelect = async () => {
+      var pokemons = await fetchPokemons(10,0, listOfPokemons)
+      setPokemonsToSelected(pokemons);
+    }
+    fetchPokemonsToSelect();
+  },[])
+  return (
+    <div className="flex max-sm:justify-center items-start">
+      <div
+        ref={parent}
+        className="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
+      >
+        {
+          listOfPokemons.map((pokemon, index) => (
+            <PokemonComponent
+              key={pokemon.name}
+              index={index}
+              pokemon={pokemon}
+            />
+          ))
+        }
+      </div>
+      <div className="flex gap-4 max-sm:flex-col">
+        <select  className="rounded-lg bg-gray-700 p-2 w-60">
+          <option disabled>Please select one</option>
+          {
+            pokemonsToSelected.map((pokemon) => (
+              <option key={pokemon.name}>{pokemon.name}</option>
+            ))
+          }
+        </select>
+        <button className="rounded-lg border-2 hover:bg-gray-700 transition-colors" onClick={insertPokemon}>Add pokemon</button>
+      </div>
+    </div>
+  )
+}
+
+`
 const fileName = 'SingleVerticalListOfPokemons';
 ---
-<PageComponent title={i18n.SINGLE_VERTICAL_LIST_WITH_INSERT} framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} reactCode="" fileName={fileName}>
+<PageComponent title={i18n.SINGLE_VERTICAL_LIST_WITH_INSERT} framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} reactCode={reactCode} fileName={fileName}>
   <fragment slot="vue">
     <SingleVerticalListOfPokemonsVue client:load />
   </fragment>
   <fragment slot="svelte">
     <SingleVerticalListOfPokemonsSvelte client:load />
+  </fragment>
+  <fragment slot="react">
+    <SingleVerticalListOfPokemonsWithInsertReact client:load />
   </fragment>
 </PageComponent>
 <style>

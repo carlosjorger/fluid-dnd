@@ -21,5 +21,8 @@ export default function useDragAndDrop<T, E extends HTMLElement>( items: T[], co
   useEffect(() => {
     onChangeParent(parent.current);
   }, [itemsState.length])
+  if (parent.current) {
+    onChangeParent(parent.current);
+  }
   return [parent, itemsState, setItemsState ,insertAt, removeAt] as const;
 }

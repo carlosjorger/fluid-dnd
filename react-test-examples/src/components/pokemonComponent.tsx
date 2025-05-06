@@ -27,12 +27,12 @@ const pokemonComponent: React.FC<Props> = ({ pokemon, index }) => {
     return(
         <div data-index={index} className={pokeColor[pokemon.name]}>
             <div style={{padding: "2px"}}>
-            <div>
-            <div>{ pokemon.name }</div>
-            <div>#{ pokemon.order }</div>
+              <div>
+                <div>{ pokemon.name }</div>
+                <div>#{ pokemon.order }</div>
+              </div>
+              <img src={pokemon.sprites.front_default} alt="pokemon" />
             </div>
-            <img src={pokemon.sprites.front_default} alt="pokemon" />
-        </div>
         <div>
             {pokemon.types.map((pokemonType) => (
                 <div key={ pokemonType.type.name}>
@@ -41,15 +41,7 @@ const pokemonComponent: React.FC<Props> = ({ pokemon, index }) => {
                 
             ))}
         </div>
-  {/* <div>
-    {#each pokemon.types as pokemonType}
-      <div>
-        { pokemonType.type.name }
       </div>
-      
-    {/each}
-  </div> */}
-        </div>
     )
 };
 export default pokemonComponent;

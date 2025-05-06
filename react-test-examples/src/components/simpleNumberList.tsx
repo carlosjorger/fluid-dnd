@@ -6,6 +6,7 @@ const NumberList: React.FC = () => {
     delayBeforeInsert: 250,
     removingClass: "removed",
   });
+  console.log(numbers)
   const addNumber = () => {
     insertAt(numbers.length, numbers.length+1);
   };

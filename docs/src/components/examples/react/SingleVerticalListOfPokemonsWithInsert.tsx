@@ -36,9 +36,11 @@ export const SingleVerticalListOfPokemonsWithInsert: React.FC = () => {
     const fetchPokemonsToSelect = async () => {
       var pokemons = await fetchPokemons(10,0, listOfPokemons)
       setPokemonsToSelected(pokemons);
-      if (!pokemonToAdd) {
-        setPokemonToAdd(pokemons[0])
+      const [firstPokemon] = pokemons
+      if (firstPokemon) {
+        setPokemonToAdd(firstPokemon)
       }
+
     }
     fetchPokemonsToSelect();
   },[listOfPokemons])

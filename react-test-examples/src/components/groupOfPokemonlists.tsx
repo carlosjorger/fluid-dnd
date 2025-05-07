@@ -6,7 +6,7 @@ import './pokemon.css'
 import { useEffect, useState } from "react";
 
 type Props = {
-  render: boolean
+  render?: boolean
 }
 
 const groupOfPokemonlists: React.FC<Props> = ({ render=true }) => {

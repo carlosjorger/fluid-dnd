@@ -383,7 +383,25 @@ export default function useDraggable<T>(
     toggleClass(element, draggingClass, true)
     element.style.transition = "";
   };
-
+  const removeAfterRemovingClass = (targetIndex: number, config: DroppableConfig<T>)=>{
+    removeClass(draggableElement, removingClass)
+    addTempChild(
+      draggableElement,
+      parent,
+      draggingState == DraggingState.START_DRAGGING,
+      droppableConfigurator.initial
+    );
+    emitRemoveEventToSiblings(
+      targetIndex,
+      draggableElement,
+      config,
+      (sibling) => {
+        removeDraggingStyles(sibling);
+        emitFinishRemoveEventToSiblings(draggableElement);
+      }
+    );
+    onRemoveAtEvent(index,true);
+  }
   const removeAtFromElement =(targetIndex: number) => {
     if (!droppableConfigurator.initial) {
       return;
@@ -392,23 +410,7 @@ export default function useDraggable<T>(
     if (targetIndex == index) {
       addClass(draggableElement, removingClass)
       setTimeout(() => {
-        onRemoveAtEvent(index);
-        removeClass(draggableElement, removingClass)
-        addTempChild(
-          draggableElement,
-          parent,
-          draggingState == DraggingState.START_DRAGGING,
-          droppableConfigurator.initial
-        );
-        emitRemoveEventToSiblings(
-          targetIndex,
-          draggableElement,
-          config,
-          (sibling: HTMLElement) => {
-            removeDraggingStyles(sibling);
-            emitFinishRemoveEventToSiblings(draggableElement);
-          }
-        );
+        removeAfterRemovingClass(targetIndex, config)
       }, delayBeforeRemove);
     }
   }

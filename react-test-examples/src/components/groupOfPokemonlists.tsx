@@ -5,8 +5,11 @@ import PokemonComponent from "./pokemonComponent";
 import './pokemon.css'
 import { useEffect, useState } from "react";
 
+type Props = {
+  render: boolean
+}
 
-const groupOfPokemonlists: React.FC = () => {
+const groupOfPokemonlists: React.FC<Props> = ({ render=true }) => {
     
     const [ parent, pokemonsValue, setPokemons ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
         delayBeforeRemove: 300,
@@ -48,37 +51,41 @@ const groupOfPokemonlists: React.FC = () => {
         fetchPokemonsToSelect();
       },[pokemonsValue2])
     return (
-        <div>
+      <>
+        {render &&
+          <div>
             <div className="pokemon-group">
-            <div className="pokemon-list" ref={parent}>
-                {pokemonsValue.map((pokemon, index) => (
-                    <PokemonComponent
-                        key={pokemon.name}
-                        index={index}
-                        pokemon={pokemon}/>
-                ))}
+              <div className="pokemon-list" ref={parent}>
+                  {pokemonsValue.map((pokemon, index) => (
+                      <PokemonComponent
+                          key={pokemon.name}
+                          index={index}
+                          pokemon={pokemon}/>
+                  ))}
+              </div>
+              <div className="pokemon-list" ref={parent2}>
+                  {pokemonsValue2.map((pokemon, index) => (
+                      <PokemonComponent
+                          key={pokemon.name}
+                          index={index}
+                          pokemon={pokemon}/>
+                  ))}
+              </div>
             </div>
-            <div className="pokemon-list" ref={parent2}>
-                {pokemonsValue2.map((pokemon, index) => (
-                    <PokemonComponent
-                        key={pokemon.name}
-                        index={index}
-                        pokemon={pokemon}/>
-                ))}
+            <div className="flex gap-4 max-sm:flex-col">
+              <select  className="rounded-lg bg-gray-700 p-2 w-60" value={pokemonToAdd?.name} onChange={handleChange}>
+                <option disabled>Please select one</option>
+                {
+                  pokemonsToSelected.map((pokemon) => (
+                    <option key={pokemon.name} value={pokemon.name}>{pokemon.name}</option>
+                  ))
+                }
+              </select>
+              <button className="rounded-lg border-2 hover:bg-gray-700 transition-colors" onClick={insertPokemon}>Add pokemon</button>
             </div>
-        </div>
-        <div className="flex gap-4 max-sm:flex-col">
-        <select  className="rounded-lg bg-gray-700 p-2 w-60" value={pokemonToAdd?.name} onChange={handleChange}>
-          <option disabled>Please select one</option>
-          {
-            pokemonsToSelected.map((pokemon) => (
-              <option key={pokemon.name} value={pokemon.name}>{pokemon.name}</option>
-            ))
-          }
-        </select>
-        <button className="rounded-lg border-2 hover:bg-gray-700 transition-colors" onClick={insertPokemon}>Add pokemon</button>
-      </div>
-        </div>
+          </div>
+        }
+      </>
     )
 }
 

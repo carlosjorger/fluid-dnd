@@ -14,7 +14,7 @@ import getTranslateBeforeDropping from "../translate/GetTranslateBeforeDropping"
 import { DRAG_EVENT, draggableTargetTimingFunction, IsDropEvent, START_DRAG_EVENT, START_DROP_EVENT, TEMP_CHILD_CLASS } from "..";
 import { DroppableConfig } from "../../configHandler";
 import { IsHTMLElement } from "../touchDevice";
-import { removeTempChild } from "../tempChildren";
+import { isTempElement, removeTempChild } from "../tempChildren";
 import { DISABLE_TRANSITION, DRAGGABLE_CLASS, DRAGGING_CLASS, DRAGGING_HANDLER_CLASS, DROPPING_CLASS, GRABBING_CLASS } from "../classes";
 import { addClass, containClass, getClassesSelector, removeClass, toggleClass } from "../dom/classList";
 import HandlerPublisher from '../../HandlerPublisher'
@@ -494,6 +494,10 @@ export default function useEmitEvents<T>(
     toggleDraggingClass,
   ] as const;
 }
+const childrenMutationFilter = (mutation: MutationRecord) => {
+    const addedNodes = mutation.addedNodes.values().filter((element) => !isTempElement(element)).toArray();
+    return addedNodes.length > 0
+  };
 const onFinishInsertElement = <T>(targetIndex:number, droppable: HTMLElement, config: CoreConfig<T>) => { 
     const { insertingFromClass, animationDuration } = config
     const observer = observeMutation(() => {
@@ -508,7 +512,7 @@ const onFinishInsertElement = <T>(targetIndex:number, droppable: HTMLElement, co
       }, animationDuration)
     },droppable,{
       childList:true,
-    })
+    },childrenMutationFilter)
   }
 export const insertToListEmpty = <T>(config: CoreConfig<T>, droppable: HTMLElement | undefined | null ,targetIndex: number,  value: T) => { 
   if (!droppable) {

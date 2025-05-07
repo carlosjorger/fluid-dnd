@@ -2,13 +2,13 @@ import React from 'react';
 import  './simpleNumberList.css';
 import useDragAndDrop from '../../../src/react/useDragAndDrop';
 const NumberList: React.FC = () => {
-  const [parent, numbers, _, insertAt, removeAt] = useDragAndDrop<number, HTMLUListElement>([1, 2, 3],{
+  const [parent, numbers, _, insertAt, removeAt] = useDragAndDrop<number, HTMLUListElement>([1,2],{
     delayBeforeInsert: 250,
     removingClass: "removed",
+    delayBeforeRemove: 400
   });
-  console.log(numbers)
   const addNumber = () => {
-    insertAt(numbers.length, numbers.length+1);
+    insertAt(numbers.length, Math.max(...numbers)+1);
   };
   const removeNumber = (index: number) => {
     removeAt(index);

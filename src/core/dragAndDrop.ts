@@ -9,7 +9,7 @@ import { addClass } from "./utils/dom/classList";
 import { DROPPABLE_CLASS } from "./utils/classes";
 import { isTempElement } from "./utils/tempChildren";
 
-export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher: HandlerPublisher, config?: Config<T>, indexAttr: string ='index' ) {
+export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher: HandlerPublisher, config?: Config<T>, indexAttr: string ='index',  reactChildrenChanges: Boolean = true) {
     let removeAtFromElements = [] as ((index: number) => void)[];
     let insertAtFromElements = [] as ((index: number, value: T) => void)[];
     const coreConfig = getConfig(listCondig, config)
@@ -42,8 +42,11 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
     };
     const observeChildrens = (parent: HTMLElement) => {
         observeMutation(
-          () => {
+          (observer) => {
             makeChildrensDraggable(parent)
+            if (!reactChildrenChanges) {
+                observer.disconnect()
+            }
           },
           parent,
           { childList: true },

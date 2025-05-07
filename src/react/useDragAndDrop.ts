@@ -17,12 +17,9 @@ const handlerPublisher = new HandlerPublisher()
 export default function useDragAndDrop<T, E extends HTMLElement>( items: T[], config?: Config<T>) {
   const parent = useRef<E>(null);
   const [itemsState, setItemsState, listCondig] = useReactListConfig(items, parent)
-  const [removeAt, insertAt, onChangeParent] = dragAndDrop(listCondig, handlerPublisher, config, 'data-index')
+  const [removeAt, insertAt, onChangeParent] = dragAndDrop(listCondig, handlerPublisher, config, 'data-index', false)
   useEffect(() => {
     onChangeParent(parent.current);
-  }, [itemsState.length])
-  if (parent.current) {
-    onChangeParent(parent.current);
-  }
+  })
   return [parent, itemsState, setItemsState ,insertAt, removeAt] as const;
 }

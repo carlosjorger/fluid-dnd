@@ -246,8 +246,9 @@ export default function useDraggable<T>(
     if (isTouchEvent(event) && lastTouchY && draggingState == DraggingState.START_DRAGGING) {
       const currentY = event.touches[0].clientY;
       const yDiff = currentY - lastTouchY;
+      const MAX_SCROLL_Y_MAX = 5;
       lastTouchY = currentY
-      if (Math.abs(yDiff) > 5) {
+      if (Math.abs(yDiff) > MAX_SCROLL_Y_MAX) {
         disableDragging("touchmove", event)
         return true;
       }

@@ -272,7 +272,7 @@ export default function useDraggable<T>(
     if (event == "touchmove") {
       delayTimeout = setTimeout(() => {
         callback();
-      }, 200);
+      }, 150);
     } else {
       callback();
     }

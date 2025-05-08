@@ -195,7 +195,7 @@ export default function useDraggable<T>(
                     !isOutside && droppable.isSameNode(droppableConfigurator.current.droppable))
     }
   }
-  const onmousemove =  (event: DragMouseTouchEvent) => {
+  const onMove = (event: DragMouseTouchEvent) => {
     droppableConfigurator.updateConfig(event);
     const isOutside = droppableConfigurator.isOutside(event)
     toggleDroppableClass(isOutside)
@@ -228,14 +228,27 @@ export default function useDraggable<T>(
       droppableConfigurator.current
     );
   };
-  const handlerMousemove = (event: MouseEvent | TouchEvent) => {
+  const isOverDraggable = (event: DragMouseTouchEvent) => {
+    const rect = draggableElement.getBoundingClientRect();
+    const isOver = (
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom
+    );
+    return isOver;
+  }
+  const handleMove = (event: MouseEvent | TouchEvent) => {
+    const eventToDragMouse = convetEventToDragMouseTouchEvent(event);
     if (isTouchEvent(event) && event.cancelable) {
       event.preventDefault();
-    } else if (isTouchEvent(event)) {
+    }
+    if ((isTouchEvent(event) && !event.cancelable)
+        || !isOverDraggable(eventToDragMouse)) {
+      disableDragging("touchmove", event)
       return;
     }
-    const eventToDragMouse = convetEventToDragMouseTouchEvent(event);
-    onmousemove(eventToDragMouse);
+    onMove(eventToDragMouse);
   };
   const addTouchDeviceDelay = (event: MoveEvent, callback: () => void) => {
     if (event == "touchmove") {
@@ -246,12 +259,11 @@ export default function useDraggable<T>(
       callback();
     }
   };
-  const clickOnChildDraggable = (event: DragMouseTouchEvent, element: HTMLElement | undefined) =>{
+  const cursorIsOnChildDraggable = (event: DragMouseTouchEvent, element: HTMLElement) =>{
     const {clientX, clientY} = event
     const elementBelow = document.elementFromPoint(clientX, clientY)
     const draggableAncestor = elementBelow?.closest(`.${DRAGGABLE_CLASS}`)
-
-    return elementBelow && element && draggableAncestor && !element.isSameNode(draggableAncestor)
+    return draggableAncestor && element.isSameNode(draggableAncestor)
   }
   const getDragStartEventData = (element: Element) : DragStartEventData<T>|undefined => {
     const value = config.onGetValue(index)
@@ -259,7 +271,7 @@ export default function useDraggable<T>(
   }
   const onmousedown = (moveEvent: MoveEvent, onLeaveEvent: OnLeaveEvent) => {
     return (event: DragMouseTouchEvent) => {
-      if (clickOnChildDraggable(event, draggableElement)){
+      if (!cursorIsOnChildDraggable(event, draggableElement)){
         return
       }
       ConfigHandler.updateScrolls(parent, droppableGroupClass);
@@ -270,12 +282,7 @@ export default function useDraggable<T>(
         const data = getDragStartEventData(draggableElement)
         data && onDragStart(data)
         addTouchDeviceDelay(moveEvent, () => {
-          if (moveEvent == 'touchmove') {
-            droppableConfigurator.updateConfig(event);
-            toggleDroppableClass(droppableConfigurator.isOutside(event))
-            startDragging(event)
-          }
-          document.addEventListener(moveEvent, handlerMousemove, {
+          document.addEventListener(moveEvent, handleMove, {
             passive: false,
           });
         });
@@ -291,11 +298,15 @@ export default function useDraggable<T>(
   }
   const onLeave = (moveEvent: MoveEvent) => {
     return (event: MouseEvent | TouchEvent) => {
+      disableDragging(moveEvent, event)
+    };
+  };
+  const disableDragging = (moveEvent: MoveEvent , event: MouseEvent | TouchEvent) => {
       toggleDroppableClass(true);
       const convertedEvent = convetEventToDragMouseTouchEvent(event);
       clearTimeout(delayTimeout);
       onDropDraggingEvent(droppableConfigurator.isOutside(convertedEvent, false));
-      document.removeEventListener(moveEvent, handlerMousemove);
+      document.removeEventListener(moveEvent, handleMove);
       droppableConfigurator.updateConfig(convertedEvent);
       const currentConfig = droppableConfigurator.getCurrentConfig(convertedEvent);
       if (currentConfig) {
@@ -303,8 +314,7 @@ export default function useDraggable<T>(
         removeOnScrollEvents(droppable);
       }
       parent.onscroll = null;
-    };
-  };
+  }
   const removeOnScrollEvents = (droppable: HTMLElement) => {
     droppable.onscroll = null;
     if (!droppableGroupClass) {

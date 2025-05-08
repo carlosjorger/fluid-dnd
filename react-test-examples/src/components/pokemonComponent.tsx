@@ -25,7 +25,7 @@ interface Props{
 }
 const pokemonComponent: React.FC<Props> = ({ pokemon, index }) => {
     return(
-        <div data-index={index} className={pokeColor[pokemon.name]}>
+        <div data-index={index} className={`${pokeColor[pokemon.name]} pokemon`}>
             <div style={{padding: "2px"}}>
               <div>
                 <div>{ pokemon.name }</div>

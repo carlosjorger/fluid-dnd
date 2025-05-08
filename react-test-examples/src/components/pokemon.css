@@ -1,6 +1,8 @@
 .pokemon {
     margin-top: 0rem !important;
     background-image: url("../assets/pokemon-bg.svg");
+    background-repeat: no-repeat;
+    border: solid 1px red;
 }
 .remove {
     cursor: pointer;
@@ -14,5 +16,5 @@
     background-color: darkgray;
     display: block;
     overflow: auto;
-    height: 600px;
+    height: 800px;
 }

@@ -45,7 +45,6 @@ export const GroupOfListsOfPokemons: React.FC = () => {
           listOfPokemons.map((pokemon, index) => (
             <PokemonComponent
               key={pokemon.name}
-              className="min-w-44 max-sm:min-w-32"
               index={index}
               pokemon={pokemon}
             />
@@ -60,7 +59,6 @@ export const GroupOfListsOfPokemons: React.FC = () => {
           listOfPokemons2.map((pokemon, index) => (
             <PokemonComponent
               key={pokemon.name}
-              className="min-w-44 max-sm:min-w-32"
               index={index}
               pokemon={pokemon}
             />
@@ -75,7 +73,6 @@ export const GroupOfListsOfPokemons: React.FC = () => {
           listOfPokemons3.map((pokemon, index) => (
             <PokemonComponent
               key={pokemon.name}
-              className="min-w-44 max-sm:min-w-32"
               index={index}
               pokemon={pokemon}
             />

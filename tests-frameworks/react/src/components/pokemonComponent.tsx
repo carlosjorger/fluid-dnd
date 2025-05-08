@@ -1,4 +1,4 @@
-import type { Pokemon } from "../../../docs/src/components/examples/Pokemon";
+import type { Pokemon } from "../../../../docs/src/components/examples/Pokemon";
 import './pokemon.css'
 
 const pokeColor = {

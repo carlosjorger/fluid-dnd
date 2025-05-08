@@ -23,7 +23,7 @@ import {
   removeClass,
   toggleClass,
 } from "./utils/dom/classList";
-import { DRAGGABLE_CLASS, DROPPABLE_CLASS, HANDLER_CLASS } from "./utils/classes";
+import { DRAGGABLE_CLASS, DRAGGING_CLASS, DROPPABLE_CLASS, HANDLER_CLASS } from "./utils/classes";
 import HandlerPublisher from "./HandlerPublisher";
 
 const enum DraggingState {
@@ -60,9 +60,8 @@ export default function useDraggable<T>(
     scrollY: 0,
   };
   let pagePosition = { pageX: 0, pageY: 0 };
-  let lastTouchY : number|undefined = undefined
-
   let delayTimeout: NodeJS.Timeout|undefined;
+  let initialTouch: {x:number, y:number}|undefined;
   const [ setTransform, updateTransformState ] = useTransform(
     draggableElement
   );
@@ -125,7 +124,10 @@ export default function useDraggable<T>(
         "ontouchstart",
         onmousedown("touchmove", "touchend"),
         (event) => {
-          lastTouchY = event.changedTouches[0].clientY
+          initialTouch = {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY,
+          };
         }
       );
       disableMousedownEventFromImages(handlerElement);
@@ -199,11 +201,11 @@ export default function useDraggable<T>(
                     !isOutside && droppable.isSameNode(droppableConfigurator.current.droppable))
     }
   }
-  const onMove = (event: DragMouseTouchEvent) => {
+  const onMove = (event: DragMouseTouchEvent, isTouchEvent: boolean = false) => {
     droppableConfigurator.updateConfig(event);
     const isOutside = droppableConfigurator.isOutside(event)
     toggleDroppableClass(isOutside)
-    if (draggingState === DraggingState.START_DRAGGING) {
+    if (draggingState === DraggingState.START_DRAGGING && !isTouchEvent) {
       startDragging(event);
     } else if (draggingState === DraggingState.DRAGING) {
       updateTempChildren(isOutside);
@@ -232,41 +234,29 @@ export default function useDraggable<T>(
       droppableConfigurator.current
     );
   };
-  const isOverDraggable = (event: DragMouseTouchEvent) => {
-    const rect = draggableElement.getBoundingClientRect();
-    const isOver = (
-      event.clientX >= rect.left &&
-      event.clientX <= rect.right &&
-      event.clientY >= rect.top &&
-      event.clientY <= rect.bottom
-    );
-    return isOver;
-  }
-  const hasScrollTouchEventAtTheBeginning = (event: MouseEvent | TouchEvent) => {
-    if (isTouchEvent(event) && lastTouchY && draggingState == DraggingState.START_DRAGGING) {
-      const currentY = event.touches[0].clientY;
-      const yDiff = currentY - lastTouchY;
-      const MAX_SCROLL_Y_MAX = 5;
-      lastTouchY = currentY
-      if (Math.abs(yDiff) > MAX_SCROLL_Y_MAX) {
-        disableDragging("touchmove", event)
-        return true;
+  const cursorWasNotMoved = (event: MouseEvent | TouchEvent) => {
+    if (isTouchEvent(event) && initialTouch && draggingState == DraggingState.START_DRAGGING) {
+      const movedX = Math.abs(event.touches[0].clientX - initialTouch.x);
+      const movedY = Math.abs(event.touches[0].clientY - initialTouch.y);
+      if (Math.abs(movedX) > 5 && Math.abs(movedY) > 5) {
+        clearTimeout(delayTimeout);
+        return false;
       }
     }
-    return false;
+    return true;
   }
   const handleMove = (event: MouseEvent | TouchEvent) => {
+    clearTimeout(delayTimeout);
     const eventToDragMouse = convetEventToDragMouseTouchEvent(event);
     if (isTouchEvent(event) && event.cancelable) {
       event.preventDefault();
     }
     if ((isTouchEvent(event) && !event.cancelable)
-        || !isOverDraggable(eventToDragMouse)
-        || hasScrollTouchEventAtTheBeginning(event)) {
+        || !cursorWasNotMoved(event)) {
       disableDragging("touchmove", event)
       return;
     }
-    onMove(eventToDragMouse);
+    onMove(eventToDragMouse, isTouchEvent(event));
   };
   const addTouchDeviceDelay = (event: MoveEvent, callback: () => void) => {
     if (event == "touchmove") {
@@ -301,9 +291,14 @@ export default function useDraggable<T>(
         const data = getDragStartEventData(draggableElement)
         data && onDragStart(data)
         addTouchDeviceDelay(moveEvent, () => {
-          document.addEventListener(moveEvent, handleMove, {
-            passive: false,
-          });
+          if (moveEvent == 'touchmove') {
+            droppableConfigurator.updateConfig(event);
+            toggleDroppableClass(droppableConfigurator.isOutside(event))
+            startDragging(event)
+          }
+        });
+        document.addEventListener(moveEvent, handleMove, {
+          passive: false,
         });
         makeScrollEventOnDroppable(parent);
         document.addEventListener(onLeaveEvent, onLeave(moveEvent), {
@@ -323,8 +318,8 @@ export default function useDraggable<T>(
   const disableDragging = (moveEvent: MoveEvent , event: MouseEvent | TouchEvent) => {
       toggleDroppableClass(true);
       const convertedEvent = convetEventToDragMouseTouchEvent(event);
-      clearTimeout(delayTimeout);
       onDropDraggingEvent(droppableConfigurator.isOutside(convertedEvent, false));
+      clearTimeout(delayTimeout);
       document.removeEventListener(moveEvent, handleMove);
       droppableConfigurator.updateConfig(convertedEvent);
       const currentConfig = droppableConfigurator.getCurrentConfig(convertedEvent);
@@ -380,23 +375,23 @@ export default function useDraggable<T>(
     return setTransformDragEvent();
   };
   const onDropDraggingEvent = (isOutsideAllDroppables: boolean) => {
-    if (draggingState !== DraggingState.DRAGING) {
+    if (draggingState !== DraggingState.DRAGING && draggingState !== DraggingState.START_DRAGGING) {
       draggingState = DraggingState.NOT_DRAGGING;
       return;
     }
     draggingState = DraggingState.END_DRAGGING;
-
     removeDraggingStyles(draggableElement);
-    
-    emitEventToSiblings(
-      draggableElement,
-      START_DROP_EVENT,
-      windowScroll,
-      isOutsideAllDroppables? 
-        droppableConfigurator.initial: 
-        droppableConfigurator.current,
-      index
-    );
+    if (draggableElement.classList.contains(DRAGGING_CLASS)) {
+      emitEventToSiblings(
+        draggableElement,
+        START_DROP_EVENT,
+        windowScroll,
+        isOutsideAllDroppables? 
+          droppableConfigurator.initial: 
+          droppableConfigurator.current,
+        index
+      );
+    }
   };
   const removeDraggingStyles = (element: Element) => {
     setTranistion(element, animationDuration, draggableTargetTimingFunction);

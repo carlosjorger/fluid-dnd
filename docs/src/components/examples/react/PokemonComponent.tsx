@@ -107,7 +107,7 @@ export const PokemonComponent: React.FC<Props> = ({pokemon, handlerClass, hasRem
             </div>
             <img
                 src={pokemon.sprites.front_default}
-                className="aspect-square select-none h-24 w-24"
+                className="aspect-square select-none h-24 w-24 pointer-events-none"
                 alt="pokemon"
             />
         </div>

@@ -114,7 +114,7 @@
     </div>
     <img
         src={pokemon.sprites.front_default}
-        class="aspect-square select-none h-24 w-24"
+        class="aspect-square select-none h-24 w-24 pointer-events-none"
         alt="pokemon"
       />
   </div>

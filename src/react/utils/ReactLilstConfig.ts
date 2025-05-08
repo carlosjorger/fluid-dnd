@@ -10,7 +10,6 @@ export function useReactListConfig<T,E extends HTMLElement>(items: T[], parent: 
     useEffect(() => {
         stateRef.current = itemsState;
     }, [itemsState]);
-    // TODO: remove in react have problems in rendering
     function removeAtEvent(index: number, sync:boolean = false) {
         const deletedItem = stateRef.current[index];
         const removeCallback = () => {

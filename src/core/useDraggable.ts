@@ -60,6 +60,7 @@ export default function useDraggable<T>(
     scrollY: 0,
   };
   let pagePosition = { pageX: 0, pageY: 0 };
+  let lastTouchY : number|undefined = undefined
 
   let delayTimeout: NodeJS.Timeout|undefined;
   const [ setTransform, updateTransformState ] = useTransform(
@@ -122,7 +123,10 @@ export default function useDraggable<T>(
       assignDraggingEvent(
         handlerElement,
         "ontouchstart",
-        onmousedown("touchmove", "touchend")
+        onmousedown("touchmove", "touchend"),
+        (event) => {
+          lastTouchY = event.changedTouches[0].clientY
+        }
       );
       disableMousedownEventFromImages(handlerElement);
     }
@@ -238,13 +242,26 @@ export default function useDraggable<T>(
     );
     return isOver;
   }
+  const hasScrollTouchEventAtTheBeginning = (event: MouseEvent | TouchEvent) => {
+    if (isTouchEvent(event) && lastTouchY && draggingState == DraggingState.START_DRAGGING) {
+      const currentY = event.touches[0].clientY;
+      const yDiff = currentY - lastTouchY;
+      lastTouchY = currentY
+      if (Math.abs(yDiff) > 5) {
+        disableDragging("touchmove", event)
+        return true;
+      }
+    }
+    return false;
+  }
   const handleMove = (event: MouseEvent | TouchEvent) => {
     const eventToDragMouse = convetEventToDragMouseTouchEvent(event);
     if (isTouchEvent(event) && event.cancelable) {
       event.preventDefault();
     }
     if ((isTouchEvent(event) && !event.cancelable)
-        || !isOverDraggable(eventToDragMouse)) {
+        || !isOverDraggable(eventToDragMouse)
+        || hasScrollTouchEventAtTheBeginning(event)) {
       disableDragging("touchmove", event)
       return;
     }
@@ -277,6 +294,7 @@ export default function useDraggable<T>(
       ConfigHandler.updateScrolls(parent, droppableGroupClass);
       const { scrollX, scrollY } = window;
       windowScroll = { scrollX, scrollY };
+
       if (draggingState === DraggingState.NOT_DRAGGING) {
         draggingState = DraggingState.START_DRAGGING;
         const data = getDragStartEventData(draggableElement)

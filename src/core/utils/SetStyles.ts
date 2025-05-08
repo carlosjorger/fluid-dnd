@@ -11,6 +11,8 @@ type TouchEventType = "touchstart" | "touchmove" | "touchend";
 const mouseEvents = ["mouseup", "mousedown", "mousemove"] as const;
 type MouseEventType = (typeof mouseEvents)[number];
 type DragEventCallback = (event: DragMouseTouchEvent) => void;
+type TouchEventCallback = (event: TouchEvent) => void;
+
 export const setSizeStyles = (element: HTMLElement | undefined | null, height: number, width: number) => {  
   if (!element) {
     return;
@@ -43,12 +45,14 @@ export const moveTranslate = (
 const assignDraggingTouchEvent = (
   element: HTMLElement,
   onEvent: onTouchEvent,
-  callback: DragEventCallback
+  callback: DragEventCallback,
+  touchCallback?: TouchEventCallback
 ) => {
   element[onEvent] = (event: TouchEvent) => {
     if (event.defaultPrevented) {
       return;
     }
+    touchCallback && touchCallback(event)
     const dragMouseTouchEvent = convetEventToDragMouseTouchEvent(event);
     callback(dragMouseTouchEvent);
   };
@@ -56,7 +60,8 @@ const assignDraggingTouchEvent = (
 export const assignDraggingEvent = (
   element: HTMLElement,
   onEvent: onMouseEvent | onTouchEvent,
-  callback: DragEventCallback | null
+  callback: DragEventCallback | null,
+  touchCallback?: TouchEventCallback
 ) => {
   if (!callback) {
     return;
@@ -64,7 +69,7 @@ export const assignDraggingEvent = (
   if (isOnMouseEvent(onEvent)) {
     element[onEvent] = callback;
   } else {
-    assignDraggingTouchEvent(element, onEvent, callback);
+    assignDraggingTouchEvent(element, onEvent, callback, touchCallback);
   }
 };
 export const addDragMouseToucEventListener = (

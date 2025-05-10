@@ -9,11 +9,12 @@ import { addClass } from "./utils/dom/classList";
 import { DROPPABLE_CLASS } from "./utils/classes";
 import { isTempElement } from "./utils/tempChildren";
 
-export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher: HandlerPublisher, config?: Config<T>, indexAttr: string ='index',  reactChildrenChanges: Boolean = true) {
+export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher: HandlerPublisher, config?: Config<T>, indexAttr: string ='index') {
     let removeAtFromElements = [] as ((index: number) => void)[];
     let insertAtFromElements = [] as ((index: number, value: T) => void)[];
+    let currentObserver: MutationObserver;
     const coreConfig = getConfig(listCondig, config)
-      
+
     const removeAt = (index: number) => {
         for (const removeAtFromElement of removeAtFromElements) {
             removeAtFromElement(index);
@@ -41,12 +42,9 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
         return addedNodes.length > 0 || removedNodes.length > 0
     };
     const observeChildrens = (parent: HTMLElement) => {
-        observeMutation(
-          (observer) => {
+        currentObserver = observeMutation(
+          () => {
             makeChildrensDraggable(parent)
-            if (!reactChildrenChanges) {
-                observer.disconnect()
-            }
           },
           parent,
           { childList: true },
@@ -71,6 +69,7 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
         observeChildrens(parent);
         makeChildrensDraggable(parent)
         ConfigHandler.removeObsoleteConfigs();
+        return currentObserver
     }
     // TODO: On mobile devices, when trying to drag an element in a scrollable area, the scroll moves as well, and when drag and drop is activated, the element automatically shifts.
     return [removeAt, insertAt, onChangeParent] as const

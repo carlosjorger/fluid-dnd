@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Config } from "../core";
 import HandlerPublisher from "../core/HandlerPublisher";
 import { dragAndDrop } from "../index";
@@ -18,9 +18,15 @@ export default function useDragAndDrop<T, E extends HTMLElement>( items: T[], co
   const parent = useRef<E>(null);
   const [itemsState, setItemsState, listCondig] = useReactListConfig(items, parent)
   // TODO: test with useMemo
-  const [removeAt, insertAt, onChangeParent] = dragAndDrop(listCondig, handlerPublisher, config, 'data-index', false)
+  const [removeAt, insertAt, onChangeParent] = useMemo(() => dragAndDrop(listCondig, handlerPublisher, config, 'data-index'), [itemsState.length]);
   useEffect(() => {
-    onChangeParent(parent.current);
-  })
+    const observer = onChangeParent(parent.current);
+    return () => {
+      if (observer) {
+        console.log('disconnect')
+        observer.disconnect()
+      }
+    }
+  }, [itemsState.length])
   return [parent, itemsState, setItemsState ,insertAt, removeAt] as const;
 }

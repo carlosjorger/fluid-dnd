@@ -8,7 +8,7 @@ function App() {
     <>
       <NumberList />
       <GroupOfNumberList />
-      <GroupOfPokemonlists />
+      <GroupOfPokemonlists render={false} />
     </>
   )
 }

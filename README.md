@@ -1,5 +1,6 @@
  <h1 align="center">
-    <img src="https://github.com/carlosjorger/fluid-dnd/assets/50055316/dab15832-5290-42ca-b425-db177a2e589e" alt="Icon" width="150" height="140" />
+    <img src="public/fluid-dnd.svg"
+    alt="Icon" width="150" height="140" />
   <br>Fluid DnD<br>
 </h1>
 

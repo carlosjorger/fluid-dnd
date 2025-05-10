@@ -58,9 +58,9 @@ library for lists with support for Vue, react and Svelte](https://fluid-dnd.netl
 - 📘 See others examples [here](https://fluid-dnd.netlify.app/example/vertical-list/single-vertical-list/).
 
 ## 📚 Libraries Support
-- Vue >=3.0.0
-- React >= 18.0.0
-- Svelte >= 5.0.0
+- **Vue** >=3.0.0
+- **React** >= 18.0.0
+- **Svelte** >= 5.0.0
 
 ## 🤝 Contributing
 

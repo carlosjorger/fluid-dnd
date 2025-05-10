@@ -1,10 +1,10 @@
 :root {
-  --purple-hsl: 180, 60%, 60%;
+  --purple-hsl: 190, 100%, 42%;
   --overlay-blurple: hsla(var(--purple-hsl), 0.2);
 }
 
 :root[data-theme="light"] {
-  --purple-hsl: 180, 85%, 65%;
+  --purple-hsl: 190, 100%, 62%;
   --sl-hue-accent: 350;
 }
 

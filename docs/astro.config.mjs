@@ -178,7 +178,6 @@ export default defineConfig({
     customCss: process.env.NO_GRADIENTS ? [] : ["/src/assets/landing.css"],
     social: [
       { icon: 'linkedin', label: 'Linkedin', href: "https://www.linkedin.com/in/carlosjorger/" },
-      { icon: 'x.com', label: 'X', href: "https://x.com/carcu_ps" },
     ],
     routeMiddleware: './src/middlewares/frameworkSidebaMiddleWare.ts',
     components: {

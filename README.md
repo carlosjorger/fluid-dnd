@@ -68,5 +68,4 @@ If you're interested in contributing to [fluid-dnd](https://github.com/carlosjor
 
 ## 🔑 License
 
-- [MIT](https://github.com/carlosjorger/fluid-dnd/blob/main/LICENSE).
-<!-- TODO: all tes project inside test folder-->
+- [MIT](https://github.com/carlosjorger/fluid-dnd/blob/main/LICENSE).   

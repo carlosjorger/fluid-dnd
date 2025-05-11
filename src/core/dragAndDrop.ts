@@ -71,6 +71,5 @@ export default function dragAndDrop<T>(listCondig:ListCondig<T>,handlerPublisher
         ConfigHandler.removeObsoleteConfigs();
         return currentObserver
     }
-    // TODO: On mobile devices, when trying to drag an element in a scrollable area, the scroll moves as well, and when drag and drop is activated, the element automatically shifts.
     return [removeAt, insertAt, onChangeParent] as const
 }

@@ -15,6 +15,7 @@ pokemons.value = await fetchPokemons(3);
 const [ parent, insertAt ] = useDragAndDrop(pokemons, {
   removingClass: "removed",
   delayBeforeRemove: 300,
+  draggingClass: "dragging-pokemon",
 });
 const pokemonsToSelected = ref([] as Pokemon[]);
 const pokemonToAdd = ref<Pokemon>()

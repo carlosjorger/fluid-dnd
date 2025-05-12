@@ -11,6 +11,7 @@ fetchPokemons(3).then((newPokemons)=>{
 const [ parent, insertAt ] = useDragAndDrop(pokemons, {
   removingClass: "removed",
   delayBeforeRemove: 300,
+  draggingClass: "dragging-pokemon",
 });
 let pokemonsToSelected = $state([] as Pokemon[]);
 $effect(()=>{

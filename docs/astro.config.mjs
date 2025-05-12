@@ -8,7 +8,7 @@ import svelte from "@astrojs/svelte";
 import react from "@astrojs/react";
 
 const site = "https://fluid-dnd.netlify.app/";
-// TODO: add pr to starlight https://github.com/withastro/starlight/blob/main/CONTRIBUTING.md#showcase
+
 const getSidebar = (framework) => [
   {
     label: "Introduction",

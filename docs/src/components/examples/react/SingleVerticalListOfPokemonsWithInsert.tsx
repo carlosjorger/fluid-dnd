@@ -8,6 +8,7 @@ export const SingleVerticalListOfPokemonsWithInsert: React.FC = () => {
   const [ parent, listOfPokemons, setPokemons, insertAt ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
     removingClass: "removed",
     delayBeforeRemove: 300,
+    draggingClass: "dragging-pokemon",
   });
   const [pokemonToAdd, setPokemonToAdd] = useState<Pokemon>();
   const [pokemonsToSelected, setPokemonsToSelected] = useState<Pokemon[]>([]);

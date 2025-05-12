@@ -11,6 +11,7 @@ fetchPokemons(9).then((newPokemons)=>{
 const [ parent,_, removeEvent ] = useDragAndDrop(pokemons, {
   removingClass: "removed",
   delayBeforeRemove: 300,
+  draggingClass: "dragging-pokemon",
 });
 </script>
 <div class="flex max-sm:justify-center items-start">

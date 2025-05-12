@@ -32,7 +32,6 @@ const [ parent3 ] = useDragAndDrop(pokemon3G, {
   direction: "horizontal",
   draggingClass: "dragging-pokemon",
   droppableClass:'hover'
-
 });
 </script>
 <template>

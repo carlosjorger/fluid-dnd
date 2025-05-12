@@ -10,6 +10,7 @@ pokemons.value = await fetchPokemons(9);
 const [ parent,_, removeEvent ] = useDragAndDrop(pokemons, {
   removingClass: "removed",
   delayBeforeRemove: 300,
+  draggingClass: "dragging-pokemon",
 });
 </script>
 <template>

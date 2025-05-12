@@ -8,6 +8,7 @@ export const SingleVerticalListOfPokemonsWithRemove: React.FC = () => {
   const [ parent, listOfPokemons, setPokemons,_, removeEvent ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
     removingClass: "removed",
     delayBeforeRemove: 300,
+    draggingClass: "dragging-pokemon",
   });
   useEffect(() => { 
       const fetchPokemonse = async () => {

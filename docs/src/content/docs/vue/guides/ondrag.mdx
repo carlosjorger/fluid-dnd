@@ -4,6 +4,7 @@ description: A guide on how to use Fluid DnD calling onDragStart and onDragEnd e
 ---
 
 import OnDragEvents from "@/components/vue/OnDragEvents.vue";
+import OnDragEventsWithMoreInfo from "@/components/vue/OnDragEventsWithMoreInfo.vue"
 import { Code } from "@astrojs/starlight/components";
 
 ### List of number example
@@ -71,8 +72,16 @@ export const highlightsDraggable = ["droppableGroup"];
 
 <Code code={listOfNumbersDraggable} lang="vue" mark={highlightsDraggable} />
 
+{/* TODO: add doc for the use of the parameters */}
+
 ### Preview
 
 <div class="p-8 bg-[var(--sl-color-gray-6)]">
   <OnDragEvents client:load  />
+</div>
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <OnDragEventsWithMoreInfo client:load  />
 </div>

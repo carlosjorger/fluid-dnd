@@ -22,20 +22,20 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*", "./dist/*", ""],
-      "@components/*": ["./src/components/*"],
-      "fluid-dnd": ["./src/index.ts"],
       "fluid-dnd/vue": [".src/vue/index.ts"],
+      "fluid-dnd": [".src/index.ts"],
       "fluid-dnd/svelte": [".src/svelte/index.ts"],
       "fluid-dnd/react": [".src/react/index.ts"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.svelte"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.svelte", "src/*.ts","src/*.d.ts"],
   "exclude": [
     "src/main.ts",
     "examples",
     "docs",
     "src/assets",
-    "tests-frameworks/vue-test-examples"
+    "tests-frameworks",
+    "public",
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

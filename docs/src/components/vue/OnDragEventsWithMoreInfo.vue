@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { ref, useTemplateRef } from "vue";
 import { useDragAndDrop } from "fluid-dnd/vue";
-// import { dragAndDrop} from "fluid-dnd";
+import { type DragEndEventData, type DragStartEventData } from "fluid-dnd";
 const droppableGroup = useTemplateRef('droppableGroup')
 const draggedElement = ref<number | undefined>(undefined)
-function onDragStart(){
+function onDragStart(data: DragStartEventData<number>){
+  console.log('onDragStart', data)
   const droppables = droppableGroup.value?.querySelectorAll('.droppable-group-group1')??[]
   for (const droppable of [...droppables]) {
     droppable.classList.toggle('marked-droppable',true)
   }
 }
-function onDragEnd (){
+function onDragEnd (data: DragEndEventData<number>){
+  console.log('onDragEnd', data)
   const droppables = droppableGroup.value?.querySelectorAll('.droppable-group-group1')??[]
   for (const droppable of [...droppables]) {
     droppable.classList.toggle('marked-droppable',false)

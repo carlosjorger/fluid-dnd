@@ -16,18 +16,18 @@
 
 </div>
 
-Fluid DnD is a [**fluid**, **agnostic** and **versatil** drag and drop
-library for lists with support for Vue, react and Svelte](https://fluid-dnd.netlify.app/). It's a **lightweight** tool ~7 Kb (gzip) with no depenencies.
+Fluid DnD is a [**fluid**, **agnostic** and **versatile** drag and drop
+library for lists; with support for **Vue**, **React** and **Svelte**](https://fluid-dnd.netlify.app/). It's a **lightweight** tool ~8 Kb (gzip) with no depenencies.
 
-<img src="https://github.com/user-attachments/assets/b350f9a4-7dd7-40ca-ae3f-ecca166a9081" width="100%"/>
+<img src="https://github.com/user-attachments/assets/7b931bc0-2fa4-4268-a2cb-0f3d93f7ab8d" width="100%"/>
 
 ## 🧰 Features
 
 - ✅ **Fully customizable 🎨**.
 - ✅ **Zero dependencies 🪶**.
-- ✅ **Work with horizontal➡️and vertical list :arrow_down:**.
+- ✅ **Works with horizontal➡️and vertical list⬇️**.
 - ✅ **Mouse 🐭 and touch 👉📱 (mobile, tablet and so on) support**.
-- ✅ **Nice documentation 📑 and examples**.
+- ✅ **Clear documentation 📑 and examples**.
 - ✅ **Fully tested 🧪, typed and reliable**.
 
 ## ✨ Inspirations
@@ -54,8 +54,8 @@ library for lists with support for Vue, react and Svelte](https://fluid-dnd.netl
 3. **Documentation**
 
 - 📚 Check out all the [docs](https://fluid-dnd.netlify.app/).
-- 🛠️ Edit the previous [here](https://codesandbox.io/s/nifty-hooks-5plkpl).
-- 📘 See others examples [here](https://fluid-dnd.netlify.app/vue/example/vertical-list/single-vertical-list/).
+- 🛠️ Edit this example [here](https://codesandbox.io/s/nifty-hooks-5plkpl).
+- 📘 See other examples [here](https://fluid-dnd.netlify.app/vue/example/vertical-list/single-vertical-list/).
 
 ## 📚 Libraries Support
 - **Vue** >=3.0.0
@@ -64,7 +64,7 @@ library for lists with support for Vue, react and Svelte](https://fluid-dnd.netl
 
 ## 🤝 Contributing
 
-If you're interested in contributing to [fluid-dnd](https://github.com/carlosjorger/fluid-dnd), please read our contributing docs before submitting a pull request [CONTRIBUTING](./CONTRIBUTING.md).
+If you're interested in contributing to [fluid-dnd](https://github.com/carlosjorger/fluid-dnd), please read our [CONTRIBUTING  GUIDELINES](./CONTRIBUTING.md) before submitting a pull request.
 
 ## 🔑 License
 

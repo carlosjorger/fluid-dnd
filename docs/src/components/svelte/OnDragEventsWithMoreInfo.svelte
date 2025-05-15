@@ -1,16 +1,20 @@
 <script lang="ts">
 import { useDragAndDrop } from "fluid-dnd/svelte";
+import { type DragEndEventData, type DragStartEventData } from "fluid-dnd";
 
 const list = $state([1, 2, 3, 4, 5]);
-
 let droppableGroup = $state<HTMLElement|null>(null)
-function onDragStart(){
+let draggedElement = $state<number | null>()
+let lastDroppedElement = $state<number | null>()
+function onDragStart(data: DragStartEventData<number>){
+  draggedElement = data.value;
   const droppables = droppableGroup?.querySelectorAll('.droppable-group-group1')??[]
   for (const droppable of [...droppables]) {
     droppable.classList.toggle('marked-droppable',true)
   }
 }
-function onDragEnd (){
+function onDragEnd (data: DragEndEventData<number>){
+  lastDroppedElement = data.value;
   const droppables = droppableGroup?.querySelectorAll('.droppable-group-group1')??[]
   for (const droppable of [...droppables]) {
     droppable.classList.toggle('marked-droppable',false)
@@ -31,6 +35,10 @@ const [ parent2 ] = useDragAndDrop(list2, {
 });
 </script>
 
+<div class="my-6">
+    <h4 class="!text-accent-200/70">Dragged element: <span class="!text-[var(--sl-color-white)]">{ draggedElement }</span></h4>
+    <h4 class="!text-accent-200/70">Last dropped element: <span class="!text-[var(--sl-color-white)]">{ lastDroppedElement }</span></h4>
+  </div>
 <div bind:this={droppableGroup} class="group-list bg-[var(--sl-color-gray-6)]">
   <ul use:parent1 class="number-list">
     {#each list as  element, index (element) }

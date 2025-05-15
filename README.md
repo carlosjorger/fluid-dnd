@@ -11,7 +11,6 @@
 [![version](https://img.shields.io/npm/v/fluid-dnd)](https://www.npmjs.com/package/fluid-dnd)
 ![GitHub issues](https://img.shields.io/github/issues/carlosjorger/fluid-dnd)
 ![GitHub stars](https://img.shields.io/github/stars/carlosjorger/fluid-dnd)
-[![twitter](https://img.shields.io/twitter/follow/carlosjorgerc)](https://twitter.com/carlosjorgerc)
 [![test_coverage](https://api.codeclimate.com/v1/badges/6b27047dcf150ccddfac/test_coverage)](https://codeclimate.com/github/carlosjorger/fluid-dnd/test_coverage)
 
 </div>

@@ -4,15 +4,16 @@ import { useDragAndDrop } from "fluid-dnd/vue";
 import { type DragEndEventData, type DragStartEventData } from "fluid-dnd";
 const droppableGroup = useTemplateRef('droppableGroup')
 const draggedElement = ref<number | undefined>(undefined)
+const lastDroppedElement = ref<number | undefined>(undefined)
 function onDragStart(data: DragStartEventData<number>){
-  console.log('onDragStart', data)
+  draggedElement.value = data.value;
   const droppables = droppableGroup.value?.querySelectorAll('.droppable-group-group1')??[]
   for (const droppable of [...droppables]) {
     droppable.classList.toggle('marked-droppable',true)
   }
 }
 function onDragEnd (data: DragEndEventData<number>){
-  console.log('onDragEnd', data)
+  lastDroppedElement.value = data.value;
   const droppables = droppableGroup.value?.querySelectorAll('.droppable-group-group1')??[]
   for (const droppable of [...droppables]) {
     droppable.classList.toggle('marked-droppable',false)
@@ -36,6 +37,10 @@ const [ parent2 ] = useDragAndDrop<number>(list2, {
 
 </script>
 <template>
+  <div class="my-6">
+    <h4 class="!text-accent-200/70">Dragged element: <span class="!text-[var(--sl-color-white)]">{{ draggedElement }}</span></h4>
+    <h4 class="!text-accent-200/70">Last dropped element: <span class="!text-[var(--sl-color-white)]">{{ lastDroppedElement }}</span></h4>
+  </div>
   <div ref="droppableGroup" class="group-list bg-[var(--sl-color-gray-6)]">
     <ul ref="parent1" class="number-list">
       <li class="number" v-for="(element, index) in list" :index :key="element">

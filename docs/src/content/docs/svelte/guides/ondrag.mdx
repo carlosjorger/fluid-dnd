@@ -4,6 +4,7 @@ description: A guide on how to use Fluid DnD calling onDragStart and onDragEnd e
 ---
 
 import OnDragEvents from "@/components/svelte/OnDragEvents.svelte";
+import OnDragEventsWithMoreInfo from "@/components/svelte/OnDragEventsWithMoreInfo.svelte"
 import { Code } from "@astrojs/starlight/components";
 
 ### List of number example
@@ -68,4 +69,34 @@ export const highlightsDraggable = ["droppableGroup"];
 
 <div class="p-8 bg-[var(--sl-color-gray-6)]">
   <OnDragEvents client:load  />
+</div>
+
+### Use onDrag events params
+
+You can use `onDragStart` and `onDragEnd` events to get more information about the dragging process. 
+For example, you can get the `value` of the element that is being dragged and the `value` of the last element that was dropped.
+
+export const onDragParams = `<script lang="ts">
+import { type DragEndEventData, type DragStartEventData } from "fluid-dnd";
+//...
+let draggedElement = $state<number | null>()
+let lastDroppedElement = $state<number | null>()
+function onDragStart(data: DragStartEventData<number>){
+  draggedElement = data.value;
+  //...
+}
+function onDragEnd (data: DragEndEventData<number>){
+  lastDroppedElement = data.value;
+  //...
+}
+//...
+</script>`;
+export const highlightsOnDragParams = ["draggedElement", "lastDroppedElement", "data", "DragEndEventData", "DragStartEventData","data.value"];
+
+<Code code={onDragParams} lang="vue" mark={highlightsOnDragParams} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <OnDragEventsWithMoreInfo client:load  />
 </div>

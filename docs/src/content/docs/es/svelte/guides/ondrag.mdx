@@ -4,7 +4,7 @@ description: Una guía de como usar Fluid DnD llamando los eventos onDragStart y
 ---
 import OnDragEvents from "@/components/svelte/OnDragEvents.svelte";
 import OnDragEventsWithMoreInfo from "@/components/svelte/OnDragEventsWithMoreInfo.svelte"
-import { Code } from "@astrojs/starlight/components";
+import { Code, Aside } from "@astrojs/starlight/components";
 
 ### Ejemplo de lista de números
 
@@ -74,6 +74,7 @@ export const highlightsDraggable = ["droppableGroup"];
 
 Puedes usar los eventos `onDragStart` y `onDragEnd` para obtener más información sobre el proceso de arrastre.
 Por ejemplo, puedes obtener el valor (`value`) del elemento que se está arrastrando y el valor (`value`) del último elemento que se soltó.
+<Aside type="note">También puedes obtener el valor del atributo `data-index` de `DragEndEventData` y `DragStartEventData`.</Aside>
 
 export const onDragParams = `<script lang="ts">
 import { type DragEndEventData, type DragStartEventData } from "fluid-dnd";

@@ -5,7 +5,7 @@ description: Una guía de como usar Fluid DnD llamando los eventos onDragStart y
 
 import { OnDragEvents } from "@/components/react/OnDragEvents.tsx";
 import { OnDragEventsWithMoreInfo } from "@/components/react/OnDragEventsWithMoreInfo.tsx"
-import { Code } from "@astrojs/starlight/components";
+import { Code, Aside } from "@astrojs/starlight/components";
 
 ### Ejemplo de lista de números
 
@@ -77,7 +77,8 @@ export const highlightsDraggable = ["droppableGroup"];
 ### Uso de los parámetros de eventos onDrag
 
 Puedes usar los eventos `onDragStart` y `onDragEnd` para obtener más información sobre el proceso de arrastre.
-Por ejemplo, puedes obtener el valor (`value`) del elemento que se está arrastrando y el valor (`value`) del último elemento que se soltó.
+Por ejemplo, puedes obtener el valor (`value`) del elemento que se está arrastrando y el valor (`value`) del último elemento que se soltó 
+<Aside type="note">También puedes obtener el valor del atributo `data-index` de `DragEndEventData` y `DragStartEventData`.</Aside>
 
 export const onDragParams = `
 import { type DragEndEventData, type DragStartEventData } from "fluid-dnd";

@@ -3,6 +3,10 @@
     background-image: url("../assets/pokemon-bg.svg");
     background-repeat: no-repeat;
     border: solid 1px red;
+    img{
+        pointer-events: none;
+        user-select: none;
+    }
 }
 .remove {
     cursor: pointer;
@@ -18,3 +22,78 @@
     overflow: auto;
     height: 800px;
 }
+:is([data-theme="dark"] .bulbasaur.dragging-pokemon),
+:is([data-theme="dark"] .ivysaur.dragging-pokemon),
+:is([data-theme="dark"] .venusaur.dragging-pokemon),
+:is([data-theme="dark"] .chikorita.dragging-pokemon),
+:is([data-theme="dark"] .bayleef.dragging-pokemon),
+:is([data-theme="dark"] .meganium.dragging-pokemon),
+:is([data-theme="dark"] .treecko.dragging-pokemon),
+:is([data-theme="dark"] .grovyle.dragging-pokemon),
+:is([data-theme="dark"] .sceptile.dragging-pokemon) {
+    background-color: #5ec8a3 !important;
+}
+:global(.pokemon.removed){
+    opacity: 0;
+}
+  
+  .bulbasaur.dragging-pokemon,
+  .ivysaur.dragging-pokemon,
+  .venusaur.dragging-pokemon,
+  .chikorita.dragging-pokemon,
+  .bayleef.dragging-pokemon,
+  .meganium.dragging-pokemon,
+  .treecko.dragging-pokemon,
+  .grovyle.dragging-pokemon,
+  .sceptile.dragging-pokemon {
+    background-color: #84efc9 !important;
+  }
+  
+  :is([data-theme="dark"] .charmander.dragging-pokemon),
+  :is([data-theme="dark"] .charmeleon.dragging-pokemon),
+  :is([data-theme="dark"] .charizard.dragging-pokemon),
+  :is([data-theme="dark"] .cyndaquil.dragging-pokemon),
+  :is([data-theme="dark"] .quilava.dragging-pokemon),
+  :is([data-theme="dark"] .typhlosion.dragging-pokemon),
+  :is([data-theme="dark"] .torchic.dragging-pokemon),
+  :is([data-theme="dark"] .combusken.dragging-pokemon),
+  :is([data-theme="dark"] .blaziken.dragging-pokemon) {
+    background-color: #b45951 !important;
+  }
+  
+  .charmander.dragging-pokemon,
+  .charmeleon.dragging-pokemon,
+  .charizard.dragging-pokemon,
+  .cyndaquil.dragging-pokemon,
+  .quilava.dragging-pokemon,
+  .typhlosion.dragging-pokemon,
+  .torchic.dragging-pokemon,
+  .combusken.dragging-pokemon,
+  .blaziken.dragging-pokemon {
+    background-color: #ff9084 !important;
+  }
+  
+  :is([data-theme="dark"] .squirtle.dragging-pokemon),
+  :is([data-theme="dark"] .wartortle.dragging-pokemon),
+  :is([data-theme="dark"] .blastoise.dragging-pokemon),
+  :is([data-theme="dark"] .totodile.dragging-pokemon),
+  :is([data-theme="dark"] .croconaw.dragging-pokemon),
+  :is([data-theme="dark"] .feraligatr.dragging-pokemon),
+  :is([data-theme="dark"] .mudkip.dragging-pokemon),
+  :is([data-theme="dark"] .marshtomp.dragging-pokemon),
+  :is([data-theme="dark"] .swampert.dragging-pokemon) {
+    background-color: #6dbafe !important;
+  }
+  
+  .squirtle.dragging-pokemon,
+  .wartortle.dragging-pokemon,
+  .blastoise.dragging-pokemon,
+  .totodile.dragging-pokemon,
+  .croconaw.dragging-pokemon,
+  .feraligatr.dragging-pokemon,
+  .mudkip.dragging-pokemon,
+  .marshtomp.dragging-pokemon,
+  .swampert.dragging-pokemon {
+    background-color: #66b7fd !important;
+  }
+  

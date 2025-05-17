@@ -13,11 +13,13 @@ const groupOfPokemonlists: React.FC<Props> = ({ render=true }) => {
     
     const [ parent, pokemonsValue, setPokemons ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
         delayBeforeRemove: 300,
-        droppableGroup: 'pokemon-group'
+        droppableGroup: 'pokemon-group',
+        draggingClass: 'dragging-pokemon'
     });
     const [ parent2, pokemonsValue2, setPokemons2, insertAt ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
         delayBeforeRemove: 300,
-        droppableGroup: 'pokemon-group'
+        droppableGroup: 'pokemon-group',
+        draggingClass: 'dragging-pokemon'
     });
     const [pokemonToAdd, setPokemonToAdd] = useState<Pokemon>();
     const [pokemonsToSelected, setPokemonsToSelected] = useState<Pokemon[]>([]);

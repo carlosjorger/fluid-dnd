@@ -65,6 +65,9 @@ export default function useDraggable<T>(
   const [ setTransform, updateTransformState ] = useTransform(
     draggableElement
   );
+  const endDraggingState = () => {
+    draggingState = DraggingState.NOT_DRAGGING
+  }
   const [
     emitEventToSiblings,
     emitRemoveEventToSiblings,
@@ -77,7 +80,7 @@ export default function useDraggable<T>(
     parent,
     droppableGroupClass,
     handlerPublisher,
-    ()=>(draggingState = DraggingState.NOT_DRAGGING)
+    endDraggingState
   );
   const setDraggable = () => {
     addClass(draggableElement, DRAGGABLE_CLASS)
@@ -248,7 +251,7 @@ export default function useDraggable<T>(
   const handleMove = (event: MouseEvent | TouchEvent) => {
     clearTimeout(delayTimeout);
     const eventToDragMouse = convetEventToDragMouseTouchEvent(event);
-    if (isTouchEvent(event) && event.cancelable) {
+    if (isTouchEvent(event) && event.cancelable && draggingState == DraggingState.DRAGING) {
       event.preventDefault();
     }
     if ((isTouchEvent(event) && !event.cancelable)
@@ -328,6 +331,7 @@ export default function useDraggable<T>(
         removeOnScrollEvents(droppable);
       }
       parent.onscroll = null;
+      endDraggingState()
   }
   const removeOnScrollEvents = (droppable: HTMLElement) => {
     droppable.onscroll = null;
@@ -376,7 +380,7 @@ export default function useDraggable<T>(
   };
   const onDropDraggingEvent = (isOutsideAllDroppables: boolean) => {
     if (draggingState !== DraggingState.DRAGING && draggingState !== DraggingState.START_DRAGGING) {
-      draggingState = DraggingState.NOT_DRAGGING;
+      endDraggingState();
       return;
     }
     draggingState = DraggingState.END_DRAGGING;

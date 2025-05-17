@@ -37,6 +37,8 @@ const triggerClick = () => {
 .vertical-list {
   display: block;
   padding-inline: 10px;
+  transform: scale(1.2);
+  transform-origin: 0 0
 }
 .number {
   padding-left: 5px;

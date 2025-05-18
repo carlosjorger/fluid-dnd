@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* @plugin "daisyui"; */
+
 details {
   max-height: 4rem; /* Set a max-height value just enough to show the summary */
   overflow: hidden; /* Hide the rest of the content */

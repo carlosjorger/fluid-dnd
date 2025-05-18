@@ -90,7 +90,7 @@ export interface DragStartEventData<T> {
     /**
      * The delay before the touchmove event is fired.
      */
-    delayBeforeTouchMoveEvent:number;
+    delayBeforeTouchMoveEvent?:number;
   }
   /**
    * onDrop event function.

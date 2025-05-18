@@ -49,6 +49,7 @@ export const getConfig = <T>(listCondig: ListCondig<T>,
     delayBeforeRemove: config?.delayBeforeRemove ?? 200,
     delayBeforeInsert: config?.delayBeforeInsert ?? 200,
     mapFrom: config?.mapFrom??defaultMapFrom,
+    delayBeforeTouchMoveEvent: config?.delayBeforeTouchMoveEvent ?? 150,
   };
 };
 export const MapConfig = <T>(coreConfig:DroppableConfig<any>, mapFrom: MapFrom<T>): CoreConfig<any>=>{

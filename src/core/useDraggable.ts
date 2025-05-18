@@ -50,6 +50,7 @@ export default function useDraggable<T>(
     onRemoveAtEvent,
     droppableClass,
     onDragStart,
+    delayBeforeTouchMoveEvent
   } = config;
   const droppableGroupClass = getClassesList(droppableGroup)
     .map((classGroup) => `droppable-group-${classGroup}`)
@@ -265,7 +266,7 @@ export default function useDraggable<T>(
     if (event == "touchmove") {
       delayTimeout = setTimeout(() => {
         callback();
-      }, 150);
+      }, delayBeforeTouchMoveEvent);
     } else {
       callback();
     }
@@ -280,6 +281,11 @@ export default function useDraggable<T>(
     const value = config.onGetValue(index)
     return ({ index, element, value})
   }
+  const startTouchMoveEvent = (event: DragMouseTouchEvent) => {
+    droppableConfigurator.updateConfig(event);
+    toggleDroppableClass(droppableConfigurator.isOutside(event))
+    startDragging(event)
+  }
   const onmousedown = (moveEvent: MoveEvent, onLeaveEvent: OnLeaveEvent) => {
     return (event: DragMouseTouchEvent) => {
       if (!cursorIsOnChildDraggable(event, draggableElement)){
@@ -288,16 +294,13 @@ export default function useDraggable<T>(
       ConfigHandler.updateScrolls(parent, droppableGroupClass);
       const { scrollX, scrollY } = window;
       windowScroll = { scrollX, scrollY };
-
       if (draggingState === DraggingState.NOT_DRAGGING) {
         draggingState = DraggingState.START_DRAGGING;
         const data = getDragStartEventData(draggableElement)
         data && onDragStart(data)
         addTouchDeviceDelay(moveEvent, () => {
           if (moveEvent == 'touchmove') {
-            droppableConfigurator.updateConfig(event);
-            toggleDroppableClass(droppableConfigurator.isOutside(event))
-            startDragging(event)
+            startTouchMoveEvent(event)
           }
         });
         document.addEventListener(moveEvent, handleMove, {

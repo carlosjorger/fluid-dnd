@@ -87,6 +87,10 @@ export interface DragStartEventData<T> {
      * Map value when is passed from the current list to another.
      */
     mapFrom?: MapFrom<T>;
+    /**
+     * The delay before the touchmove event is fired.
+     */
+    delayBeforeTouchMoveEvent:number;
   }
   /**
    * onDrop event function.
@@ -159,5 +163,12 @@ export interface DragStartEventData<T> {
     onInsertEvent: OnInsertEvent<T>;
     onGetLegth: OnGetLength;
     onGetValue: OnGetValue<T>;
+    /**
+     * Map value when is passed from the current list to another.
+     */
     mapFrom: MapFrom<T>;
+    /**
+     * The delay before the touchmove event is fired.
+     */
+    delayBeforeTouchMoveEvent:number;
   };

@@ -68,12 +68,13 @@
     "@types/react": "^18.3.20",
     "@types/react-dom": "^19.1.2",
     "jsdom": "^24.0.0",
+    "prettier": "3.5.3",
+    "prettier-plugin-svelte": "^3.3.3",
+    "svelte": "^5.0.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
     "vite-plugin-dts": "^3.7.0",
     "vitest": "^1.2.2",
-    "prettier-plugin-svelte": "^3.3.3",
-    "svelte": "^5.0.0",
     "vue": ">=3.4.0"
   }
 }

@@ -9,7 +9,7 @@ const pokemons = $state([] as Pokemon[]);
 fetchPokemons(9).then((newPokemons) => {
   pokemons.push(...newPokemons);
 });
-const pokemons2 = $state([] as Pokemon[]);
+const pokemons2 = $state([] as Pokemon[]); 
 fetchPokemons(9, 151).then((newPokemons) => {
   pokemons2.push(...newPokemons);
 });

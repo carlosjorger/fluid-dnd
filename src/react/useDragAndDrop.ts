@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef } from "react";
-import { Config } from "../core";
-import HandlerPublisher from "../core/HandlerPublisher";
-import { dragAndDrop } from "../index";
-import { useReactListConfig } from "./utils/ReactLilstConfig";
+import { useEffect, useMemo, useRef } from 'react';
+import { Config } from '../core';
+import HandlerPublisher from '../core/HandlerPublisher';
+import { dragAndDrop } from '../index';
+import { useReactListConfig } from './utils/ReactLilstConfig';
 
 /**
  * Create the parent element of the draggable children and all the drag and drop events and styles.
@@ -13,20 +13,24 @@ import { useReactListConfig } from "./utils/ReactLilstConfig";
  * @returns The reference of the parent element and function to remove an element.
  */
 
-const handlerPublisher = new HandlerPublisher()
-export default function useDragAndDrop<T, E extends HTMLElement>( items: T[], config?: Config<T>) {
-  const parent = useRef<E>(null);
-  const [itemsState, setItemsState, listCondig] = useReactListConfig(items, parent)
-  const [removeAt, insertAt, onChangeParent] = useMemo(() => dragAndDrop(listCondig, handlerPublisher, config, 'data-index'), [itemsState.length]);
-  
-  useEffect(() => {
-    const observer = onChangeParent(parent.current);
-    return () => {
-      if (observer) {
-        console.log('disconnect')
-        observer.disconnect()
-      }
-    }
-  }, [itemsState.length])
-  return [parent, itemsState, setItemsState ,insertAt, removeAt] as const;
+const handlerPublisher = new HandlerPublisher();
+export default function useDragAndDrop<T, E extends HTMLElement>(items: T[], config?: Config<T>) {
+	const parent = useRef<E>(null);
+	const [itemsState, setItemsState, listCondig] = useReactListConfig(items, parent);
+	const [removeAt, insertAt, onChangeParent] = dragAndDrop(
+		listCondig,
+		handlerPublisher,
+		config,
+		'data-index'
+	);
+
+	useEffect(() => {
+		const observer = onChangeParent(parent.current);
+		return () => {
+			if (observer) {
+				observer.disconnect();
+			}
+		};
+	}, [itemsState.length]);
+	return [parent, itemsState, setItemsState, insertAt, removeAt] as const;
 }

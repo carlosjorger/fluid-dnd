@@ -1,5 +1,17 @@
-<template>
-	<div class="flex flex-col gap-8 delay-menu">
+<script lang="ts">
+  // Export a prop that can be bound
+//   export let value = 150;
+    interface Props {
+		changeDelay:(newDelay:number)=>void
+	}
+    let { changeDelay } = $props();
+    function handleInput(event:Event) {
+        const target = event.target as HTMLInputElement;
+        changeDelay(parseFloat(target.value));
+    }
+</script>
+
+<div class="flex flex-col gap-8 delay-menu">
 		<h3>Delay before touch move event</h3>
 		<div class="w-full max-w-xs">
 			<input
@@ -9,7 +21,7 @@
 				value="150"
 				class="range w-full"
 				step="150"
-				@change="changeDelay"
+				on:input={handleInput}
 			/>
 			<div class="flex justify-between px-2.5 mt-2 text-xs">
 				<span>|</span>
@@ -27,21 +39,8 @@
 			</div>
 		</div>
 	</div>
-</template>
-
-<script setup lang="ts">
-const model = defineModel({ type: Number });
-const emit = defineEmits<{
-	(e: "update:modelValue", value: Number | number): void;
-}>();
-const changeDelay = (event: Event) => {
-	const target = event.target as HTMLInputElement;
-	const value = parseFloat(target.value);
-	emit("update:modelValue", value);
-};
-</script>
-<style scoped>
-.delay-menu {
-	margin-top: 3rem !important;
-}
-</style>
+    <style>
+        .delay-menu {
+            margin-top: 3rem !important;
+        }
+    </style>

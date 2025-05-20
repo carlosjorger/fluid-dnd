@@ -42,8 +42,8 @@ importers:
         specifier: ^5.6.1
         version: 5.6.1(@netlify/blobs@8.1.2)(jiti@1.21.7)(rollup@4.39.0)(typescript@5.8.3)(yaml@2.7.1)
       fluid-dnd:
-        specifier: ^2.1.2
-        version: 2.1.2
+        specifier: ^2.1.3
+        version: 2.1.3
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -1652,8 +1652,8 @@ packages:
     resolution: {integrity: sha512-9UbaD6XdAL97+k/n+N7JwX46K/M6Zc6KcFYskrYL8wbBV/Uyk0CTAMY0VT+qiK5PM7AIc9aTWYtq65U7T+aCNQ==}
     engines: {node: '>=8'}
 
-  fluid-dnd@2.1.2:
-    resolution: {integrity: sha512-msBHIDaRK4Zxz5SHk6baw16WGaC1f9qIswb8zLic9yuOxpXeF89TgOeR1Y1gDFqwvUJJVFEC7shsHDoMV1f31Q==}
+  fluid-dnd@2.1.3:
+    resolution: {integrity: sha512-bJx8uI8exbGxqmP+lzZSyDt9qADFTsuzclX2+pxsFi+rV1hKoZwZ63RHyiH1Qso/Cc4jH6+Jb1QER+aV3MagzA==}
 
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
@@ -5089,7 +5089,7 @@ snapshots:
 
   flattie@1.1.1: {}
 
-  fluid-dnd@2.1.2: {}
+  fluid-dnd@2.1.3: {}
 
   foreground-child@3.3.1:
     dependencies:

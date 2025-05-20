@@ -7,12 +7,15 @@ import { TouchDelaySilder } from "./TouchDelaySilder.tsx";
 
 export const SingleVerticalListOfPokemons: React.FC = () => {
 	const [delay, setDelay] = useState(150);
+
 	const [parent, listOfPokemons, setPokemons] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
 		draggingClass: "dragging-pokemon",
 		delayBeforeTouchMoveEvent: delay
 	});
 	function isMobileDevice() {
-		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			navigator.userAgent
+		);
 	}
 	useEffect(() => {
 		const fetchPokemonse = async () => {
@@ -34,15 +37,14 @@ export const SingleVerticalListOfPokemons: React.FC = () => {
 					))}
 				</div>
 			</div>
-			{	
-				isMobileDevice() && 
+			{isMobileDevice() && (
 				<TouchDelaySilder
 					value={delay}
 					changeDelay={(newDelay) => {
 						setDelay(newDelay);
 					}}
 				/>
-			}
+			)}
 		</div>
 	);
 };

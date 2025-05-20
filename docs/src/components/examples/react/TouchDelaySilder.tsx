@@ -2,13 +2,14 @@ interface Props {
 	changeDelay: (newDelay: number) => void;
 	value: number;
 }
+
 export const TouchDelaySilder: React.FC<Props> = ({ changeDelay, value }) => {
 	function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
 		const target = event.target as HTMLInputElement;
 		changeDelay(parseFloat(target.value));
 	}
 	return (
-		<div className="flex flex-col gap-8 delay-menu">
+		<div className="flex flex-col gap-8 delay-menu items-center" style={{ marginTop: "3rem" }}>
 			<h3>Delay before touch move event</h3>
 			<div className="w-full max-w-xs">
 				<input

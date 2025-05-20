@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col gap-8 delay-menu">
+	<div class="flex flex-col gap-8 items-center delay-menu">
 		<h3>Delay before touch move event</h3>
 		<div class="w-full max-w-xs">
 			<input

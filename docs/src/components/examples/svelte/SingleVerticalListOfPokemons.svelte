@@ -46,9 +46,5 @@
 </div>
 
 <style>
-  :global(.sl-markdown-content
-    :not(a, strong, em, del, span, input, code)
-    + :not(a, strong, em, del, span, input, code, :where(.not-content *))) {
-    margin-top: 0rem !important;
-  }
+
 </style>

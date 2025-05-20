@@ -41,9 +41,7 @@ function isMobileDevice() {
 	</div>
 </template>
 <style>
-.sl-markdown-content
-	:not(a, strong, em, del, span, input, code)
-	+ :not(a, strong, em, del, span, input, code, :where(.not-content *)) {
+.temp-child {
 	margin-top: 0rem !important;
 }
 </style>

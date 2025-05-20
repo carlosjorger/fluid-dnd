@@ -1,6 +1,4 @@
 <script lang="ts">
-  // Export a prop that can be bound
-//   export let value = 150;
     interface Props {
 		changeDelay:(newDelay:number)=>void
 	}
@@ -11,7 +9,7 @@
     }
 </script>
 
-<div class="flex flex-col gap-8 delay-menu">
+<div class="flex flex-col gap-8 items-center delay-menu">
 		<h3>Delay before touch move event</h3>
 		<div class="w-full max-w-xs">
 			<input

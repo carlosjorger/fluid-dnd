@@ -5,6 +5,7 @@ import type { Pokemon } from "../Pokemon";
 import PokemonComponent from "./PokemonComponent.vue";
 import { fetchPokemons } from "@/server/pokemonServer";
 import touchDelaySilder from "./touchDelaySilder.vue";
+import { isMobileDevice } from "@/utils/mobile.ts";
 
 const pokemons = ref([] as Pokemon[]);
 pokemons.value = await fetchPokemons(3);
@@ -18,9 +19,6 @@ watchEffect(() => {
 	});
 	parent = dragAndDrop[0];
 });
-function isMobileDevice() {
-	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
 </script>
 <template>
 	<div class="flex-col gap-4">

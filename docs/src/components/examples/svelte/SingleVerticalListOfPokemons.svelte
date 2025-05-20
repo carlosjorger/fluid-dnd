@@ -4,6 +4,7 @@
   import PokemonComponent from "./PokemonComponent.svelte";
   import { fetchPokemons } from "@/server/pokemonServer";
   import TouchDelaySilder from "./touchDelaySilder.svelte";
+  import { isMobileDevice } from "@/utils/mobile.ts";
 
   let delay = $state(150);
   let pokemons = $state([] as Pokemon[]);
@@ -21,9 +22,7 @@
       draggingClass: "dragging-pokemon",
       delayBeforeTouchMoveEvent: delay
     }));
- function isMobileDevice() {
-	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
+
 </script>
 	<div class="flex-col gap-4">
     <div class="flex max-sm:justify-center items-start">

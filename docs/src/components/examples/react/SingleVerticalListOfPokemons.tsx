@@ -4,6 +4,7 @@ import { fetchPokemons } from "@/server/pokemonServer";
 import { PokemonComponent } from "./PokemonComponent";
 import { useEffect, useState } from "react";
 import { TouchDelaySilder } from "./TouchDelaySilder.tsx";
+import { isMobileDevice } from "@/utils/mobile.ts";
 
 export const SingleVerticalListOfPokemons: React.FC = () => {
 	const [delay, setDelay] = useState(150);
@@ -12,11 +13,7 @@ export const SingleVerticalListOfPokemons: React.FC = () => {
 		draggingClass: "dragging-pokemon",
 		delayBeforeTouchMoveEvent: delay
 	});
-	function isMobileDevice() {
-		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-			navigator.userAgent
-		);
-	}
+
 	useEffect(() => {
 		const fetchPokemonse = async () => {
 			const newPokemons = await fetchPokemons(3);

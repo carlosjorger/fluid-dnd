@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Config } from '../core';
 import HandlerPublisher from '../core/HandlerPublisher';
 import { dragAndDrop } from '../index';

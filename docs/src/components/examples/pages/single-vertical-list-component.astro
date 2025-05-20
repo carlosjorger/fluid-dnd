@@ -16,102 +16,144 @@ const i18n = getI18N({ currentLocale });
 
 const verticalList=`
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { useDragAndDrop } from "fluid-dnd/vue";
-import type { Pokemon } from "./Pokemon";
+import type { Pokemon } from "../Pokemon";
 import PokemonComponent from "./PokemonComponent.vue";
 import { fetchPokemons } from "@/server/pokemonServer";
+import touchDelaySilder from "./touchDelaySilder.vue";
+import { isMobileDevice } from "@/utils/mobile.ts";
 
 const pokemons = ref([] as Pokemon[]);
 pokemons.value = await fetchPokemons(3);
-const [ parent ] = useDragAndDrop(pokemons,{
-  draggingClass: "dragging-pokemon"
+const delay = ref(150);
+let parent = ref<HTMLElement | undefined>();
+
+watchEffect(() => {
+	const dragAndDrop = useDragAndDrop(pokemons, {
+		draggingClass: "dragging-pokemon",
+		delayBeforeTouchMoveEvent: delay.value
+	});
+	parent = dragAndDrop[0];
 });
 </script>
 <template>
-  <div class="flex max-sm:justify-center items-start">
-    <div
-      ref="parent"
-      class="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
-    >
-      <PokemonComponent
-        v-for="(pokemon, index) in pokemons"
-        :key="pokemon.name"
-        :index="index"
-        :pokemon="pokemon"
-      />
-    </div>
-  </div>
+	<div class="flex-col gap-4">
+		<div class="flex max-sm:justify-center items-start">
+			<div
+				ref="parent"
+				class="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
+			>
+				<PokemonComponent
+					v-for="(pokemon, index) in pokemons"
+					:key="pokemon.name"
+					:index="index"
+					:pokemon="pokemon"
+				/>
+			</div>
+		</div>
+		<touchDelaySilder v-if="isMobileDevice()" v-model="delay" />
+	</div>
 </template>
 `
 const verticalListSvelteCode=`
   <script lang="ts">
   import { useDragAndDrop } from "fluid-dnd/svelte";
-  import type { Pokemon } from "./Pokemon";
+  import type { Pokemon } from "../Pokemon";
   import PokemonComponent from "./PokemonComponent.svelte";
   import { fetchPokemons } from "@/server/pokemonServer";
+  import TouchDelaySilder from "./touchDelaySilder.svelte";
+  import { isMobileDevice } from "@/utils/mobile.ts";
 
+  let delay = $state(150);
   let pokemons = $state([] as Pokemon[]);
+  let parent: HTMLElement;
   fetchPokemons(3).then((newPokemons) => {
       pokemons.push(...newPokemons);
   });
-  const [ parent ] = useDragAndDrop(pokemons, {
-    draggingClass: "dragging-pokemon",
-  });
-  </script>
+  const changeDelay = (newDelay:number) => {
+    delay = newDelay;
+    if (parent) {
+      dragAndDropAction(parent);
+    }
+  }
+  const [ dragAndDropAction ] = $derived(useDragAndDrop(pokemons, {
+      draggingClass: "dragging-pokemon",
+      delayBeforeTouchMoveEvent: delay
+    }));
+
+</script>
+<div class="flex-col gap-4">
   <div class="flex max-sm:justify-center items-start">
     <div
-      use:parent
+      bind:this={parent}
+      use:dragAndDropAction
       class="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
     >
-    {#each pokemons as pokemon, index (pokemon.name)}
-      <PokemonComponent
-        index={index}
-        pokemon={pokemon}
-      />
-    {/each}
+      {#each pokemons as pokemon, index (pokemon.name)}
+        <PokemonComponent
+          index={index}
+          pokemon={pokemon}
+        />
+      {/each}
     </div>
   </div>
+  {#if isMobileDevice()}
+    <TouchDelaySilder {changeDelay} />
+  {/if}
+</div>
   `
 const verticalListReact = `
 import { useDragAndDrop } from "fluid-dnd/react";
 import type { Pokemon } from "../Pokemon";
 import { fetchPokemons } from "@/server/pokemonServer";
 import { PokemonComponent } from "./PokemonComponent";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { TouchDelaySilder } from "./TouchDelaySilder.tsx";
+import { isMobileDevice } from "@/utils/mobile.ts";
 
 export const SingleVerticalListOfPokemons: React.FC = () => {
-  const [ parent, listOfPokemons, setPokemons ] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
-    draggingClass: "dragging-pokemon",
-  });
-  useEffect(() => { 
-      const fetchPokemonse = async () => {
-          const newPokemons = await fetchPokemons(3);
-          setPokemons(newPokemons);
-      }
-      fetchPokemonse();
-  }, [])
+	const [delay, setDelay] = useState(150);
+	const [isMobile, setIsMobile] = useState(false);
+	const [parent, listOfPokemons, setPokemons] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
+		draggingClass: "dragging-pokemon",
+		delayBeforeTouchMoveEvent: delay
+	});
 
-  return (
-    <div className="flex max-sm:justify-center items-start">
-      <div
-        ref={parent}
-        className="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
-      >
-        {
-          listOfPokemons.map((pokemon, index) => (
-            <PokemonComponent
-              key={pokemon.name}
-              className="min-w-44 max-sm:min-w-32"
-              index={index}
-              pokemon={pokemon}
-            />
-          ))
-        }
-      </div>
-    </div>
-  )
-}
+	useEffect(() => {
+		const fetchPokemonse = async () => {
+			const newPokemons = await fetchPokemons(3);
+			setPokemons(newPokemons);
+		};
+		fetchPokemonse();
+	}, []);
+
+	useEffect(() => {
+		setIsMobile(isMobileDevice());
+	}, []);
+	return (
+		<div className="flex-col gap-4">
+			<div className="flex max-sm:justify-center items-start">
+				<div
+					ref={parent}
+					className="bg-gray-200/60 border-solid border-black/40 rounded-2xl w-60 border-4 p-4 block"
+				>
+					{listOfPokemons.map((pokemon, index) => (
+						<PokemonComponent key={pokemon.name} index={index} pokemon={pokemon} />
+					))}
+				</div>
+			</div>
+			{isMobile && (
+				<TouchDelaySilder
+					value={delay}
+					changeDelay={(newDelay) => {
+						setDelay(newDelay);
+					}}
+				/>
+			)}
+		</div>
+	);
+};
 `
 const fileName = 'SingleVerticalListOfPokemons';
 ---

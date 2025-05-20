@@ -1,8 +1,8 @@
 .pokemon {
-    margin-top: 0rem !important;
-    background-image: url("../../../../assets/pokemon-bg.svg");
-    transition: background-color 200ms ease-in;
-    transition: opacity 200ms ease;
+	margin-top: 0rem !important;
+	background-image: url("../../../../assets/pokemon-bg.svg");
+	transition: background-color 200ms ease-in;
+	transition: opacity 200ms ease;
 }
 :is([data-theme="dark"] .bulbasaur.dragging-pokemon),
 :is([data-theme="dark"] .ivysaur.dragging-pokemon),
@@ -13,10 +13,10 @@
 :is([data-theme="dark"] .treecko.dragging-pokemon),
 :is([data-theme="dark"] .grovyle.dragging-pokemon),
 :is([data-theme="dark"] .sceptile.dragging-pokemon) {
-    background-color: #5ec8a3 !important;
+	background-color: #5ec8a3 !important;
 }
-:global(.pokemon.removed){
-    opacity: 0;
+:global(.pokemon.removed) {
+	opacity: 0;
 }
 
 .bulbasaur.dragging-pokemon,
@@ -28,7 +28,7 @@
 .treecko.dragging-pokemon,
 .grovyle.dragging-pokemon,
 .sceptile.dragging-pokemon {
-    background-color: #84efc9 !important;
+	background-color: #84efc9 !important;
 }
 
 :is([data-theme="dark"] .charmander.dragging-pokemon),
@@ -40,7 +40,7 @@
 :is([data-theme="dark"] .torchic.dragging-pokemon),
 :is([data-theme="dark"] .combusken.dragging-pokemon),
 :is([data-theme="dark"] .blaziken.dragging-pokemon) {
-    background-color: #b45951 !important;
+	background-color: #b45951 !important;
 }
 
 .charmander.dragging-pokemon,
@@ -52,7 +52,7 @@
 .torchic.dragging-pokemon,
 .combusken.dragging-pokemon,
 .blaziken.dragging-pokemon {
-    background-color: #ff9084 !important;
+	background-color: #ff9084 !important;
 }
 
 :is([data-theme="dark"] .squirtle.dragging-pokemon),
@@ -64,7 +64,7 @@
 :is([data-theme="dark"] .mudkip.dragging-pokemon),
 :is([data-theme="dark"] .marshtomp.dragging-pokemon),
 :is([data-theme="dark"] .swampert.dragging-pokemon) {
-    background-color: #6dbafe !important;
+	background-color: #6dbafe !important;
 }
 
 .squirtle.dragging-pokemon,
@@ -76,11 +76,14 @@
 .mudkip.dragging-pokemon,
 .marshtomp.dragging-pokemon,
 .swampert.dragging-pokemon {
-    background-color: #66b7fd !important;
+	background-color: #66b7fd !important;
 }
-.pokemon-generation{
-    transition: background-color 150ms ease-in;
+.pokemon-generation {
+	transition: background-color 150ms ease-in;
 }
-.pokemon-generation.hover{
-    background-color: rgb(236 238 242 / 0.8) !important;
+.pokemon-generation.hover {
+	background-color: rgb(236 238 242 / 0.8) !important;
+}
+.temp-child {
+	margin-top: 0rem !important;
 }

@@ -3,7 +3,7 @@ import type { Pokemon } from "../Pokemon";
 import { fetchPokemons } from "@/server/pokemonServer";
 import { PokemonComponent } from "./PokemonComponent";
 import { useEffect, useState } from "react";
-import { TouchDelaySilder } from "./touchDelaySilder.tsx";
+import { TouchDelaySilder } from "./TouchDelaySilder.tsx";
 
 export const SingleVerticalListOfPokemons: React.FC = () => {
 	const [delay, setDelay] = useState(150);
@@ -11,14 +11,16 @@ export const SingleVerticalListOfPokemons: React.FC = () => {
 		draggingClass: "dragging-pokemon",
 		delayBeforeTouchMoveEvent: delay
 	});
-
+	function isMobileDevice() {
+		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+	}
 	useEffect(() => {
 		const fetchPokemonse = async () => {
 			const newPokemons = await fetchPokemons(3);
 			setPokemons(newPokemons);
 		};
 		fetchPokemonse();
-	}, [delay]);
+	}, []);
 
 	return (
 		<div className="flex-col gap-4">
@@ -32,12 +34,15 @@ export const SingleVerticalListOfPokemons: React.FC = () => {
 					))}
 				</div>
 			</div>
-			<TouchDelaySilder
-				value={delay}
-				changeDelay={(newDelay) => {
-					setDelay(newDelay);
-				}}
-			/>
+			{	
+				isMobileDevice() && 
+				<TouchDelaySilder
+					value={delay}
+					changeDelay={(newDelay) => {
+						setDelay(newDelay);
+					}}
+				/>
+			}
 		</div>
 	);
 };

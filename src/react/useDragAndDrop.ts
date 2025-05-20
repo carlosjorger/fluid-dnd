@@ -31,6 +31,6 @@ export default function useDragAndDrop<T, E extends HTMLElement>(items: T[], con
 				observer.disconnect();
 			}
 		};
-	}, [itemsState.length]);
+	}, [itemsState.length, config]);
 	return [parent, itemsState, setItemsState, insertAt, removeAt] as const;
 }

@@ -8,7 +8,7 @@ import { isMobileDevice } from "@/utils/mobile.ts";
 
 export const SingleVerticalListOfPokemons: React.FC = () => {
 	const [delay, setDelay] = useState(150);
-
+	const [isMobile, setIsMobile] = useState(false);
 	const [parent, listOfPokemons, setPokemons] = useDragAndDrop<Pokemon, HTMLDivElement>([], {
 		draggingClass: "dragging-pokemon",
 		delayBeforeTouchMoveEvent: delay
@@ -22,6 +22,9 @@ export const SingleVerticalListOfPokemons: React.FC = () => {
 		fetchPokemonse();
 	}, []);
 
+	useEffect(() => {
+		setIsMobile(isMobileDevice());
+	}, []);
 	return (
 		<div className="flex-col gap-4">
 			<div className="flex max-sm:justify-center items-start">
@@ -34,7 +37,7 @@ export const SingleVerticalListOfPokemons: React.FC = () => {
 					))}
 				</div>
 			</div>
-			{isMobileDevice() && (
+			{isMobile && (
 				<TouchDelaySilder
 					value={delay}
 					changeDelay={(newDelay) => {

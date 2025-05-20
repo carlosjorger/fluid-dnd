@@ -117,10 +117,10 @@ const fileName = 'SingleVerticalListOfPokemons';
 ---
 <PageComponent title={i18n.SINGLE_VERTICAL_LIST} framework={framework} vueCode={verticalList} svelteCode={verticalListSvelteCode} reactCode={verticalListReact} fileName={fileName}>
   <fragment slot="vue">
-    <SingleVerticalListOfPokemonsVue client:load />
+    <SingleVerticalListOfPokemonsVue client:only="vue" />
   </fragment>
   <fragment slot="svelte">
-    <SingleVerticalListOfPokemonsSvelte client:load />
+    <SingleVerticalListOfPokemonsSvelte client:only="svelte" />
   </fragment>
   <fragment slot="react">
     <SingleVerticalListOfPokemonsReact client:only="react" />

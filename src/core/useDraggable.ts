@@ -7,7 +7,7 @@ import {
 	setTranistion
 } from './utils/SetStyles';
 import { useTransform } from './utils/SetTransform';
-import { DragMouseTouchEvent, MoveEvent, OnLeaveEvent } from '../../index';
+import { Coordinate, DragMouseTouchEvent, MoveEvent, OnLeaveEvent } from '../../index';
 import { CoreConfig, DragStartEventData } from '.';
 import useEmitEvents from './utils/events/emitEvents';
 import {
@@ -55,7 +55,8 @@ export default function useDraggable<T>(
 		onRemoveAtEvent,
 		droppableClass,
 		onDragStart,
-		delayBeforeTouchMoveEvent
+		delayBeforeTouchMoveEvent,
+		coordinateTransform
 	} = config;
 	const droppableGroupClass = getClassesList(droppableGroup)
 		.map((classGroup) => `droppable-group-${classGroup}`)
@@ -67,8 +68,8 @@ export default function useDraggable<T>(
 	};
 	let pagePosition = { pageX: 0, pageY: 0 };
 	let delayTimeout: NodeJS.Timeout | undefined;
-	let initialTouch: { x: number; y: number } | undefined;
-	const [setTransform, updateTransformState] = useTransform(draggableElement);
+	let initialTouch: Coordinate | undefined;
+	const [setTransform, updateTransformState] = useTransform(draggableElement, coordinateTransform);
 	const endDraggingState = () => {
 		draggingState = DraggingState.NOT_DRAGGING;
 	};

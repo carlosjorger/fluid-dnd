@@ -4,6 +4,7 @@ import useDragAndDrop from '../../../../src/react/useDragAndDrop';
 import PokemonComponent from './pokemonComponent';
 import './pokemon.css';
 import { useEffect, useState } from 'react';
+import { Coordinate } from '../../../../index';
 
 type Props = {
 	render?: boolean;
@@ -11,6 +12,19 @@ type Props = {
 
 const groupOfPokemonlists: React.FC<Props> = ({ render = true }) => {
 	const [delay, setDelay] = useState(150);
+	const pixelMove = ({ x, y }: Coordinate) => {
+		const gridSize = 20;
+		return {
+			x: Math.ceil(x / gridSize) * gridSize,
+			y: Math.ceil(y / gridSize) * gridSize
+		};
+	};
+	const lockHorizontal = ({ y }: Coordinate) => {
+		return {
+			x: 0,
+			y
+		};
+	};
 	function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
 		const target = event.target as HTMLInputElement;
 		setDelay(parseFloat(target.value));
@@ -19,7 +33,8 @@ const groupOfPokemonlists: React.FC<Props> = ({ render = true }) => {
 		delayBeforeRemove: 300,
 		droppableGroup: 'pokemon-group',
 		draggingClass: 'dragging-pokemon',
-		delayBeforeTouchMoveEvent: delay
+		delayBeforeTouchMoveEvent: delay,
+		coordinateTransform: [lockHorizontal]
 	});
 	const [parent2, pokemonsValue2, setPokemons2, insertAt] = useDragAndDrop<Pokemon, HTMLDivElement>(
 		[],
@@ -27,7 +42,8 @@ const groupOfPokemonlists: React.FC<Props> = ({ render = true }) => {
 			delayBeforeRemove: 300,
 			droppableGroup: 'pokemon-group',
 			draggingClass: 'dragging-pokemon',
-			delayBeforeTouchMoveEvent: delay
+			delayBeforeTouchMoveEvent: delay,
+			coordinateTransform: [pixelMove]
 		}
 	);
 	const [pokemonToAdd, setPokemonToAdd] = useState<Pokemon>();

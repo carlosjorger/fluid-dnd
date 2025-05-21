@@ -25,6 +25,14 @@ export const VERTICAL = 'vertical';
  */
 export type Direction = typeof HORIZONTAL | typeof VERTICAL;
 /**
+ * The coordinate of the translate property of the draggred element.
+ */
+export type Coordinate = { x: number; y: number };
+/**
+ * Mapping function that transforms the coordinates of the dragged element.
+ */
+export type CoordinateMap = (coordinate: Coordinate, currentElement: HTMLElement) => Coordinate;
+/**
  * Configuration of the drag and drop.
  * @public
  */
@@ -89,6 +97,19 @@ export interface Config<T> {
 	 * The delay before the touchmove event is fired.
 	 */
 	delayBeforeTouchMoveEvent?: number;
+	/**
+	 * List of mapping functions that transform the coordinates of the dragged element, which are applied one after another,
+	 * where the output of one mapping function becomes the input of the next.
+	 * @example
+	 * [map1, map2, map3]
+	 * means:
+	 * let y1 = map1(y0)
+	 * let y2 = map2(y1)
+	 * let finalCoordinate = map3(y2)
+	 * The default value is [(coordinate) => coordinate]
+	 * @default [(coordinate) => coordinate]
+	 */
+	coordinateTransform?: CoordinateMap[];
 }
 /**
  * onDrop event function.
@@ -166,4 +187,17 @@ export type CoreConfig<T> = {
 	 * The delay before the touchmove event is fired.
 	 */
 	delayBeforeTouchMoveEvent: number;
+	/**
+	 * List of mapping functions that transform the coordinates of the dragged element, which are applied one after another,
+	 * where the output of one mapping function becomes the input of the next.
+	 * @example
+	 * [map1, map2, map3]
+	 * means:
+	 * let y1 = map1(y0)
+	 * let y2 = map2(y1)
+	 * let finalCoordinate = map3(y2)
+	 * The default value is [(coordinate) => coordinate]
+	 * @default [(coordinate) => coordinate]
+	 */
+	coordinateTransform: CoordinateMap[];
 };

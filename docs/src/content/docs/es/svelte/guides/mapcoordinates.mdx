@@ -1,4 +1,71 @@
 ---
-title: Mapeo de coordenadas mientras se arrastra
+title: Mapear coordenadas al arrastrar
 description: Una guía sobre cómo usar Fluid DnD para mapear las coordenadas de la propiedad translate mientras se arrastra un elemento.
 ---
+
+import ListWithMappedCoordinates from "@/components/svelte/ListWithMappedCoordinates.svelte";
+import { Code } from "@astrojs/starlight/components";
+
+### Ejemplo fijando el eje horizontal
+
+Si deseas mapear las coordenadas de la propiedad translate mientras arrastras, puedes usar la opción `coordinateTransform`.
+Primero, vamos a agregar la función `lockAxis`:
+
+export const listOfNumbers = `<script lang="ts">
+	import { type Coordinate } from "fluid-dnd";
+
+	const list = ref([...Array(20).keys()]);
+	const lockAxis = (coordinate: Coordinate) => {
+		return {
+			x: 0,
+			y: coordinate.y
+		};
+	};
+  const [ parent ] = useDragAndDrop(list, {
+		coordinateTransform: [ lockAxis ]
+  });
+</script>`;
+
+export const highlightslockAxis = ['lockAxis', 'coordinateTransform'];
+
+<Code code={listOfNumbers} lang="svelte" mark={highlightslockAxis} />
+
+### Resultado
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+	<ListWithMappedCoordinates client:load lockAxis={true}/>
+</div>
+
+### Ejemplo con multiples mappers
+
+También puedes usar múltiples funciones de mapeo, las cuales se aplicarán secuencialmente, 
+donde la salida de una función de mapeo se convierte en la entrada de la siguiente.
+
+En este ejemplo, vamos a agregar el mapeo `gridTranslate` para ajustar las coordenadas a un tamaño de cuadrícula específico
+
+export const listOfNumbersGridTranslate = `<script lang="ts">
+	//...
+  const gridTranslate = ({ x, y }: Coordinate) => {
+    const gridSize = 25.78;
+    return {
+      x: Math.ceil(x / gridSize) * gridSize,
+      y: Math.ceil(y / gridSize) * gridSize
+    };
+  };
+	//...
+
+const [ parent ] = useDragAndDrop(list, {
+		coordinateTransform: [lockAxis, gridTranslate]
+  });
+</script>`;
+
+export const highlightsGridTranslate = ['gridTranslate'];
+
+
+<Code code={listOfNumbersGridTranslate} lang="svelte" mark={highlightsGridTranslate}/>
+
+### Resultado
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+	<ListWithMappedCoordinates client:load lockAxis={true} gridTranslate={true}/>
+</div>

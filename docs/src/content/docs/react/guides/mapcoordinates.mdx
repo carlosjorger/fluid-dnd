@@ -2,3 +2,73 @@
 title: Map coordinates while dragging
 description: A guide on how to use Fluid DnD to map coordinates of the translate property while dragging.
 ---
+
+import { ListWithMappedCoordinates } from "@/components/react/ListWithMappedCoordinates.tsx";
+import { Code } from "@astrojs/starlight/components";
+
+### Locking axis example
+
+If you want to map the coordinates of the translate property while dragging, you can use the `coordinateTransform` option.
+First, we're going to add the `lockAxis` map:
+
+export const listOfNumbers = `
+import { type Coordinate } from "fluid-dnd";
+
+export const ListWithMappedCoordinates: React.FC = () => {
+	const list = ref([...Array(20).keys()]);
+	const lockAxis = (coordinate: Coordinate) => {
+		return {
+			x: 0,
+			y: coordinate.y
+		};
+	};
+	const [ parent ] = useDragAndDrop(list, {
+		coordinateTransform: [ lockAxis ]
+	});
+	//... 
+}`;
+
+export const highlightslockAxis = ['lockAxis', 'coordinateTransform'];
+
+<Code code={listOfNumbers} lang="tsx" mark={highlightslockAxis} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+	<ListWithMappedCoordinates client:load lockAxis={true} />
+</div>
+
+### Multiple mappers example
+
+You can also use multiple mappers, those will be applied sequentially,
+where the output of one mapping function becomes the input of the next.
+
+In this example, we're going to add the `gridTranslate` map the coordinate to snap to a given grid size:
+
+export const listOfNumbersGridTranslate = `
+export const ListWithMappedCoordinates: React.FC = () => {
+	//...
+	const gridTranslate = ({ x, y }: Coordinate) => {
+		const gridSize = 25.78;
+		return {
+		x: Math.ceil(x / gridSize) * gridSize,
+		y: Math.ceil(y / gridSize) * gridSize
+		};
+	};
+	//...
+	const [ parent ] = useDragAndDrop(list, {
+			coordinateTransform: [lockAxis, gridTranslate]
+	});
+	//...
+}`;
+
+export const highlightsGridTranslate = ['gridTranslate'];
+
+
+<Code code={listOfNumbersGridTranslate} lang="tsx" mark={highlightsGridTranslate}/>
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+	<ListWithMappedCoordinates client:load lockAxis={true} gridTranslate={true}/>
+</div>

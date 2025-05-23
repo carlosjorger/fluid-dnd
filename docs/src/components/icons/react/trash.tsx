@@ -2,7 +2,7 @@ interface Props{
   className?: string,
   color?: string;
 }
-export const Trash: React.FC<Props> = ({ className, color }) => {
+export const Trash: React.FC<Props> = ({ color }) => {
   return (
     <svg
     xmlns="http://www.w3.org/2000/svg"

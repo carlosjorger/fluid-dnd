@@ -88,61 +88,93 @@ const getSidebar = (framework) => [
 				}
 			},
 			{
-				label: "Dragging styles",
-				link: `/${framework}/guides/draggingclass/`,
-				translations: {
-					es: "Estilos al arrastrar"
-				}
-			},
-			{
-				label: "Dropping styles",
-				link: `/${framework}/guides/droppableclass/`,
-				translations: {
-					es: "Estilos al soltar"
-				}
-			},
-			{
 				label: "Sorting tables",
 				link: `/${framework}/guides/sortingtable/`,
 				translations: {
 					es: "Ordenar tablas"
 				}
-			},
+			},	
 			{
-				label: "Remove on lists",
-				link: `/${framework}/guides/listremove/`,
+				label: "Events",
+				items:[
+					{
+						label: "Map values",
+						link: `/${framework}/guides/events/mapvalues/`,
+						translations: {
+							es: "Mapear valores"
+						}
+					},
+					{
+						label: "Map coordinates",
+						link: `/${framework}/guides/events/mapcoordinates/`,
+						translations: {
+							es: "Mapear coordenadas"
+						}
+					},
+					{
+						label: "OnDrag events",
+						link: `/${framework}/guides/events/ondrag/`,
+						translations: {
+							es: "Eventos OnDrag"
+						}
+					},
+				],
 				translations: {
-					es: "Remover en listas"
+					es: "Eventos"
 				}
 			},
 			{
-				label: "Insert on list",
-				link: `/${framework}/guides/listinsert/`,
+				label: "Styles",
+				items: [
+					{
+						label: "Dragging styles",
+						link: `/${framework}/guides/styles/draggingclass/`,
+						translations: {
+							es: "Estilos al arrastrar"
+						}
+					},
+					{
+						label: "Dropping styles",
+						link: `/${framework}/guides/styles/droppableclass/`,
+						translations: {
+							es: "Estilos al soltar"
+						}
+					},
+					{
+						label: "List with handler",
+						link: `/${framework}/guides/styles/listhandler/`,
+						translations: {
+							es: "Lista con handler"
+						}
+					},
+				],
 				translations: {
-					es: "Insertar en listas"
+					es: "Estilos"
 				}
 			},
 			{
-				label: "OnDrag events",
-				link: `/${framework}/guides/ondrag/`,
+				label: "Actions",
+				items: [
+					{
+						label: "Insert on list",
+						link: `/${framework}/guides/actions/listinsert/`,
+						translations: {
+							es: "Insertar en listas"
+						}
+					},
+					{
+						label: "Remove on lists",
+						link: `/${framework}/guides/actions/listremove/`,
+						translations: {
+							es: "Remover en listas"
+						}
+					}
+				],
 				translations: {
-					es: "Eventos OnDrag"
-				}
-			},
-			{
-				label: "Map values",
-				link: `/${framework}/guides/mapvalues/`,
-				translations: {
-					es: "Mapear valores"
-				}
-			},
-			{
-				label: "Map coordinates",
-				link: `/${framework}/guides/mapcoordinates/`,
-				translations: {
-					es: "Mapear coordenadas"
+					es: "Acciones"
 				}
 			}
+
 		],
 		translations: {
 			es: "Guía"

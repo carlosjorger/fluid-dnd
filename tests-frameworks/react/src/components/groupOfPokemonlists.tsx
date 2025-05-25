@@ -62,9 +62,9 @@ const groupOfPokemonlists: React.FC<Props> = ({ render = true }) => {
 	};
 	useEffect(() => {
 		const fetchPokemonse = async () => {
-			const newPokemons = render ? await fetchPokemons(9) : [];
+			const newPokemons = render ? await fetchPokemons(24) : [];
 			setPokemons(newPokemons);
-			const newPokemons2 = render ? await fetchPokemons(9, 151) : [];
+			const newPokemons2 = render ? await fetchPokemons(24, 151) : [];
 			setPokemons2(newPokemons2);
 		};
 		fetchPokemonse();

@@ -19,12 +19,6 @@ const groupOfPokemonlists: React.FC<Props> = ({ render = true }) => {
 			y: Math.ceil(y / gridSize) * gridSize
 		};
 	};
-	const lockHorizontal = ({ y }: Coordinate) => {
-		return {
-			x: 0,
-			y
-		};
-	};
 	function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
 		const target = event.target as HTMLInputElement;
 		setDelay(parseFloat(target.value));
@@ -33,8 +27,7 @@ const groupOfPokemonlists: React.FC<Props> = ({ render = true }) => {
 		delayBeforeRemove: 300,
 		droppableGroup: 'pokemon-group',
 		draggingClass: 'dragging-pokemon',
-		delayBeforeTouchMoveEvent: delay,
-		coordinateTransform: [lockHorizontal]
+		delayBeforeTouchMoveEvent: delay
 	});
 	const [parent2, pokemonsValue2, setPokemons2, insertAt] = useDragAndDrop<Pokemon, HTMLDivElement>(
 		[],
@@ -80,7 +73,7 @@ const groupOfPokemonlists: React.FC<Props> = ({ render = true }) => {
 	return (
 		<>
 			{render && (
-				<div>
+				<div className="pokemon-container">
 					<input
 						type="range"
 						min="150"

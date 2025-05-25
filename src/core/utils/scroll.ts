@@ -1,6 +1,6 @@
 import { ElementScroll } from 'index';
 import { Coordinate, Direction } from '..';
-import { draggableIsOutside, getPropByDirection } from './GetStyles';
+import { draggableIsCompleteOutside, draggableIsOutside, getPropByDirection } from './GetStyles';
 const scrollByDirection = (element: HTMLElement, direction: Direction, scrollAmount: number) => {
 	if (scrollAmount == 0) {
 		return;
@@ -47,7 +47,7 @@ export const useScroll = (draggedElement: HTMLElement) => {
 		const infLimit = 0.2;
 		const upperLimit = 0.8;
 		let percent = 0;
-		const isOutside = draggableIsOutside(draggedElement, parent);
+		const isOutside = draggableIsCompleteOutside(draggedElement, parent);
 		if (!isOutside && relativePosition < infLimit && relativePosition > -relativeDistanceValue) {
 			percent = scrollFuncionToStart(relativePosition < 0 ? 0 : relativePosition, infLimit);
 		} else if (

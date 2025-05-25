@@ -1,12 +1,11 @@
 import { Coordinate, DragMouseTouchEvent, ElementPosition, TransformEvent } from '../../../index';
 import {
-	draggableIsOutside,
 	getNearestFixedParentPosition,
 	getPropByDirection,
 	getValueFromProperty
 } from './GetStyles';
 import { CoordinateMap, Direction, HORIZONTAL, VERTICAL } from '..';
-import { scrollByDirection } from './scroll';
+import { useScroll } from './scroll';
 import { HANDLER_CLASS, DRAGGING_CLASS } from './classes';
 import { containClass } from './dom/classList';
 
@@ -17,7 +16,7 @@ export const useTransform = (
 	let currentOffset = { offsetX: 0, offsetY: 0 };
 	let position = { top: 0, left: 0 };
 	let translate = { x: 0, y: 0 };
-
+	const [updateScrollByPosition] = useScroll(draggedElement);
 	const updateTranform = (newTranslate: Coordinate) => {
 		draggedElement.style.transform = `translate( ${newTranslate.x}px, ${newTranslate.y}px)`;
 	};
@@ -75,38 +74,7 @@ export const useTransform = (
 		};
 		const updateScroll = (translateDirection: Direction) => {
 			if (element && containClass(element, DRAGGING_CLASS) && translateDirection === direction) {
-				const { before, distance, axis, getRect } = getPropByDirection(direction);
-				const distanceValue = getRect(element)[distance];
-
-				const parentBoundingClientRect = getRect(parent);
-				const positionInsideParent =
-					position[before] - parentBoundingClientRect[before] + translate[axis];
-
-				const parentDistance = parentBoundingClientRect[distance];
-				const totalDistance = parentDistance - distanceValue;
-				const relativePosition = positionInsideParent / totalDistance;
-				const relativeDistanceValue = distanceValue / totalDistance;
-
-				const velocity = 0.1;
-				const infLimit = 0.2;
-				const upperLimit = 0.8;
-				let percent = 0;
-				const isOutside = draggableIsOutside(element, parent);
-				if (
-					!isOutside &&
-					relativePosition < infLimit &&
-					relativePosition > -relativeDistanceValue
-				) {
-					percent = relativePosition / infLimit - 1;
-				} else if (
-					!isOutside &&
-					relativePosition > upperLimit &&
-					relativePosition < 1 + relativeDistanceValue
-				) {
-					percent = (1 / (1 - upperLimit)) * (relativePosition - upperLimit);
-				}
-				const scrollAmount = velocity * distanceValue * percent;
-				scrollByDirection(parent, direction, scrollAmount);
+				updateScrollByPosition(direction, parent, position, translate);
 			}
 		};
 		const updateTranlateByDirection = (direction: Direction) => {

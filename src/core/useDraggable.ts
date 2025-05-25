@@ -6,7 +6,7 @@ import {
 	setEventWithInterval,
 	setTranistion
 } from './utils/SetStyles';
-import { useTransform } from './utils/SetTransform';
+import { usePositioning } from './positioning/usePositioning';
 import { Coordinate, DragMouseTouchEvent, MoveEvent, OnLeaveEvent } from '../../index';
 import { CoreConfig, DragStartEventData } from '.';
 import useEmitEvents from './utils/events/emitEvents';
@@ -16,10 +16,10 @@ import {
 	START_DRAG_EVENT,
 	START_DROP_EVENT
 } from './utils';
-import ConfigHandler, { DroppableConfig } from './configHandler';
+import ConfigHandler, { DroppableConfig } from './droppableConfig/configHandler';
 import { IsHTMLElement, isTouchEvent } from './utils/touchDevice';
 import { addTempChild, addTempChildOnInsert, removeTempChildrens } from './utils/tempChildren';
-import { DroppableConfigurator } from './utils/droppableConfigurator';
+import { DroppableConfigurator } from './droppableConfig/droppableConfigurator';
 import {
 	addClass,
 	containClass,
@@ -30,6 +30,7 @@ import {
 } from './utils/dom/classList';
 import { DRAGGABLE_CLASS, DRAGGING_CLASS, DROPPABLE_CLASS, HANDLER_CLASS } from './utils/classes';
 import HandlerPublisher from './HandlerPublisher';
+import useDragAndDropEvents from './events/dragAndDrop';
 
 const enum DraggingState {
 	NOT_DRAGGING,
@@ -69,17 +70,23 @@ export default function useDraggable<T>(
 	let pagePosition = { pageX: 0, pageY: 0 };
 	let delayTimeout: NodeJS.Timeout | undefined;
 	let initialTouch: Coordinate | undefined;
-	const [setTransform, updateTransformState] = useTransform(draggableElement, coordinateTransform);
+	const [setTransform, updateTransformState] = usePositioning(
+		draggableElement,
+		coordinateTransform
+	);
 	const endDraggingState = () => {
 		draggingState = DraggingState.NOT_DRAGGING;
 	};
-	const [
-		emitEventToSiblings,
-		emitRemoveEventToSiblings,
-		emitInsertEventToSiblings,
-		emitFinishRemoveEventToSiblings,
-		toggleDraggingClass
-	] = useEmitEvents<T>(
+	const [_, emitRemoveEventToSiblings, emitInsertEventToSiblings, emitFinishRemoveEventToSiblings] =
+		useEmitEvents<T>(
+			config,
+			index,
+			parent,
+			droppableGroupClass,
+			handlerPublisher,
+			endDraggingState
+		);
+	const [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] = useDragAndDropEvents<T>(
 		config,
 		index,
 		parent,
@@ -160,7 +167,7 @@ export default function useDraggable<T>(
 		}
 		const { droppable, config } = droppableConfigurator.current;
 		setTransform(draggableElement, droppable, pagePosition, config.direction);
-		emitEventToSiblings(draggableElement, DRAG_EVENT, windowScroll, droppableConfigurator.current);
+		emitDraggingEvent(draggableElement, DRAG_EVENT, droppableConfigurator.current);
 	};
 	const changeDroppable = (
 		newdDroppableConfig: DroppableConfig<T> | undefined,
@@ -171,7 +178,7 @@ export default function useDraggable<T>(
 			draggingState == DraggingState.DRAGING &&
 			!newdDroppableConfig?.droppable.isSameNode(oldDroppableConfig.droppable)
 		) {
-			emitEventToSiblings(draggableElement, DRAG_EVENT, windowScroll, oldDroppableConfig);
+			emitDraggingEvent(draggableElement, DRAG_EVENT, oldDroppableConfig);
 		}
 	};
 	const droppableConfigurator = new DroppableConfigurator(
@@ -343,12 +350,7 @@ export default function useDraggable<T>(
 			droppableConfigurator.current
 		);
 		updateDraggingStateBeforeDragging();
-		emitEventToSiblings(
-			draggableElement,
-			START_DRAG_EVENT,
-			windowScroll,
-			droppableConfigurator.current
-		);
+		emitDraggingEvent(draggableElement, START_DRAG_EVENT, droppableConfigurator.current);
 		setDraggingStyles(draggableElement);
 		updateTransformState(event, draggableElement);
 	};
@@ -374,11 +376,11 @@ export default function useDraggable<T>(
 		draggingState = DraggingState.END_DRAGGING;
 		removeDraggingStyles(draggableElement);
 		if (draggableElement.classList.contains(DRAGGING_CLASS)) {
-			emitEventToSiblings(
+			emitDroppingEvent(
 				draggableElement,
 				START_DROP_EVENT,
-				windowScroll,
 				isOutsideAllDroppables ? droppableConfigurator.initial : droppableConfigurator.current,
+				windowScroll,
 				index
 			);
 		}

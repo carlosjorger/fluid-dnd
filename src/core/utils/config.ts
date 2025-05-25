@@ -1,6 +1,6 @@
 import { DragEndEventData, ListCondig, MapFrom } from '..';
 import { Config, CoreConfig, VERTICAL } from '..';
-import { DroppableConfig } from '../configHandler';
+import { DroppableConfig } from '../droppableConfig/configHandler';
 import { DRAGGABLE_CLASS } from './classes';
 
 export const getConfig = <T>(listCondig: ListCondig<T>, config?: Config<T>): CoreConfig<T> => {

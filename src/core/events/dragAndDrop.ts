@@ -1,51 +1,46 @@
 import {
 	draggableIsOutside,
-	getParentDraggableChildren,
 	getPropByDirection,
 	getSiblings,
 	getTransform,
 	getWindowScroll
-} from '../GetStyles';
-import { Translate, WindowScroll } from '../../../../index';
-import { moveTranslate, setCustomFixedSize, setTranistion } from '../SetStyles';
-import { CoreConfig, Direction } from '../..';
-import getTranslationByDragging from '../translate/GetTranslationByDraggingAndEvent';
-import getTranslateBeforeDropping from '../translate/GetTranslateBeforeDropping';
+} from '../utils/GetStyles';
+import { Translate, WindowScroll } from '../../../index';
+import { moveTranslate, setCustomFixedSize, setTranistion } from '../utils/SetStyles';
+import { CoreConfig, Direction } from '..';
+import getTranslationByDragging from '../utils/translate/GetTranslationByDraggingAndEvent';
+import getTranslateBeforeDropping from '../utils/translate/GetTranslateBeforeDropping';
 import {
 	DRAG_EVENT,
 	draggableTargetTimingFunction,
-	IsDropEvent,
 	START_DRAG_EVENT,
 	START_DROP_EVENT,
 	TEMP_CHILD_CLASS
-} from '..';
-import { DroppableConfig } from '../../droppableConfig/configHandler';
-import { IsHTMLElement } from '../touchDevice';
-import { isTempElement, removeTempChild } from '../tempChildren';
+} from '../utils';
+import { DroppableConfig } from '../droppableConfig/configHandler';
+import { IsHTMLElement } from '../utils/touchDevice';
+import { removeTempChild } from '../utils/tempChildren';
 import {
-	DISABLE_TRANSITION,
 	DRAGGABLE_CLASS,
 	DRAGGING_CLASS,
 	DRAGGING_HANDLER_CLASS,
 	DROPPING_CLASS,
 	GRABBING_CLASS
-} from '../classes';
+} from '../utils/classes';
 import {
 	addClass,
 	containClass,
 	getClassesSelector,
 	removeClass,
 	toggleClass
-} from '../dom/classList';
-import HandlerPublisher from '../../HandlerPublisher';
-import { observeMutation } from '../observer';
+} from '../utils/dom/classList';
+import HandlerPublisher from '../HandlerPublisher';
 const DELAY_TIME_TO_SWAP = 50;
 
 type DraggingEvent = typeof DRAG_EVENT | typeof START_DRAG_EVENT;
-type DragAndDropEvent = DraggingEvent | DropEvent;
 type DropEvent = 'drop' | typeof START_DROP_EVENT;
 
-export default function useEmitEvents<T>(
+export default function useDragAndDropEvents<T>(
 	currentConfig: CoreConfig<T>,
 	index: number,
 	parent: HTMLElement,
@@ -54,19 +49,26 @@ export default function useEmitEvents<T>(
 	endDraggingAction: () => void
 ) {
 	let actualIndex = index;
-	const {
-		direction,
-		handlerSelector,
-		onRemoveAtEvent,
-		animationDuration,
-		delayBeforeInsert,
-		draggingClass
-	} = currentConfig;
-	const emitEventToSiblings = (
+	const { direction, handlerSelector, onRemoveAtEvent, animationDuration, draggingClass } =
+		currentConfig;
+
+	const emitDraggingEvent = (
 		draggedElement: HTMLElement,
-		event: DragAndDropEvent,
-		initialWindowScroll: WindowScroll,
+		event: DraggingEvent,
+		droppableConfig: DroppableConfig<T> | undefined
+	) => {
+		if (!droppableConfig) {
+			return;
+		}
+		const { droppable, config } = droppableConfig;
+		const tranlation = getTranslationByDragging(draggedElement, event, config.direction, droppable);
+		emitDraggingEventToSiblings(draggedElement, event, tranlation, droppableConfig);
+	};
+	const emitDroppingEvent = (
+		draggedElement: HTMLElement,
+		event: DropEvent,
 		droppableConfig: DroppableConfig<T> | undefined,
+		initialWindowScroll: WindowScroll,
 		positionOnSourceDroppable?: number
 	) => {
 		if (!droppableConfig) {
@@ -74,88 +76,14 @@ export default function useEmitEvents<T>(
 		}
 		const { droppable, config } = droppableConfig;
 		const tranlation = getTranslationByDragging(draggedElement, event, config.direction, droppable);
-		const dropping = IsDropEvent(event);
-		if (!dropping) {
-			emitDraggingEventToSiblings(draggedElement, event, tranlation, droppableConfig);
-		} else {
-			emitDroppingEventToSiblings(
-				draggedElement,
-				event,
-				tranlation,
-				initialWindowScroll,
-				droppableConfig,
-				positionOnSourceDroppable
-			);
-		}
-	};
-	// #region Insert
-	const emitInsertEventToSiblings = (
-		targetIndex: number,
-		draggedElement: HTMLElement,
-		droppable: HTMLElement,
-		value: T,
-		startInserting: () => void
-	) => {
-		const translation = getTranslationByDragging(
+		emitDroppingEventToSiblings(
 			draggedElement,
-			'insert',
-			currentConfig.direction,
-			droppable
+			event,
+			tranlation,
+			initialWindowScroll,
+			droppableConfig,
+			positionOnSourceDroppable
 		);
-		const { onInsertEvent } = currentConfig;
-		const siblings = getParentDraggableChildren(droppable);
-		for (const [index, sibling] of siblings.entries()) {
-			if (!containClass(sibling, DRAGGABLE_CLASS)) {
-				continue;
-			}
-			if (index >= targetIndex) {
-				dragEventOverElement(sibling, translation);
-			}
-		}
-		startInserting();
-		setTimeout(() => {
-			onInsertEvent(targetIndex, value);
-			onFinishInsertElement(targetIndex, droppable, currentConfig);
-			removeElementDraggingStyles(draggedElement);
-			removeTranslateFromSiblings(draggedElement, parent);
-			removeTempChild(parent, 0, true);
-		}, delayBeforeInsert);
-	};
-
-	// #region Remove
-	const emitRemoveEventToSiblings = (
-		targetIndex: number,
-		draggedElement: HTMLElement,
-		droppableConfig: DroppableConfig<T>,
-		onFinishRemoveEvent: (element: HTMLElement) => void
-	) => {
-		if (!droppableConfig || !droppableConfig.droppable || !droppableConfig.config) {
-			return;
-		}
-		const { droppable, config } = droppableConfig;
-		let [siblings] = getSiblings(draggedElement, droppable);
-		siblings = [draggedElement, ...siblings].toReversed();
-		const translation = getTranslationByDragging(
-			draggedElement,
-			'remove',
-			config.direction,
-			droppable
-		);
-		for (const [index, sibling] of siblings.entries()) {
-			if (index >= targetIndex) {
-				startDragEventOverElement(sibling, translation);
-				setTimeout(() => {
-					onFinishRemoveEvent(sibling as HTMLElement);
-				}, animationDuration);
-			}
-		}
-	};
-	const emitFinishRemoveEventToSiblings = (draggedElement: HTMLElement) => {
-		removeTempChild(parent, animationDuration, true);
-		setTimeout(() => {
-			removeElementDraggingStyles(draggedElement);
-			removeTranslateFromSiblings(draggedElement, parent);
-		}, animationDuration);
 	};
 	// #region Drag events
 	const emitDraggingEventToSiblings = (
@@ -446,58 +374,5 @@ export default function useEmitEvents<T>(
 		toogleHandlerDraggingClass(force, element);
 		handlerPublisher.toggleGrabClass(!force);
 	};
-	return [
-		emitEventToSiblings,
-		emitRemoveEventToSiblings,
-		emitInsertEventToSiblings,
-		emitFinishRemoveEventToSiblings,
-		toggleDraggingClass
-	] as const;
+	return [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] as const;
 }
-const childrenMutationFilter = (mutation: MutationRecord) => {
-	const addedNodes = mutation.addedNodes
-		.values()
-		.filter((element) => !isTempElement(element))
-		.toArray();
-	return addedNodes.length > 0;
-};
-const onFinishInsertElement = <T>(
-	targetIndex: number,
-	droppable: HTMLElement,
-	config: CoreConfig<T>
-) => {
-	const { insertingFromClass, animationDuration } = config;
-	const observer = observeMutation(
-		() => {
-			const siblings = getParentDraggableChildren(droppable);
-			const newElement = siblings[targetIndex];
-			addClass(newElement, insertingFromClass);
-			addClass(newElement, DISABLE_TRANSITION);
-			setTimeout(() => {
-				removeClass(newElement, DISABLE_TRANSITION);
-				removeClass(newElement, insertingFromClass);
-				observer.disconnect();
-			}, animationDuration);
-		},
-		droppable,
-		{
-			childList: true
-		},
-		childrenMutationFilter
-	);
-};
-export const insertToListEmpty = <T>(
-	config: CoreConfig<T>,
-	droppable: HTMLElement | undefined | null,
-	targetIndex: number,
-	value: T
-) => {
-	if (!droppable) {
-		return;
-	}
-	const { onInsertEvent, delayBeforeInsert } = config;
-	setTimeout(() => {
-		onInsertEvent(targetIndex, value);
-		onFinishInsertElement(targetIndex, droppable, config);
-	}, delayBeforeInsert);
-};

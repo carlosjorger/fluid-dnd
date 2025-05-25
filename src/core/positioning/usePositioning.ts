@@ -3,13 +3,13 @@ import {
 	getNearestFixedParentPosition,
 	getPropByDirection,
 	getValueFromProperty
-} from './GetStyles';
+} from '../utils/GetStyles';
 import { CoordinateMap, Direction, HORIZONTAL, VERTICAL } from '..';
-import { useScroll } from './scroll';
-import { HANDLER_CLASS, DRAGGING_CLASS } from './classes';
-import { containClass } from './dom/classList';
+import { useScroll } from './autoScroll';
+import { HANDLER_CLASS, DRAGGING_CLASS } from '../utils/classes';
+import { containClass } from '../utils/dom/classList';
 
-export const useTransform = (
+export const usePositioning = (
 	draggedElement: HTMLElement,
 	coordinateTransforms: CoordinateMap[]
 ) => {

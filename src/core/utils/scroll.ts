@@ -1,6 +1,6 @@
 import { ElementScroll } from 'index';
 import { Coordinate, Direction } from '..';
-import { draggableIsCompleteOutside, draggableIsOutside, getPropByDirection } from './GetStyles';
+import { draggableIsCompleteOutside, getPropByDirection } from './GetStyles';
 const scrollByDirection = (element: HTMLElement, direction: Direction, scrollAmount: number) => {
 	if (scrollAmount == 0) {
 		return;

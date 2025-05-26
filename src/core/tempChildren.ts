@@ -1,13 +1,13 @@
-import { DroppableConfig } from '../droppableConfig/configHandler';
-import { ElementScroll, Translate } from '../../../index';
-import { Direction, HORIZONTAL, VERTICAL } from '..';
-import { getPropByDirection } from '../utils/GetStyles';
-import { getGapPixels } from '../utils/ParseStyles';
-import { setSizeStyles, setTranistion } from '../utils/SetStyles';
-import { observeMutation } from '../utils/observer';
-import getTranslationByDragging from '../events/dragAndDrop/getTranslationByDraggingAndEvent';
-import { TEMP_CHILD_CLASS } from '../utils';
-import { addClass, getClassesSelector } from '../utils/dom/classList';
+import { DroppableConfig } from './config/configHandler';
+import { ElementScroll, Translate } from '../../index';
+import { Direction, HORIZONTAL, VERTICAL } from '.';
+import { getPropByDirection } from './utils/GetStyles';
+import { getGapPixels } from './utils/ParseStyles';
+import { setSizeStyles, setTranistion } from './utils/SetStyles';
+import { observeMutation } from './utils/observer';
+import getTranslationByDragging from './events/dragAndDrop/getTranslationByDraggingAndEvent';
+import { TEMP_CHILD_CLASS } from './utils';
+import { addClass, getClassesSelector } from './utils/dom/classList';
 
 const START_DRAG_EVENT = 'startDrag';
 const timingFunction = 'cubic-bezier(0.2, 0, 0, 1)';

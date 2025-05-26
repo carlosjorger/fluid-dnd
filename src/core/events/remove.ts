@@ -3,9 +3,9 @@ import { Translate } from '../../../index';
 import { moveTranslate } from '../utils/SetStyles';
 import { CoreConfig } from '..';
 import getTranslationByDragging from './dragAndDrop/getTranslationByDraggingAndEvent';
-import { DroppableConfig } from '../droppableConfig/configHandler';
+import { DroppableConfig } from '../config/configHandler';
 import { IsHTMLElement } from '../utils/typesCheckers';
-import { removeTempChild } from '../tempChildren/tempChildren';
+import { removeTempChild } from '../tempChildren';
 import { useChangeDraggableStyles } from './changeDraggableStyles';
 import HandlerPublisher from '@/core/HandlerPublisher';
 

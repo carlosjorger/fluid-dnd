@@ -16,14 +16,10 @@ import {
 	START_DRAG_EVENT,
 	START_DROP_EVENT
 } from './utils';
-import ConfigHandler, { DroppableConfig } from './droppableConfig/configHandler';
+import ConfigHandler, { DroppableConfig } from './config/configHandler';
 import { IsHTMLElement, isTouchEvent } from './utils/typesCheckers';
-import {
-	addTempChild,
-	addTempChildOnInsert,
-	removeTempChildrens
-} from './tempChildren/tempChildren';
-import { DroppableConfigurator } from './droppableConfig/droppableConfigurator';
+import { addTempChild, addTempChildOnInsert, removeTempChildrens } from './tempChildren';
+import { DroppableConfigurator } from './config/droppableConfigurator';
 import {
 	addClass,
 	containClass,

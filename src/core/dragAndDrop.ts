@@ -2,7 +2,7 @@ import { CoreConfig, ListCondig, VERTICAL } from '.';
 import { Config } from '.';
 import useDroppable from './useDroppable';
 import HandlerPublisher from './HandlerPublisher';
-import ConfigHandler from './droppableConfig/configHandler';
+import ConfigHandler from './config/configHandler';
 import { isTempElement, observeMutation } from './utils/observer';
 import { addClass } from './utils/dom/classList';
 import { DRAGGABLE_CLASS, DROPPABLE_CLASS } from './utils/classes';

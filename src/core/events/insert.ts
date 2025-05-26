@@ -2,7 +2,7 @@ import { getParentDraggableChildren, getSiblings } from '../utils/GetStyles';
 import { CoreConfig } from '../index';
 import getTranslationByDragging from '../events/dragAndDrop/getTranslationByDraggingAndEvent';
 import { IsHTMLElement } from '../utils/typesCheckers';
-import { removeTempChild } from '../tempChildren/tempChildren';
+import { removeTempChild } from '../tempChildren';
 import { DISABLE_TRANSITION, DRAGGABLE_CLASS } from '../utils/classes';
 import { addClass, containClass, removeClass } from '../utils/dom/classList';
 import HandlerPublisher from '../HandlerPublisher';

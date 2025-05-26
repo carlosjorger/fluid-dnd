@@ -14,19 +14,8 @@ import { DRAG_EVENT, START_DRAG_EVENT, START_DROP_EVENT, TEMP_CHILD_CLASS } from
 import { DroppableConfig } from '../../droppableConfig/configHandler';
 import { IsHTMLElement } from '../../utils/typesCheckers';
 import { removeTempChild } from '../../tempChildren/tempChildren';
-import {
-	DRAGGABLE_CLASS,
-	DRAGGING_HANDLER_CLASS,
-	DROPPING_CLASS,
-	GRABBING_CLASS
-} from '../../utils/classes';
-import {
-	addClass,
-	containClass,
-	getClassesSelector,
-	removeClass,
-	toggleClass
-} from '../../utils/dom/classList';
+import { DRAGGABLE_CLASS, DROPPING_CLASS } from '../../utils/classes';
+import { addClass, containClass, getClassesSelector, removeClass } from '../../utils/dom/classList';
 import HandlerPublisher from '../../HandlerPublisher';
 import { useChangeDraggableStyles } from '../changeDraggableStyles';
 const DELAY_TIME_TO_SWAP = 50;
@@ -43,8 +32,7 @@ export default function useDragAndDropEvents<T>(
 	endDraggingAction: () => void
 ) {
 	let actualIndex = index;
-	const { direction, handlerSelector, onRemoveAtEvent, animationDuration, draggingClass } =
-		currentConfig;
+	const { direction, onRemoveAtEvent, animationDuration, draggingClass } = currentConfig;
 
 	const [removeElementDraggingStyles, toggleDraggingClass, dragEventOverElement] =
 		useChangeDraggableStyles(currentConfig, handlerPublisher, endDraggingAction);
@@ -338,15 +326,6 @@ export default function useDragAndDropEvents<T>(
 		if (IsHTMLElement(element)) {
 			element.style.transition = '';
 			element.style.transform = '';
-		}
-	};
-	const toogleHandlerDraggingClass = (force: boolean, element: Element) => {
-		const handlerElement = element.querySelector(handlerSelector);
-		toggleClass(document.body, GRABBING_CLASS, force);
-		if (handlerElement) {
-			toggleClass(handlerElement, DRAGGING_HANDLER_CLASS, force);
-		} else {
-			toggleClass(element, DRAGGING_HANDLER_CLASS, force);
 		}
 	};
 

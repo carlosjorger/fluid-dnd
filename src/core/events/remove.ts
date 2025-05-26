@@ -1,4 +1,4 @@
-import { getParentDraggableChildren, getSiblings } from '../utils/GetStyles';
+import { getSiblings } from '../utils/GetStyles';
 import { Translate } from '../../../index';
 import { moveTranslate } from '../utils/SetStyles';
 import { CoreConfig } from '..';
@@ -6,9 +6,6 @@ import getTranslationByDragging from './dragAndDrop/getTranslationByDraggingAndE
 import { DroppableConfig } from '../droppableConfig/configHandler';
 import { IsHTMLElement } from '../utils/typesCheckers';
 import { removeTempChild } from '../tempChildren/tempChildren';
-import { DISABLE_TRANSITION } from '../utils/classes';
-import { addClass, removeClass } from '../utils/dom/classList';
-import { isTempElement, observeMutation } from '../utils/observer';
 import { useChangeDraggableStyles } from './changeDraggableStyles';
 import HandlerPublisher from '@/core/HandlerPublisher';
 
@@ -78,35 +75,3 @@ export default function useRemoveEvents<T>(
 	};
 	return [emitRemoveEventToSiblings, emitFinishRemoveEventToSiblings] as const;
 }
-const childrenMutationFilter = (mutation: MutationRecord) => {
-	const addedNodes = mutation.addedNodes
-		.values()
-		.filter((element) => !isTempElement(element))
-		.toArray();
-	return addedNodes.length > 0;
-};
-const onFinishInsertElement = <T>(
-	targetIndex: number,
-	droppable: HTMLElement,
-	config: CoreConfig<T>
-) => {
-	const { insertingFromClass, animationDuration } = config;
-	const observer = observeMutation(
-		() => {
-			const siblings = getParentDraggableChildren(droppable);
-			const newElement = siblings[targetIndex];
-			addClass(newElement, insertingFromClass);
-			addClass(newElement, DISABLE_TRANSITION);
-			setTimeout(() => {
-				removeClass(newElement, DISABLE_TRANSITION);
-				removeClass(newElement, insertingFromClass);
-				observer.disconnect();
-			}, animationDuration);
-		},
-		droppable,
-		{
-			childList: true
-		},
-		childrenMutationFilter
-	);
-};

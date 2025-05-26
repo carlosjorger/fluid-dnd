@@ -1,11 +1,27 @@
 import ConfigHandler, { DroppableConfig } from './configHandler';
 import { DragMouseTouchEvent } from '../../../index';
 import { draggableIsOutside } from '../utils/GetStyles';
-import { IsHTMLElement } from '../utils/touchDevice';
+import { IsHTMLElement } from '../utils/typesCheckers';
 import { setEventWithInterval } from '../utils/SetStyles';
 import { getClassesSelector } from '../utils/dom/classList';
-import { MapConfig } from '../utils/config';
-import { MapFrom } from '..';
+import { CoreConfig, DragEndEventData, MapFrom } from '..';
+
+const MapConfig = <T>(coreConfig: DroppableConfig<any>, mapFrom: MapFrom<T>): CoreConfig<any> => {
+	const { config, droppable } = coreConfig;
+	const { onInsertEvent, onDragEnd } = config;
+	const mapOnInsertEvent = (index: number, value: T) => {
+		return onInsertEvent(index, mapFrom(value, droppable), true);
+	};
+	const mapOnDragEnd = (eventData: DragEndEventData<T>) => {
+		const { index, value } = eventData;
+		onDragEnd({ index, value: mapFrom(value, droppable) });
+	};
+	return {
+		...config,
+		onDragEnd: mapOnDragEnd,
+		onInsertEvent: mapOnInsertEvent
+	};
+};
 
 export class DroppableConfigurator<T> {
 	initial: DroppableConfig<any> | undefined;

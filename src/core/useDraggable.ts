@@ -9,7 +9,7 @@ import {
 import { usePositioning } from './positioning/usePositioning';
 import { Coordinate, DragMouseTouchEvent, MoveEvent, OnLeaveEvent } from '../../index';
 import { CoreConfig, DragStartEventData } from '.';
-import useEmitEvents from './utils/events/emitEvents';
+import useRemoveEvents from './events/remove';
 import {
 	DRAG_EVENT,
 	draggableTargetTimingFunction,
@@ -17,8 +17,12 @@ import {
 	START_DROP_EVENT
 } from './utils';
 import ConfigHandler, { DroppableConfig } from './droppableConfig/configHandler';
-import { IsHTMLElement, isTouchEvent } from './utils/touchDevice';
-import { addTempChild, addTempChildOnInsert, removeTempChildrens } from './utils/tempChildren';
+import { IsHTMLElement, isTouchEvent } from './utils/typesCheckers';
+import {
+	addTempChild,
+	addTempChildOnInsert,
+	removeTempChildrens
+} from './tempChildren/tempChildren';
 import { DroppableConfigurator } from './droppableConfig/droppableConfigurator';
 import {
 	addClass,
@@ -30,7 +34,8 @@ import {
 } from './utils/dom/classList';
 import { DRAGGABLE_CLASS, DRAGGING_CLASS, DROPPABLE_CLASS, HANDLER_CLASS } from './utils/classes';
 import HandlerPublisher from './HandlerPublisher';
-import useDragAndDropEvents from './events/dragAndDrop';
+import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
+import useInsertEvents from './events/insert';
 
 const enum DraggingState {
 	NOT_DRAGGING,
@@ -77,20 +82,23 @@ export default function useDraggable<T>(
 	const endDraggingState = () => {
 		draggingState = DraggingState.NOT_DRAGGING;
 	};
-	const [_, emitRemoveEventToSiblings, emitInsertEventToSiblings, emitFinishRemoveEventToSiblings] =
-		useEmitEvents<T>(
-			config,
-			index,
-			parent,
-			droppableGroupClass,
-			handlerPublisher,
-			endDraggingState
-		);
+	const [emitRemoveEventToSiblings, emitFinishRemoveEventToSiblings] = useRemoveEvents<T>(
+		config,
+		parent,
+		handlerPublisher,
+		endDraggingState
+	);
 	const [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] = useDragAndDropEvents<T>(
 		config,
 		index,
 		parent,
 		droppableGroupClass,
+		handlerPublisher,
+		endDraggingState
+	);
+	const [emitInsertEventToSiblings] = useInsertEvents(
+		config,
+		parent,
 		handlerPublisher,
 		endDraggingState
 	);

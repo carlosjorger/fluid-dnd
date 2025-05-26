@@ -1,24 +1,18 @@
 import { DroppableConfig } from '../droppableConfig/configHandler';
 import { ElementScroll, Translate } from '../../../index';
 import { Direction, HORIZONTAL, VERTICAL } from '..';
-import { getPropByDirection } from './GetStyles';
-import { getGapPixels } from './ParseStyles';
-import { setSizeStyles, setTranistion } from './SetStyles';
-import { observeMutation } from './observer';
-import getTranslationByDragging from './translate/GetTranslationByDraggingAndEvent';
-import { TEMP_CHILD_CLASS } from '.';
-import { addClass, getClassesSelector } from './dom/classList';
-import { IsHTMLElement } from './touchDevice';
+import { getPropByDirection } from '../utils/GetStyles';
+import { getGapPixels } from '../utils/ParseStyles';
+import { setSizeStyles, setTranistion } from '../utils/SetStyles';
+import { observeMutation } from '../utils/observer';
+import getTranslationByDragging from '../events/dragAndDrop/getTranslationByDraggingAndEvent';
+import { TEMP_CHILD_CLASS } from '../utils';
+import { addClass, getClassesSelector } from '../utils/dom/classList';
 
 const START_DRAG_EVENT = 'startDrag';
 const timingFunction = 'cubic-bezier(0.2, 0, 0, 1)';
 const DELAY_TIME = 50;
-export const isTempElement = (element: Node) => {
-	if (!IsHTMLElement(element)) {
-		return false;
-	}
-	return element.classList.contains(TEMP_CHILD_CLASS);
-};
+
 const getDistance = (droppable: HTMLElement, draggedElement: HTMLElement, direction: Direction) => {
 	let distances = getTranslationByDragging(draggedElement, START_DRAG_EVENT, direction, droppable);
 	const gap = getGapPixels(droppable, direction);

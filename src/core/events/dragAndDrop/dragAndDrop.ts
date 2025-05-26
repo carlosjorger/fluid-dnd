@@ -4,37 +4,31 @@ import {
 	getSiblings,
 	getTransform,
 	getWindowScroll
-} from '../utils/GetStyles';
-import { Translate, WindowScroll } from '../../../index';
-import { moveTranslate, setCustomFixedSize, setTranistion } from '../utils/SetStyles';
-import { CoreConfig, Direction } from '..';
-import getTranslationByDragging from '../utils/translate/GetTranslationByDraggingAndEvent';
-import getTranslateBeforeDropping from '../utils/translate/GetTranslateBeforeDropping';
-import {
-	DRAG_EVENT,
-	draggableTargetTimingFunction,
-	START_DRAG_EVENT,
-	START_DROP_EVENT,
-	TEMP_CHILD_CLASS
-} from '../utils';
-import { DroppableConfig } from '../droppableConfig/configHandler';
-import { IsHTMLElement } from '../utils/touchDevice';
-import { removeTempChild } from '../utils/tempChildren';
+} from '../../utils/GetStyles';
+import { Translate, WindowScroll } from '../../../../index';
+import { moveTranslate } from '../../utils/SetStyles';
+import { CoreConfig, Direction } from '../..';
+import getTranslationByDragging from './getTranslationByDraggingAndEvent';
+import getTranslateBeforeDropping from './getTranslateBeforeDropping';
+import { DRAG_EVENT, START_DRAG_EVENT, START_DROP_EVENT, TEMP_CHILD_CLASS } from '../../utils';
+import { DroppableConfig } from '../../droppableConfig/configHandler';
+import { IsHTMLElement } from '../../utils/typesCheckers';
+import { removeTempChild } from '../../tempChildren/tempChildren';
 import {
 	DRAGGABLE_CLASS,
-	DRAGGING_CLASS,
 	DRAGGING_HANDLER_CLASS,
 	DROPPING_CLASS,
 	GRABBING_CLASS
-} from '../utils/classes';
+} from '../../utils/classes';
 import {
 	addClass,
 	containClass,
 	getClassesSelector,
 	removeClass,
 	toggleClass
-} from '../utils/dom/classList';
-import HandlerPublisher from '../HandlerPublisher';
+} from '../../utils/dom/classList';
+import HandlerPublisher from '../../HandlerPublisher';
+import { useChangeDraggableStyles } from '../changeDraggableStyles';
 const DELAY_TIME_TO_SWAP = 50;
 
 type DraggingEvent = typeof DRAG_EVENT | typeof START_DRAG_EVENT;
@@ -51,6 +45,9 @@ export default function useDragAndDropEvents<T>(
 	let actualIndex = index;
 	const { direction, handlerSelector, onRemoveAtEvent, animationDuration, draggingClass } =
 		currentConfig;
+
+	const [removeElementDraggingStyles, toggleDraggingClass, dragEventOverElement] =
+		useChangeDraggableStyles(currentConfig, handlerPublisher, endDraggingAction);
 
 	const emitDraggingEvent = (
 		draggedElement: HTMLElement,
@@ -165,11 +162,6 @@ export default function useDragAndDropEvents<T>(
 	const startDragEventOverElement = (element: Element, translation: Translate) => {
 		const { width, height } = translation;
 		moveTranslate(element, height, width);
-	};
-	const dragEventOverElement = (element: Element, translation: Translate) => {
-		const { width, height } = translation;
-		moveTranslate(element, height, width);
-		setTranistion(element, animationDuration, draggableTargetTimingFunction);
 	};
 	// #region Drop events
 	const emitDroppingEventToSiblings = (
@@ -348,18 +340,6 @@ export default function useDragAndDropEvents<T>(
 			element.style.transform = '';
 		}
 	};
-	const removeElementDraggingStyles = (element: HTMLElement) => {
-		endDraggingAction();
-		toggleDraggingClass(element, false);
-		element.style.transform = '';
-		element.style.transition = '';
-		element.style.top = '';
-		element.style.left = '';
-		setCustomFixedSize(element, {
-			fixedHeight: '',
-			fixedWidth: ''
-		});
-	};
 	const toogleHandlerDraggingClass = (force: boolean, element: Element) => {
 		const handlerElement = element.querySelector(handlerSelector);
 		toggleClass(document.body, GRABBING_CLASS, force);
@@ -369,10 +349,6 @@ export default function useDragAndDropEvents<T>(
 			toggleClass(element, DRAGGING_HANDLER_CLASS, force);
 		}
 	};
-	const toggleDraggingClass = (element: Element, force: boolean) => {
-		toggleClass(element, DRAGGING_CLASS, force);
-		toogleHandlerDraggingClass(force, element);
-		handlerPublisher.toggleGrabClass(!force);
-	};
+
 	return [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] as const;
 }

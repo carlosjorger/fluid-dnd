@@ -1,4 +1,4 @@
-import { insertToListEmpty } from '../../core/utils/events/emitEvents';
+import { insertToListEmpty } from '../../core/events/insert';
 import { CoreConfig } from '../../core';
 import { ListCondig } from '../../core';
 

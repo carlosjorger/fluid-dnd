@@ -60,13 +60,6 @@ const getSidebar = (framework) => [
 				}
 			},
 			{
-				label: "List with handler",
-				link: `/${framework}/guides/listhandler/`,
-				translations: {
-					es: "Lista con handler"
-				}
-			},
-			{
 				label: "isDraggable",
 				link: `/${framework}/guides/isdraggable/`,
 				translations: {
@@ -93,10 +86,10 @@ const getSidebar = (framework) => [
 				translations: {
 					es: "Ordenar tablas"
 				}
-			},	
+			},
 			{
 				label: "Events",
-				items:[
+				items: [
 					{
 						label: "Map values",
 						link: `/${framework}/guides/events/mapvalues/`,
@@ -117,7 +110,7 @@ const getSidebar = (framework) => [
 						translations: {
 							es: "Eventos OnDrag"
 						}
-					},
+					}
 				],
 				translations: {
 					es: "Eventos"
@@ -146,7 +139,7 @@ const getSidebar = (framework) => [
 						translations: {
 							es: "Lista con handler"
 						}
-					},
+					}
 				],
 				translations: {
 					es: "Estilos"
@@ -174,7 +167,6 @@ const getSidebar = (framework) => [
 					es: "Acciones"
 				}
 			}
-
 		],
 		translations: {
 			es: "Guía"

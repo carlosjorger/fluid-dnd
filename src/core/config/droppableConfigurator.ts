@@ -59,11 +59,7 @@ export class DroppableConfigurator<T> {
 			.elementsFromPoint(clientX, clientY)
 			.filter((element) => !element.isSameNode(draggable));
 	}
-	private getElementBelow(
-		currentElement: HTMLElement,
-		event: DragMouseTouchEvent,
-		hiddenDraggable: boolean = true
-	) {
+	private getElementBelow(currentElement: HTMLElement, event: DragMouseTouchEvent) {
 		const getElementBelow = (config: DroppableConfigurator<T>) => {
 			const [elementBelow] = config.getDraggableAncestor(
 				event.clientX,
@@ -72,22 +68,10 @@ export class DroppableConfigurator<T> {
 			);
 			return elementBelow;
 		};
-		let elementBelow = null;
-		if (hiddenDraggable) {
-			currentElement.hidden = true;
-			elementBelow = getElementBelow(this);
-			currentElement.hidden = false;
-		} else {
-			elementBelow = getElementBelow(this);
-		}
-		return elementBelow;
+		return getElementBelow(this);
 	}
-	private getCurrent(
-		currentElement: HTMLElement,
-		event: DragMouseTouchEvent,
-		hiddenDraggable: boolean = true
-	) {
-		const elementBelow = this.getElementBelow(currentElement, event, hiddenDraggable);
+	private getCurrent(currentElement: HTMLElement, event: DragMouseTouchEvent) {
+		const elementBelow = this.getElementBelow(currentElement, event);
 		if (!this.groupClass || !elementBelow) {
 			return;
 		}
@@ -125,12 +109,19 @@ export class DroppableConfigurator<T> {
 			config: MapConfig(coreConfig, this.mapFrom)
 		};
 	}
+	droppableIfInsideCurrent(droppable: Element | null | undefined, current: HTMLElement) {
+		return droppable && !droppable.isSameNode(current) && current.contains(droppable);
+	}
 	getCurrentConfig(event: DragMouseTouchEvent) {
 		const currentElement = this.draggableElement;
-		if (this.current && this.isNotInsideAnotherDroppable(currentElement, this.current?.droppable)) {
+		const currentDroppable = this.getCurrent(currentElement, event);
+		if (
+			this.current &&
+			this.isNotInsideAnotherDroppable(currentElement, this.current?.droppable) &&
+			!this.droppableIfInsideCurrent(currentDroppable, this.current?.droppable)
+		) {
 			return this.current;
 		}
-		const currentDroppable = this.getCurrent(currentElement, event);
 		if (!currentDroppable) {
 			return this.getConfigFrom(this.parent);
 		}
@@ -144,8 +135,8 @@ export class DroppableConfigurator<T> {
 		this.current = this.getCurrentConfig(event);
 		this.changeDroppable(this.current, oldDroppableConfig);
 	}
-	isOutside(event: DragMouseTouchEvent, hiddenDraggable: boolean = true) {
+	isOutside(event: DragMouseTouchEvent) {
 		const currentElement = this.draggableElement;
-		return !Boolean(this.getCurrent(currentElement, event, hiddenDraggable));
+		return !Boolean(this.getCurrent(currentElement, event));
 	}
 }

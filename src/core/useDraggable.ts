@@ -320,7 +320,7 @@ export default function useDraggable<T>(
 	const disableDragging = (moveEvent: MoveEvent, event: MouseEvent | TouchEvent) => {
 		toggleDroppableClass(true);
 		const convertedEvent = convetEventToDragMouseTouchEvent(event);
-		onDropDraggingEvent(droppableConfigurator.isOutside(convertedEvent, false));
+		onDropDraggingEvent(droppableConfigurator.isOutside(convertedEvent));
 		clearTimeout(delayTimeout);
 		document.removeEventListener(moveEvent, handleMove);
 		droppableConfigurator.updateConfig(convertedEvent);

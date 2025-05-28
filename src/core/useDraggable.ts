@@ -173,6 +173,12 @@ export default function useDraggable<T>(
 		setTransform(draggableElement, droppable, pagePosition, config.direction);
 		emitDraggingEvent(draggableElement, DRAG_EVENT, droppableConfigurator.current);
 	};
+	const removeTranslates = (droppable: Element) => {
+		const drgagables = droppable.querySelectorAll(`.${DRAGGABLE_CLASS}`);
+		for (const draggable of drgagables) {
+			moveTranslate(draggable, 0, 0);
+		}
+	};
 	const changeDroppable = (
 		newdDroppableConfig: DroppableConfig<T> | undefined,
 		oldDroppableConfig: DroppableConfig<T> | undefined
@@ -183,6 +189,7 @@ export default function useDraggable<T>(
 			!newdDroppableConfig?.droppable.isSameNode(oldDroppableConfig.droppable)
 		) {
 			emitDraggingEvent(draggableElement, DRAG_EVENT, oldDroppableConfig);
+			removeTranslates(oldDroppableConfig.droppable);
 		}
 	};
 	const droppableConfigurator = new DroppableConfigurator(

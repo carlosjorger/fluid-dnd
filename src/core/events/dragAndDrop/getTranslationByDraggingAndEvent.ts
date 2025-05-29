@@ -16,21 +16,58 @@ export default function getTranslationByDraggingAndEvent(
 	previousElement = current.previousElementSibling,
 	nextElement = current.nextElementSibling
 ) {
-	let { height, width } = getTranslationByDragging(
-		direction,
+	const value = getTranslationValueByDraggingEvent(
 		current,
+		event,
+		direction,
+		droppable,
 		previousElement,
 		nextElement
 	);
-	const intersection = draggableIsOutside(current, droppable);
-	if (intersection && event == DRAG_EVENT) {
-		height = 0;
-		width = 0;
-	}
+	return getDistancesByDirection(direction, value);
+}
+export function getTranslationByDraggingEventOverAGrid(
+	current: HTMLElement,
+	event: DragAndDropEvent,
+	droppable: HTMLElement,
+	previousElement = current.previousElementSibling,
+	nextElement = current.nextElementSibling
+) {
+	const height = getTranslationValueByDraggingEvent(
+		current,
+		event,
+		'vertical',
+		droppable,
+		previousElement,
+		nextElement
+	);
+	const width = getTranslationValueByDraggingEvent(
+		current,
+		event,
+		'horizontal',
+		droppable,
+		previousElement,
+		nextElement
+	);
 	return { height, width };
 }
+function getTranslationValueByDraggingEvent(
+	current: HTMLElement,
+	event: DragAndDropEvent,
+	direction: Direction,
+	droppable: HTMLElement,
+	previousElement = current.previousElementSibling,
+	nextElement = current.nextElementSibling
+) {
+	let value = getTranslationValueByDragging(direction, current, previousElement, nextElement);
+	const intersection = draggableIsOutside(current, droppable);
+	if (intersection && event == DRAG_EVENT) {
+		value = 0;
+	}
+	return value;
+}
 
-const getTranslationByDragging = (
+const getTranslationValueByDragging = (
 	direction: Direction,
 	current: HTMLElement,
 	previous: Element | null,
@@ -52,7 +89,7 @@ const getTranslationByDragging = (
 
 	const space = getRect(current)[distance];
 	if (hasGaps) {
-		return getTranslation(space, before, after, gap, 0, direction);
+		return getTranslationValue(space, before, after, gap, 0);
 	}
 	const [afterSpace, beforeScace, rest] = getTranslationByDraggingWithoutGaps(
 		previous,
@@ -61,8 +98,9 @@ const getTranslationByDragging = (
 		before,
 		afterMargin
 	);
-	return getTranslation(space, beforeScace, afterSpace, 0, rest, direction);
+	return getTranslationValue(space, beforeScace, afterSpace, 0, rest);
 };
+
 const getTranslationByDraggingWithoutGaps = (
 	previousElement: Element | null,
 	nextBeforeMargin: number,
@@ -81,16 +119,16 @@ const getTranslationByDraggingWithoutGaps = (
 	}
 	return [afterSpace, beforeScace, rest] as const;
 };
-const getTranslation = (
+const getTranslationValue = (
 	size: number,
 	before: number,
 	after: number,
 	gap: number,
-	rest: number,
-	direction: Direction
+	rest: number
 ) => {
-	return getDistancesByDirection(direction, size + before + after + gap - rest);
+	return size + before + after + gap - rest;
 };
+
 const getDistancesByDirection = (direction: Direction, value: number) => {
 	if (direction == HORIZONTAL) {
 		return { width: value, height: 0 };

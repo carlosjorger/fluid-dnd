@@ -11,6 +11,8 @@
 	const pokemons = $state([] as Pokemon[]);
 	const pokemons2 = $state([] as Pokemon[]);
 	const pokemons3 = $state([] as Pokemon[]);
+	const pokemons4 = $state([] as Pokemon[]);
+
 	if (render) {
 		fetchPokemons(9).then((newPokemons) => {
 			pokemons.push(...newPokemons);
@@ -21,6 +23,9 @@
 
 		fetchPokemons(9, 252).then((newPokemons) => {
 			pokemons3.push(...newPokemons);
+		});
+		fetchPokemons(9).then((newPokemons) => {
+			pokemons4.push(...newPokemons);
 		});
 	}
 	// const handlerSelector = ".pokemon-handler";
@@ -35,6 +40,11 @@
 		droppableGroup: 'pokemon-group'
 	});
 	const [parent3] = useDragAndDrop(pokemons3 as any, {
+		// handlerSelector,
+		delayBeforeRemove: 300,
+		droppableGroup: 'pokemon-group'
+	});
+	const [parent4] = useDragAndDrop(pokemons3 as any, {
 		// handlerSelector,
 		delayBeforeRemove: 300,
 		droppableGroup: 'pokemon-group'
@@ -58,6 +68,11 @@
 				<PokemonComponent {index} {pokemon} handlerSelector="pokemon-handler" />
 			{/each}
 		</div>
+	</div>
+	<div use:parent4 class="grid grid-cols-3 gap-2">
+		{#each pokemons4 as pokemon, index (pokemon.name)}
+			<PokemonComponent {index} {pokemon} handlerSelector="pokemon-handler" />
+		{/each}
 	</div>
 {/if}
 

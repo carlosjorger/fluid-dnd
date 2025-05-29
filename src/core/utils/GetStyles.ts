@@ -173,3 +173,9 @@ export const getNearestFixedParentPosition = (element: Element, direction: Direc
 		? getRect(fixedParent)[before] + getValueFromProperty(fixedParent, borderBeforeWidth)
 		: 0;
 };
+export function isGridContainer(element: Element) {
+	if (!(element instanceof HTMLElement)) return false;
+
+	const display = window.getComputedStyle(element).getPropertyValue('display');
+	return display === 'grid' || display === 'inline-grid';
+}

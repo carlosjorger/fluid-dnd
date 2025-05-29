@@ -3,12 +3,15 @@ import {
 	getPropByDirection,
 	getSiblings,
 	getTransform,
-	getWindowScroll
+	getWindowScroll,
+	isGridContainer
 } from '../../utils/GetStyles';
 import { Translate, WindowScroll } from '../../../../index';
 import { moveTranslate } from '../../utils/SetStyles';
 import { CoreConfig, Direction } from '../..';
-import getTranslationByDragging from './getTranslationByDraggingAndEvent';
+import getTranslationByDragging, {
+	getTranslationByDraggingEventOverAGrid
+} from './getTranslationByDraggingAndEvent';
 import getTranslateBeforeDropping from './getTranslateBeforeDropping';
 import { DRAG_EVENT, START_DRAG_EVENT, START_DROP_EVENT, TEMP_CHILD_CLASS } from '../../utils';
 import { DroppableConfig } from '../../config/configHandler';
@@ -18,6 +21,7 @@ import { DRAGGABLE_CLASS, DROPPING_CLASS } from '../../utils/classes';
 import { addClass, containClass, getClassesSelector, removeClass } from '../../utils/dom/classList';
 import HandlerPublisher from '../../HandlerPublisher';
 import { useChangeDraggableStyles } from '../changeDraggableStyles';
+import { isTempElement, observeMutation } from '../../utils/observer';
 const DELAY_TIME_TO_SWAP = 50;
 
 type DraggingEvent = typeof DRAG_EVENT | typeof START_DRAG_EVENT;
@@ -46,8 +50,28 @@ export default function useDragAndDropEvents<T>(
 			return;
 		}
 		const { droppable, config } = droppableConfig;
-		const tranlation = getTranslationByDragging(draggedElement, event, config.direction, droppable);
-		emitDraggingEventToSiblings(draggedElement, event, tranlation, droppableConfig);
+		if (isGridContainer(droppable)) {
+			emitDraggingEventOverAGrid(draggedElement, event, droppableConfig);
+		} else {
+			const tranlation = getTranslationByDragging(
+				draggedElement,
+				event,
+				config.direction,
+				droppable
+			);
+			emitDraggingEventToSiblings(draggedElement, event, tranlation, droppableConfig);
+		}
+	};
+	const emitDraggingEventOverAGrid = (
+		draggedElement: HTMLElement,
+		event: DraggingEvent,
+		droppableConfig: DroppableConfig<T>
+	) => {
+		const { config, droppable } = droppableConfig;
+		const [siblings] = getSiblings(draggedElement, droppable);
+		const isOutside = draggableIsOutside(draggedElement, droppable);
+		const tranlation = getTranslationByDraggingEventOverAGrid(draggedElement, event, droppable);
+		console.log(tranlation);
 	};
 	const emitDroppingEvent = (
 		draggedElement: HTMLElement,

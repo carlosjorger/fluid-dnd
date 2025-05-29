@@ -10,5 +10,5 @@
 <SimpleNumberList />
 <GroupOfNumberLists />
 <ListGroup />
-<ExampleOfPokemonList render={false} />
+<ExampleOfPokemonList />
 <Tasks />

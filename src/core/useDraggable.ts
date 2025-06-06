@@ -28,7 +28,13 @@ import {
 	removeClass,
 	toggleClass
 } from './utils/dom/classList';
-import { DRAGGABLE_CLASS, DRAGGING_CLASS, DROPPABLE_CLASS, HANDLER_CLASS } from './utils/classes';
+import {
+	DRAGGABLE_CLASS,
+	DRAGGING_CLASS,
+	DROPPABLE_CLASS,
+	HANDLER_CLASS,
+	DRAGGING_SORTABLE_CLASS
+} from './utils/classes';
 import HandlerPublisher from './HandlerPublisher';
 import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
 import useInsertEvents from './events/insert';
@@ -60,6 +66,7 @@ export default function useDraggable<T>(
 		delayBeforeTouchMoveEvent,
 		coordinateTransform
 	} = config;
+	let fixedDraggableElement: HTMLElement | undefined;
 	const droppableGroupClass = getClassesList(droppableGroup)
 		.map((classGroup) => `droppable-group-${classGroup}`)
 		.join(' ');
@@ -170,8 +177,8 @@ export default function useDraggable<T>(
 			return;
 		}
 		const { droppable, config } = droppableConfigurator.current;
-		setTransform(draggableElement, droppable, pagePosition, config.direction);
-		emitDraggingEvent(draggableElement, DRAG_EVENT, droppableConfigurator.current);
+		setTransform(fixedDraggableElement, droppable, pagePosition, config.direction);
+		// emitDraggingEvent(draggableElement, DRAG_EVENT, droppableConfigurator.current);
 	};
 	const removeTranslates = (droppable: Element) => {
 		const drgagables = droppable.querySelectorAll(`.${DRAGGABLE_CLASS}`);
@@ -353,17 +360,23 @@ export default function useDraggable<T>(
 			}
 		}
 	};
+	const createFixedDraggableElement = () => {
+		const clonedDraggable = draggableElement.cloneNode(true) as HTMLElement;
+		clonedDraggable.style.width = '100%';
+		clonedDraggable.style.height = '100%';
+		const wrapper = document.createElement(parent.tagName);
+		wrapper.appendChild(clonedDraggable);
+		document.body.appendChild(wrapper);
+		setDraggingStyles(wrapper);
+		return wrapper;
+	};
 	const startDragging = (event: DragMouseTouchEvent) => {
-		addTempChild(
-			draggableElement,
-			parent,
-			draggingState == DraggingState.START_DRAGGING,
-			droppableConfigurator.current
-		);
+		fixedDraggableElement = createFixedDraggableElement();
 		updateDraggingStateBeforeDragging();
-		emitDraggingEvent(draggableElement, START_DRAG_EVENT, droppableConfigurator.current);
-		setDraggingStyles(draggableElement);
-		updateTransformState(event, draggableElement);
+		addClass(draggableElement, DRAGGING_SORTABLE_CLASS);
+		// emitDraggingEvent(draggableElement, START_DRAG_EVENT, droppableConfigurator.current);
+		// setDraggingStyles(draggableElement);
+		updateTransformState(event, draggableElement, fixedDraggableElement);
 	};
 	const updateDraggingStateBeforeDragging = () => {
 		draggingState = DraggingState.DRAGING;
@@ -401,7 +414,7 @@ export default function useDraggable<T>(
 		moveTranslate(element, 0, 0);
 	};
 	const setDraggingStyles = (element: HTMLElement) => {
-		const { height, width } = element.getBoundingClientRect();
+		const { height, width } = draggableElement.getBoundingClientRect();
 		setCustomFixedSize(element, {
 			fixedHeight: `${height}px`,
 			fixedWidth: `${width}px`

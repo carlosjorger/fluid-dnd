@@ -10,7 +10,7 @@ const scrollByDirection = (element: HTMLElement, direction: Direction, scrollAmo
 		element.scrollBy(scrollAmount, 0);
 	}
 };
-export const useScroll = (draggedElement: HTMLElement) => {
+export const useScroll = (draggedElement: HTMLElement | undefined) => {
 	let lastScrollAmount = 0.5;
 	const minScrollAmountDiff = 0.03;
 	const updateScrollByPosition = (
@@ -22,6 +22,9 @@ export const useScroll = (draggedElement: HTMLElement) => {
 		},
 		translate: Coordinate
 	) => {
+		if (!draggedElement) {
+			return;
+		}
 		const { before, distance, axis, getRect } = getPropByDirection(direction);
 		const distanceValue = getRect(draggedElement)[distance];
 

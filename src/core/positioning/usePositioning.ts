@@ -17,15 +17,15 @@ export const usePositioning = (
 	let position = { top: 0, left: 0 };
 	let translate = { x: 0, y: 0 };
 	const [updateScrollByPosition] = useScroll(draggedElement);
-	const updateTranform = (newTranslate: Coordinate) => {
-		draggedElement.style.transform = `translate( ${newTranslate.x}px, ${newTranslate.y}px)`;
+	const updateTranform = (newTranslate: Coordinate, element: HTMLElement) => {
+		element.style.transform = `translate( ${newTranslate.x}px, ${newTranslate.y}px)`;
 	};
-	const updatePosition = (newPosition: ElementPosition) => {
-		draggedElement.style.top = `${newPosition.top}px`;
-		draggedElement.style.left = `${newPosition.left}px`;
+	const updatePosition = (newPosition: ElementPosition, element: HTMLElement) => {
+		element.style.top = `${newPosition.top}px`;
+		element.style.left = `${newPosition.left}px`;
 	};
 	const setTransform = (
-		element: HTMLElement,
+		element: HTMLElement | undefined,
 		parent: HTMLElement,
 		pagePosition: {
 			pageX: number;
@@ -33,6 +33,9 @@ export const usePositioning = (
 		},
 		direction?: Direction
 	) => {
+		if (!element) {
+			return;
+		}
 		const getTranslateWihtDirection = (translateDirection: Direction) => {
 			const {
 				beforeMargin,
@@ -50,8 +53,9 @@ export const usePositioning = (
 			const scrollValue = window[scroll];
 			const innerDistance = window[inner];
 			const distanceValue = getRect(element)[distance];
-			const border = getValueFromProperty(element, borderBeforeWidth);
-			const margin = getValueFromProperty(element, beforeMargin);
+			const [draggedElement] = element.children;
+			const border = getValueFromProperty(draggedElement, borderBeforeWidth);
+			const margin = getValueFromProperty(draggedElement, beforeMargin);
 			const elementPosittion = pageValue - currentOffset[offset];
 
 			const beforefixecParentValue = getNearestFixedParentPosition(element, translateDirection);
@@ -81,25 +85,29 @@ export const usePositioning = (
 			const { axis } = getPropByDirection(direction);
 			translate[axis] = getTranslateWihtDirection(direction);
 
-			updateTranform(mapCoordinate());
+			updateTranform(mapCoordinate(element), element);
 		};
 		updateTranlateByDirection(HORIZONTAL);
 		updateTranlateByDirection(VERTICAL);
 	};
-	const mapCoordinate = () => {
+	const mapCoordinate = (element: HTMLElement) => {
 		let coordinate = translate;
 		for (const transform of coordinateTransforms) {
-			coordinate = transform(coordinate, draggedElement);
+			coordinate = transform(coordinate, element);
 		}
 		return coordinate;
 	};
-	const updateTransformState = (event: DragMouseTouchEvent, element: HTMLElement) => {
-		const [top, left, offsetX, offsetY] = getTransformState(event, element, draggedElement);
+	const updateTransformState = (
+		event: DragMouseTouchEvent,
+		element: HTMLElement,
+		fixedElement: HTMLElement
+	) => {
+		const [top, left, offsetX, offsetY] = getTransformState(event, element);
 		position = {
 			top,
 			left
 		};
-		updatePosition(position);
+		updatePosition(position, fixedElement);
 		currentOffset = { offsetX, offsetY };
 	};
 	return [setTransform, updateTransformState] as const;
@@ -158,10 +166,9 @@ const getPositionByDistance = (
 };
 export const getTransformState = (
 	event: TransformEvent,
-	element: HTMLElement,
-	draggable: Element
+	element: HTMLElement
 ): [number, number, number, number] => {
-	const [offsetX, offsetY] = getOffset(event, draggable);
+	const [offsetX, offsetY] = getOffset(event, element);
 	return [
 		getPositionByDistance(VERTICAL, event, element, {
 			offsetX,

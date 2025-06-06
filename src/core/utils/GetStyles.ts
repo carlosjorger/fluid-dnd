@@ -173,3 +173,17 @@ export const getNearestFixedParentPosition = (element: Element, direction: Direc
 		? getRect(fixedParent)[before] + getValueFromProperty(fixedParent, borderBeforeWidth)
 		: 0;
 };
+export const getDimensionsWithMargin = (element: HTMLElement) => {
+	const rect = element.getBoundingClientRect();
+	const styles = window.getComputedStyle(element);
+
+	const marginTop = parseFloat(styles.marginTop);
+	const marginRight = parseFloat(styles.marginRight);
+	const marginBottom = parseFloat(styles.marginBottom);
+	const marginLeft = parseFloat(styles.marginLeft);
+
+	return {
+		width: rect.width + marginLeft + marginRight,
+		height: rect.height + marginTop + marginBottom
+	};
+};

@@ -173,12 +173,13 @@ export default function useDraggable<T>(
 		if (pagePosition.pageX == 0 && pagePosition.pageY == 0) {
 			return;
 		}
-		if (!droppableConfigurator.current) {
+		if (!droppableConfigurator.current || !fixedDraggableElement) {
 			return;
 		}
+		// console.log(fixedDraggableElement);
 		const { droppable, config } = droppableConfigurator.current;
 		setTransform(fixedDraggableElement, droppable, pagePosition, config.direction);
-		// emitDraggingEvent(draggableElement, DRAG_EVENT, droppableConfigurator.current);
+		emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, droppableConfigurator.current);
 	};
 	const removeTranslates = (droppable: Element) => {
 		const drgagables = droppable.querySelectorAll(`.${DRAGGABLE_CLASS}`);
@@ -193,9 +194,10 @@ export default function useDraggable<T>(
 		if (
 			oldDroppableConfig &&
 			draggingState == DraggingState.DRAGING &&
-			!newdDroppableConfig?.droppable.isSameNode(oldDroppableConfig.droppable)
+			!newdDroppableConfig?.droppable.isSameNode(oldDroppableConfig.droppable) &&
+			fixedDraggableElement
 		) {
-			emitDraggingEvent(draggableElement, DRAG_EVENT, oldDroppableConfig);
+			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, oldDroppableConfig);
 			removeTranslates(oldDroppableConfig.droppable);
 		}
 	};
@@ -374,7 +376,7 @@ export default function useDraggable<T>(
 		fixedDraggableElement = createFixedDraggableElement();
 		updateDraggingStateBeforeDragging();
 		addClass(draggableElement, DRAGGING_SORTABLE_CLASS);
-		// emitDraggingEvent(draggableElement, START_DRAG_EVENT, droppableConfigurator.current);
+		emitDraggingEvent(fixedDraggableElement, START_DRAG_EVENT, droppableConfigurator.current);
 		// setDraggingStyles(draggableElement);
 		updateTransformState(event, draggableElement, fixedDraggableElement);
 	};

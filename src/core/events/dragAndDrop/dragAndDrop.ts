@@ -2,7 +2,6 @@ import {
 	draggableIsOutside,
 	getPropByDirection,
 	getSiblings,
-	getTransform,
 	getWindowScroll
 } from '../../utils/GetStyles';
 import { Translate, WindowScroll } from '../../../../index';
@@ -14,7 +13,7 @@ import { DRAG_EVENT, START_DRAG_EVENT, START_DROP_EVENT, TEMP_CHILD_CLASS } from
 import { DroppableConfig } from '../../config/configHandler';
 import { IsHTMLElement } from '../../utils/typesCheckers';
 import { removeTempChild } from '../../tempChildren';
-import { DRAGGABLE_CLASS, DROPPING_CLASS } from '../../utils/classes';
+import { DRAGGABLE_CLASS, DRAGGING_SORTABLE_CLASS, DROPPING_CLASS } from '../../utils/classes';
 import { addClass, containClass, getClassesSelector, removeClass } from '../../utils/dom/classList';
 import HandlerPublisher from '../../HandlerPublisher';
 import { useChangeDraggableStyles } from '../changeDraggableStyles';
@@ -37,6 +36,13 @@ export default function useDragAndDropEvents<T>(
 	const [removeElementDraggingStyles, toggleDraggingClass, dragEventOverElement] =
 		useChangeDraggableStyles(currentConfig, handlerPublisher, endDraggingAction);
 
+	const getPositionsArray = (droppable: HTMLElement, direction: Direction) => {
+		const siblings = [...droppable.children].filter((child) =>
+			child.classList.contains(DRAGGABLE_CLASS)
+		);
+		const { before, getRect } = getPropByDirection(direction);
+		return siblings.map((sibling) => getRect(sibling)[before]);
+	};
 	const emitDraggingEvent = (
 		draggedElement: HTMLElement,
 		event: DraggingEvent,
@@ -45,9 +51,7 @@ export default function useDragAndDropEvents<T>(
 		if (!droppableConfig) {
 			return;
 		}
-		const { droppable, config } = droppableConfig;
-		const tranlation = getTranslationByDragging(draggedElement, event, config.direction, droppable);
-		emitDraggingEventToSiblings(draggedElement, event, tranlation, droppableConfig);
+		emitDraggingEventToSiblings(draggedElement, event, droppableConfig);
 	};
 	const emitDroppingEvent = (
 		draggedElement: HTMLElement,
@@ -70,86 +74,171 @@ export default function useDragAndDropEvents<T>(
 			positionOnSourceDroppable
 		);
 	};
+	let positions = [] as number[];
 	// #region Drag events
+	let draggingFoward = true;
 	const emitDraggingEventToSiblings = (
 		draggedElement: HTMLElement,
 		event: DraggingEvent,
-		translation: Translate,
 		droppableConfig: DroppableConfig<T>
 	) => {
 		const { config, droppable } = droppableConfig;
 		const [siblings] = getSiblings(draggedElement, droppable);
-		const isOutside = draggableIsOutside(draggedElement, droppable);
-		if (siblings.length == 0) {
-			updateActualIndexBaseOnTranslation(translation, 1, config.direction, siblings);
+
+		const draggableSortable = siblings.find((sibling) =>
+			sibling.classList.contains(DRAGGING_SORTABLE_CLASS)
+		);
+		if (!draggableSortable) {
+			return;
 		}
-		for (const [index, sibling] of siblings.entries()) {
+		if (event == 'startDrag') {
+			positions = getPositionsArray(droppable, direction);
+		}
+		for (const [siblingIndex, sibling] of siblings.toReversed().entries()) {
 			if (!containClass(sibling, DRAGGABLE_CLASS)) {
 				continue;
 			}
-			const siblingTransition = canChangeDraggable(
-				config.direction,
-				draggedElement,
-				sibling,
-				translation
-			);
-			if (!isOutside && siblingTransition) {
-				translation = siblingTransition;
-			} else if (!isOutside) {
+			const animations = sibling.getAnimations();
+			const transitions = animations.filter((anim) => anim instanceof CSSTransition);
+			if (transitions.length > 0) {
 				continue;
 			}
-			const siblingRealIndex = siblings.length - index;
-			updateActualIndexBaseOnTranslation(translation, siblingRealIndex, config.direction, siblings);
-			if (event === START_DRAG_EVENT) {
-				startDragEventOverElement(sibling, translation);
-			} else if (event === DRAG_EVENT) {
-				dragEventOverElement(sibling, translation);
+			const [canChange, foward] = canChangeDraggable(config.direction, draggedElement, sibling);
+			const currentPosition = getIndex(siblingIndex, sibling);
+			if (
+				canChange &&
+				!sibling.isSameNode(draggableSortable) &&
+				(actualIndex != currentPosition || draggingFoward != foward)
+			) {
+				draggingFoward = foward;
+				actualIndex = currentPosition;
+				translateDraggableSortable(draggableSortable, actualIndex);
+				transleteSibling(sibling, siblingIndex, !draggingFoward);
+			} else if (
+				(siblingIndex < actualIndex && siblingIndex < index) ||
+				(siblingIndex > actualIndex && siblingIndex > index)
+			) {
+				dragEventOverElement(sibling, {
+					width: 0,
+					height: 0
+				});
+			} else if (siblingIndex < actualIndex && index < siblingIndex) {
+				transleteSibling(sibling, siblingIndex, true);
+			} else if (siblingIndex > actualIndex && index > siblingIndex) {
+				transleteSibling(sibling, siblingIndex, false);
 			}
 		}
 	};
+	const getIndex = (targetIndex: number, sibling: Element) => {
+		if (!IsHTMLElement(sibling)) {
+			return targetIndex;
+		}
+		const tranlateProp = direction == 'horizontal' ? '--translate-x' : '--translate-y';
+		const currentTranslate = parseFloat(sibling.style.getPropertyValue(tranlateProp) || '0');
+		if (currentTranslate > 0) {
+			return targetIndex + 1;
+		} else if (currentTranslate < 0) {
+			return targetIndex - 1;
+		}
+		return targetIndex;
+	};
+	const getDelta = (targetIndex: number, draggingDirection: number) => {
+		const targetPosition = positions[targetIndex];
+		const existingPosition = Boolean(positions[targetIndex - draggingDirection]);
+		return existingPosition ? positions[targetIndex - draggingDirection] - targetPosition : 0;
+	};
+
+	const translateDraggableSortable = (targetElement: Element, targetIndex: number) => {
+		const draggingDirection = actualIndex - index;
+
+		const deltaTargetPosition = getDelta(targetIndex, draggingDirection);
+		if (direction == 'horizontal') {
+			settranslate(targetElement, -deltaTargetPosition, 0);
+		} else {
+			settranslate(targetElement, 0, -deltaTargetPosition);
+		}
+	};
+	const getDeltaTargetPosition = (
+		targetIndex: number,
+		targetElement: Element,
+		draggingDirection: number
+	) => {
+		const deltaTargetPosition = getDelta(targetIndex, draggingDirection);
+		if (IsHTMLElement(targetElement) && deltaTargetPosition != 0) {
+			const tranlateProp = direction == 'horizontal' ? '--translate-x' : '--translate-y';
+			const currentTranslate = parseFloat(
+				targetElement.style.getPropertyValue(tranlateProp) || '0'
+			);
+			if (currentTranslate != 0 && Math.sign(currentTranslate) != Math.sign(deltaTargetPosition)) {
+				return 0;
+			}
+		}
+		return deltaTargetPosition;
+	};
+	const transleteSibling = (targetElement: Element, targetIndex: number, foward: boolean) => {
+		const draggingDirection = foward ? 1 : -1;
+		const deltaTargetPosition = getDeltaTargetPosition(
+			targetIndex,
+			targetElement,
+			draggingDirection
+		);
+
+		if (direction == 'horizontal') {
+			settranslate(targetElement, deltaTargetPosition, 0);
+		} else {
+			settranslate(targetElement, 0, deltaTargetPosition);
+		}
+	};
+
+	function settranslate(element: Element, x: number, y: number) {
+		if (!IsHTMLElement(element)) {
+			return;
+		}
+
+		element.style.setProperty('--translate-x', x + 'px');
+		element.style.setProperty('--translate-y', y + 'px');
+
+		element.style.transform = `
+		  translate(var(--translate-x, 0), var(--translate-y, 0))
+		  /* Other transforms can be added here */
+		`;
+	}
 	const canChangeDraggable = (
 		direction: Direction,
 		sourceElement: Element,
-		targetElement: Element,
-		translation: Translate
+		targetElement: Element
 	) => {
-		const { before, distance, axis, getRect } = getPropByDirection(direction);
+		const { before, distance, getRect } = getPropByDirection(direction);
 		const currentBoundingClientRect = getRect(sourceElement);
 		const targetBoundingClientRect = getRect(targetElement);
 
 		const currentPosition = currentBoundingClientRect[before];
+		const currentSize = currentBoundingClientRect[distance];
+		const currentEndPosition = currentPosition + currentSize;
 
 		const targetPosition = targetBoundingClientRect[before];
 		const targetSize = targetBoundingClientRect[distance];
-		const targetMiddle = targetPosition + targetSize / 2;
+		const targetMiddle = targetSize / 2;
+		const targetEndPosition = targetPosition + targetSize;
 
-		const targetTransform = getTransform(targetElement)[axis];
-		const targetMiddleWithoutTransform = targetMiddle - targetTransform;
+		const instersectionAtTheBeggining = Math.abs(targetEndPosition - currentPosition);
+		const instersectionAtTheEnd = Math.abs(targetPosition - currentEndPosition);
 
-		if (currentPosition > targetMiddleWithoutTransform) {
-			return { height: 0, width: 0 };
-		}
-		return translation;
-	};
-	const updateActualIndexBaseOnTranslation = (
-		translation: Translate,
-		siblingIndex: number,
-		direction: Direction,
-		siblings: Element[]
-	) => {
-		const itemsCount = siblings.filter((sibling) => containClass(sibling, DRAGGABLE_CLASS)).length;
+		const isIntersectedAtTheBeggining =
+			instersectionAtTheBeggining > targetMiddle &&
+			instersectionAtTheBeggining < targetSize &&
+			currentPosition > targetPosition &&
+			currentPosition < targetEndPosition;
 
-		const { distance } = getPropByDirection(direction);
-		if (translation[distance] == 0) {
-			actualIndex = Math.max(actualIndex, siblingIndex);
-		} else {
-			actualIndex = Math.min(actualIndex, siblingIndex - 1);
-		}
-		actualIndex = Math.min(actualIndex, itemsCount);
-	};
-	const startDragEventOverElement = (element: Element, translation: Translate) => {
-		const { width, height } = translation;
-		moveTranslate(element, height, width);
+		const isIntersectedAtTheEnd =
+			instersectionAtTheEnd > targetMiddle &&
+			instersectionAtTheEnd < targetSize &&
+			currentEndPosition > targetPosition &&
+			currentEndPosition < targetEndPosition;
+		return [
+			isIntersectedAtTheBeggining || isIntersectedAtTheEnd,
+			isIntersectedAtTheBeggining
+		] as const;
 	};
 	// #region Drop events
 	const emitDroppingEventToSiblings = (

@@ -1,15 +1,22 @@
 import {
 	draggableIsOutside,
 	getPropByDirection,
+	getScrollElement,
 	getSiblings,
 	getWindowScroll
 } from '../../utils/GetStyles';
 import { Translate, WindowScroll } from '../../../../index';
-import { moveTranslate } from '../../utils/SetStyles';
+import { moveTranslate, setTranistion } from '../../utils/SetStyles';
 import { CoreConfig, Direction } from '../..';
 import getTranslationByDragging from './getTranslationByDraggingAndEvent';
 import getTranslateBeforeDropping from './getTranslateBeforeDropping';
-import { DRAG_EVENT, START_DRAG_EVENT, START_DROP_EVENT, TEMP_CHILD_CLASS } from '../../utils';
+import {
+	DRAG_EVENT,
+	draggableTargetTimingFunction,
+	START_DRAG_EVENT,
+	START_DROP_EVENT,
+	TEMP_CHILD_CLASS
+} from '../../utils';
 import { DroppableConfig } from '../../config/configHandler';
 import { IsHTMLElement } from '../../utils/typesCheckers';
 import { removeTempChild } from '../../tempChildren';
@@ -31,6 +38,10 @@ export default function useDragAndDropEvents<T>(
 	endDraggingAction: () => void
 ) {
 	let actualIndex = index;
+	let initialWindowScroll = {
+		scrollX: 0,
+		scrollY: 0
+	};
 	const { direction, onRemoveAtEvent, animationDuration, draggingClass } = currentConfig;
 
 	const [removeElementDraggingStyles, toggleDraggingClass, dragEventOverElement] =
@@ -77,6 +88,18 @@ export default function useDragAndDropEvents<T>(
 	let positions = [] as number[];
 	// #region Drag events
 	let draggingFoward = true;
+	const getPosition = (
+		droppableConfig: DroppableConfig<T>,
+		index: number,
+		direction: Direction
+	) => {
+		const { scroll: scrollProp, scrollElement } = getPropByDirection(direction);
+		const actualWindowScroll = getWindowScroll();
+		const windowScrollChange = initialWindowScroll[scrollProp] - actualWindowScroll[scrollProp];
+		const { scroll, droppable } = droppableConfig;
+		const scrollChange = scroll[scrollElement] - droppable[scrollElement];
+		return positions[index] + windowScrollChange + scrollChange;
+	};
 	const emitDraggingEventToSiblings = (
 		draggedElement: HTMLElement,
 		event: DraggingEvent,
@@ -93,18 +116,20 @@ export default function useDragAndDropEvents<T>(
 		}
 		if (event == 'startDrag') {
 			positions = getPositionsArray(droppable, direction);
+			initialWindowScroll = getWindowScroll();
 		}
 		for (const [siblingIndex, sibling] of siblings.toReversed().entries()) {
 			if (!containClass(sibling, DRAGGABLE_CLASS)) {
 				continue;
 			}
-			const animations = sibling.getAnimations();
-			const transitions = animations.filter((anim) => anim instanceof CSSTransition);
-			if (transitions.length > 0) {
-				continue;
-			}
-			const [canChange, foward] = canChangeDraggable(config.direction, draggedElement, sibling);
 			const currentPosition = getIndex(siblingIndex, sibling);
+			const [canChange, foward] = canChangeDraggable(
+				droppableConfig,
+				config.direction,
+				draggedElement,
+				sibling,
+				currentPosition
+			);
 			if (
 				canChange &&
 				!sibling.isSameNode(draggableSortable) &&
@@ -150,8 +175,8 @@ export default function useDragAndDropEvents<T>(
 
 	const translateDraggableSortable = (targetElement: Element, targetIndex: number) => {
 		const draggingDirection = actualIndex - index;
-
 		const deltaTargetPosition = getDelta(targetIndex, draggingDirection);
+
 		if (direction == 'horizontal') {
 			settranslate(targetElement, -deltaTargetPosition, 0);
 		} else {
@@ -202,11 +227,14 @@ export default function useDragAndDropEvents<T>(
 		  translate(var(--translate-x, 0), var(--translate-y, 0))
 		  /* Other transforms can be added here */
 		`;
+		setTranistion(element, animationDuration, draggableTargetTimingFunction);
 	}
 	const canChangeDraggable = (
+		droppableConfig: DroppableConfig<T>,
 		direction: Direction,
 		sourceElement: Element,
-		targetElement: Element
+		targetElement: Element,
+		targetIndex: number
 	) => {
 		const { before, distance, getRect } = getPropByDirection(direction);
 		const currentBoundingClientRect = getRect(sourceElement);
@@ -215,8 +243,7 @@ export default function useDragAndDropEvents<T>(
 		const currentPosition = currentBoundingClientRect[before];
 		const currentSize = currentBoundingClientRect[distance];
 		const currentEndPosition = currentPosition + currentSize;
-
-		const targetPosition = targetBoundingClientRect[before];
+		const targetPosition = getPosition(droppableConfig, targetIndex, direction);
 		const targetSize = targetBoundingClientRect[distance];
 		const targetMiddle = targetSize / 2;
 		const targetEndPosition = targetPosition + targetSize;

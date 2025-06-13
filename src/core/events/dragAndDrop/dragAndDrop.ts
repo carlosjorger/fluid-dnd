@@ -51,8 +51,13 @@ export default function useDragAndDropEvents<T>(
 		const siblings = [...droppable.children].filter((child) =>
 			child.classList.contains(DRAGGABLE_CLASS)
 		);
-		const { before, getRect } = getPropByDirection(direction);
-		return siblings.map((sibling) => getRect(sibling)[before]);
+		const { before, after, getRect } = getPropByDirection(direction);
+		const positions = siblings.map((sibling) => getRect(sibling)[before]);
+		const lastSibling = siblings.at(-1);
+		if (lastSibling) {
+			positions.push(getRect(lastSibling)[after]);
+		}
+		return positions;
 	};
 	const emitDraggingEvent = (
 		draggedElement: HTMLElement,
@@ -137,16 +142,13 @@ export default function useDragAndDropEvents<T>(
 			) {
 				draggingFoward = foward;
 				actualIndex = currentPosition;
-				translateDraggableSortable(draggableSortable, sibling, actualIndex);
+				translateDraggableSortable(draggableSortable, actualIndex);
 				transleteSibling(sibling, siblingIndex, draggableSortable, !draggingFoward);
 			} else if (
 				(siblingIndex < actualIndex && siblingIndex < index) ||
 				(siblingIndex > actualIndex && siblingIndex > index)
 			) {
-				dragEventOverElement(sibling, {
-					width: 0,
-					height: 0
-				});
+				settranslate(sibling, 0, 0);
 			} else if (siblingIndex < actualIndex && index < siblingIndex) {
 				transleteSibling(sibling, siblingIndex, draggableSortable, true);
 			} else if (siblingIndex > actualIndex && index > siblingIndex) {
@@ -172,36 +174,21 @@ export default function useDragAndDropEvents<T>(
 		const existingPosition = Boolean(positions[targetIndex - draggingDirection]);
 		return existingPosition ? positions[targetIndex - draggingDirection] - targetPosition : 0;
 	};
-	const getDeltaDraggableSortable = (
-		targetElement: Element,
-		targetIndex: number,
-		draggingDirection: number
-	) => {
-		let targetPosition = positions[targetIndex];
-		const { distance, getRect } = getPropByDirection(direction);
-		const targetBoundingClientRect = getRect(targetElement);
-		const targetSize = targetBoundingClientRect[distance];
+	const getDeltaDraggableSortable = (targetIndex: number, draggingDirection: number) => {
+		let nextIndex = targetIndex;
 		if (draggingDirection > 0) {
-			targetPosition += targetSize;
+			nextIndex += 1;
 			draggingDirection -= 1;
-		} else {
-			targetPosition -= targetSize;
-			draggingDirection += 1;
 		}
+		let targetPosition = positions[nextIndex] ?? 0;
 		const existingPosition = Boolean(positions[targetIndex - draggingDirection]);
+
 		return existingPosition ? positions[targetIndex - draggingDirection] - targetPosition : 0;
 	};
-	const translateDraggableSortable = (
-		draggableSortable: Element,
-		targetElement: Element,
-		targetIndex: number
-	) => {
+	const translateDraggableSortable = (draggableSortable: Element, targetIndex: number) => {
 		const draggingDirection = actualIndex - index;
-		const deltaTargetPosition = getDeltaDraggableSortable(
-			targetElement,
-			targetIndex,
-			draggingDirection
-		);
+		const deltaTargetPosition = getDeltaDraggableSortable(targetIndex, draggingDirection);
+
 		if (direction == 'horizontal') {
 			settranslate(draggableSortable, -deltaTargetPosition, 0);
 		} else {
@@ -219,7 +206,8 @@ export default function useDragAndDropEvents<T>(
 			const currentTranslate = parseFloat(
 				targetElement.style.getPropertyValue(tranlateProp) || '0'
 			);
-			if (currentTranslate != 0 && Math.sign(currentTranslate) != Math.sign(deltaTargetPosition)) {
+			const diff = Math.sign(currentTranslate) * Math.sign(deltaTargetPosition);
+			if (currentTranslate != 0 && diff == 1) {
 				return 0;
 			}
 		}
@@ -232,16 +220,20 @@ export default function useDragAndDropEvents<T>(
 		foward: boolean
 	) => {
 		const draggingDirection = foward ? 1 : -1;
-		const deltaTargetPosition = getDeltaTargetPosition(
-			targetIndex,
+		// const deltaTargetPosition = getDeltaTargetPosition(
+		// 	targetIndex,
+		// 	targetElement,
+		// 	draggingDirection
+		// );
+		const deltaDraggableSortable = -getDeltaTargetPosition(
+			index,
 			targetElement,
-			draggingDirection
+			index < targetIndex ? -1 : 1
 		);
-
 		if (direction == 'horizontal') {
-			settranslate(targetElement, deltaTargetPosition, 0);
+			settranslate(targetElement, deltaDraggableSortable, 0);
 		} else {
-			settranslate(targetElement, 0, deltaTargetPosition);
+			settranslate(targetElement, 0, deltaDraggableSortable);
 		}
 	};
 
@@ -252,11 +244,14 @@ export default function useDragAndDropEvents<T>(
 
 		element.style.setProperty('--translate-x', x + 'px');
 		element.style.setProperty('--translate-y', y + 'px');
-
-		element.style.transform = `
-		  translate(var(--translate-x, 0), var(--translate-y, 0))
-		  /* Other transforms can be added here */
-		`;
+		if (x == 0 && y == 0) {
+			element.style.transform = '';
+		} else {
+			element.style.transform = `
+			  translate(var(--translate-x, 0), var(--translate-y, 0))
+			  /* Other transforms can be added here */
+			`;
+		}
 		setTranistion(element, animationDuration, draggableTargetTimingFunction);
 	}
 	const canChangeDraggable = (

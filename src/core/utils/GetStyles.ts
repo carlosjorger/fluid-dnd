@@ -111,7 +111,7 @@ export const getPropByDirection = (direction: Direction) => {
 		afterMargin: ifHorizontal ? 'marginRight' : 'marginBottom',
 		borderBeforeWidth: ifHorizontal ? 'borderLeftWidth' : 'borderTopWidth',
 		before: ifHorizontal ? 'left' : 'top',
-		after: ifHorizontal ? 'right' : 'down',
+		after: ifHorizontal ? 'right' : 'bottom',
 		gap: ifHorizontal ? 'columnGap' : 'rowGap',
 		distance: ifHorizontal ? 'width' : 'height',
 		axis: ifHorizontal ? 'x' : 'y',

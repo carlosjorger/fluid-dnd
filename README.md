@@ -1,7 +1,6 @@
  <h1 align="center">
-    <img src="public/fluid-dnd.svg"
-    alt="Icon" width="150" height="140" />
-  <br>Fluid DnD<br>
+    <img src="public/fluid-dnd-logo.png"
+    alt="Icon" width="200" height="200" />
 </h1>
 
 <div align="center">
@@ -50,21 +49,22 @@ library for lists; with support for **Vue**, **React** and **Svelte**](https://f
    pnpm i fluid-dnd
    ```
 
-3. **Documentation**
+2. **Documentation**
 
 - 📚 Check out all the [docs](https://fluid-dnd.netlify.app/).
 - 🛠️ Edit this example [here](https://codesandbox.io/s/nifty-hooks-5plkpl).
 - 📘 See other examples [here](https://fluid-dnd.netlify.app/vue/example/vertical-list/single-vertical-list/).
 
 ## 📚 Libraries Support
+
 - **Vue** >=3.0.0
 - **React** >= 18.0.0
 - **Svelte** >= 5.0.0
 
 ## 🤝 Contributing
 
-If you're interested in contributing to [fluid-dnd](https://github.com/carlosjorger/fluid-dnd), please read our [CONTRIBUTING  GUIDELINES](./CONTRIBUTING.md) before submitting a pull request.
+If you're interested in contributing to [fluid-dnd](https://github.com/carlosjorger/fluid-dnd), please read our [CONTRIBUTING GUIDELINES](./CONTRIBUTING.md) before submitting a pull request.
 
 ## 🔑 License
 
-- [MIT](https://github.com/carlosjorger/fluid-dnd/blob/main/LICENSE).   
+- [MIT](https://github.com/carlosjorger/fluid-dnd/blob/main/LICENSE).

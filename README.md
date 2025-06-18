@@ -12,12 +12,18 @@
 ![GitHub stars](https://img.shields.io/github/stars/carlosjorger/fluid-dnd)
 [![test_coverage](https://api.codeclimate.com/v1/badges/6b27047dcf150ccddfac/test_coverage)](https://codeclimate.com/github/carlosjorger/fluid-dnd/test_coverage)
 
-</div>
+_Drag and drop elements of your list smoothly and effortlessly_
 
-Fluid DnD is a [**fluid**, **agnostic** and **versatile** drag and drop
-library for lists; with support for **Vue**, **React** and **Svelte**](https://fluid-dnd.netlify.app/). It's a **lightweight** tool ~8 Kb (gzip) with no depenencies.
+[📖 **Documentation**](https://fluid-dnd.netlify.app/) | [🤹 **Examples**](https://fluid-dnd.netlify.app/vue/example/vertical-list/single-vertical-list/)
 
 <img src="https://github.com/user-attachments/assets/1b7ac5e3-48e9-43f9-a577-e78c6b9eacae" width="100%"/>
+
+</div>
+
+## 🪪 About
+
+Fluid DnD is a **fluid**, **agnostic** and **versatile** drag and drop
+library for lists; with support for **Vue**, **React** and **Svelte**. It's a **lightweight** tool ~8 Kb (gzip) with no depenencies.
 
 ## 🧰 Features
 
@@ -48,12 +54,6 @@ library for lists; with support for **Vue**, **React** and **Svelte**](https://f
    # with pnpm:
    pnpm i fluid-dnd
    ```
-
-2. **Documentation**
-
-- 📚 Check out all the [docs](https://fluid-dnd.netlify.app/).
-- 🛠️ Edit this example [here](https://codesandbox.io/s/nifty-hooks-5plkpl).
-- 📘 See other examples [here](https://fluid-dnd.netlify.app/vue/example/vertical-list/single-vertical-list/).
 
 ## 📚 Libraries Support
 

@@ -12,7 +12,8 @@ const mouseEvents = ['mouseup', 'mousedown', 'mousemove'] as const;
 type MouseEventType = (typeof mouseEvents)[number];
 type DragEventCallback = (event: DragMouseTouchEvent) => void;
 type TouchEventCallback = (event: TouchEvent) => void;
-
+export const TRANSLATE_X = '--translate-x';
+export const TRANSLATE_Y = '--translate-y';
 export const setSizeStyles = (
 	element: HTMLElement | undefined | null,
 	height: number,
@@ -247,3 +248,16 @@ const setCustomProperty = (
 ) => {
 	return element && element.style.setProperty(fixedProp, newFixedSize);
 };
+export function setTranslate(element: Element, x: number, y: number) {
+	if (!IsHTMLElement(element)) {
+		return;
+	}
+
+	element.style.setProperty(TRANSLATE_X, x + 'px');
+	element.style.setProperty(TRANSLATE_Y, y + 'px');
+	if (x == 0 && y == 0) {
+		element.style.transform = '';
+	} else {
+		element.style.transform = `translate(var(${TRANSLATE_X}, 0), var(${TRANSLATE_Y}, 0))`;
+	}
+}

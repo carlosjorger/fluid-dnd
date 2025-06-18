@@ -8,6 +8,7 @@ import { CoordinateMap, Direction, HORIZONTAL, VERTICAL } from '..';
 import { useScroll } from './autoScroll';
 import { HANDLER_CLASS, DRAGGING_CLASS } from '../utils/classes';
 import { containClass } from '../utils/dom/classList';
+import { setTranslate } from '../utils/SetStyles';
 
 export const usePositioning = (
 	draggedElement: HTMLElement,
@@ -18,7 +19,7 @@ export const usePositioning = (
 	let translate = { x: 0, y: 0 };
 	const [updateScrollByPosition] = useScroll(draggedElement);
 	const updateTranform = (newTranslate: Coordinate, element: HTMLElement) => {
-		element.style.transform = `translate( ${newTranslate.x}px, ${newTranslate.y}px)`;
+		setTranslate(element,newTranslate.x, newTranslate.y)
 	};
 	const updatePosition = (newPosition: ElementPosition, element: HTMLElement) => {
 		element.style.top = `${newPosition.top}px`;

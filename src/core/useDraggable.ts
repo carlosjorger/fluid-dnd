@@ -176,7 +176,6 @@ export default function useDraggable<T>(
 		if (!droppableConfigurator.current || !fixedDraggableElement) {
 			return;
 		}
-		// console.log(fixedDraggableElement);
 		const { droppable, config } = droppableConfigurator.current;
 		setTransform(fixedDraggableElement, droppable, pagePosition, config.direction);
 		emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, droppableConfigurator.current);
@@ -400,11 +399,9 @@ export default function useDraggable<T>(
 			return;
 		}
 		draggingState = DraggingState.END_DRAGGING;
-		removeDraggingStyles(draggableElement);
-		if (draggableElement.classList.contains(DRAGGING_CLASS)) {
+		if (fixedDraggableElement?.classList.contains(DRAGGING_CLASS)) {
 			emitDroppingEvent(
-				draggableElement,
-				START_DROP_EVENT,
+				fixedDraggableElement,
 				isOutsideAllDroppables ? droppableConfigurator.initial : droppableConfigurator.current,
 				windowScroll,
 				index

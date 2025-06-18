@@ -4,25 +4,19 @@ import {
 	getSiblings,
 	getWindowScroll
 } from '../../utils/GetStyles';
-import {  WindowScroll } from '../../../../index';
+import { WindowScroll } from '../../../../index';
 import { setTranistion, setTranslate } from '../../utils/SetStyles';
 import { CoreConfig, Direction } from '../..';
-import {
-	DRAG_EVENT,
-	draggableTargetTimingFunction,
-	START_DRAG_EVENT,
-	START_DROP_EVENT,
-} from '../../utils';
+import { DRAG_EVENT, draggableTargetTimingFunction, START_DRAG_EVENT } from '../../utils';
 import { DroppableConfig } from '../../config/configHandler';
 import { IsHTMLElement } from '../../utils/typesCheckers';
-import { DRAGGABLE_CLASS, DRAGGING_SORTABLE_CLASS, DROPPING_CLASS } from '../../utils/classes';
-import {containClass} from '../../utils/dom/classList';
+import { DRAGGABLE_CLASS, DRAGGING_SORTABLE_CLASS } from '../../utils/classes';
+import { containClass } from '../../utils/dom/classList';
 import HandlerPublisher from '../../HandlerPublisher';
 import { useChangeDraggableStyles } from '../changeDraggableStyles';
 import { getGapPixels } from '../../utils/ParseStyles';
 
 type DraggingEvent = typeof DRAG_EVENT | typeof START_DRAG_EVENT;
-type DropEvent = 'drop' | typeof START_DROP_EVENT;
 const TRANSLATE_X = '--translate-x';
 const TRANSLATE_Y = '--translate-y';
 export default function useDragAndDropEvents<T>(
@@ -70,7 +64,6 @@ export default function useDragAndDropEvents<T>(
 		}
 		emitDraggingEventToSiblings(draggedElement, event, droppableConfig);
 	};
-	// TODO: take in account windows and droppable scroll
 	const emitDroppingEvent = (
 		draggedElement: HTMLElement,
 		droppableConfig: DroppableConfig<T> | undefined,
@@ -80,7 +73,7 @@ export default function useDragAndDropEvents<T>(
 		if (!droppableConfig) {
 			return;
 		}
-		emitDroppingEventToSiblings(draggedElement, droppableConfig);
+		emitDroppingEventToSiblings(draggedElement, droppableConfig, initialWindowScroll);
 	};
 	let positions = [] as number[];
 	// #region Drag events
@@ -90,18 +83,13 @@ export default function useDragAndDropEvents<T>(
 		index: number,
 		direction: Direction
 	) => {
-		const { scroll: scrollProp, scrollElement } = getPropByDirection(direction);
-		const actualWindowScroll = getWindowScroll();
-		const windowScrollChange = initialWindowScroll[scrollProp] - actualWindowScroll[scrollProp];
-		const { scroll, droppable } = droppableConfig;
-		const scrollChange = scroll[scrollElement] - droppable[scrollElement];
+		const { droppable } = droppableConfig;
 		const transalte = getTranslate(direction, element);
-		return positions[index] + windowScrollChange + scrollChange + transalte;
+		const scrollChange = getScrollChange(droppableConfig, droppable, initialWindowScroll);
+		return positions[index] + scrollChange + transalte;
 	};
 	const getDraggableSortable = (siblings: Element[]) => {
-		return siblings.find((sibling) =>
-			sibling.classList.contains(DRAGGING_SORTABLE_CLASS)
-		);
+		return siblings.find((sibling) => sibling.classList.contains(DRAGGING_SORTABLE_CLASS));
 	};
 	const emitDraggingEventToSiblings = (
 		draggedElement: HTMLElement,
@@ -215,7 +203,7 @@ export default function useDragAndDropEvents<T>(
 	};
 
 	function settranslate(element: Element, x: number, y: number) {
-		setTranslate(element,x,y)
+		setTranslate(element, x, y);
 		setTranistion(element, animationDuration, draggableTargetTimingFunction);
 	}
 	const canChangeDraggable = (
@@ -253,10 +241,24 @@ export default function useDragAndDropEvents<T>(
 			currentEndPosition < targetEndPosition;
 		return isIntersectedAtTheBeggining || isIntersectedAtTheEnd;
 	};
+	const getScrollChange = (
+		droppableConfig: DroppableConfig<T>,
+		droppable: HTMLElement,
+		initialWindowScroll: WindowScroll
+	) => {
+		const { scroll } = droppableConfig;
+		const { scrollElement, scroll: scrollProp } = getPropByDirection(direction);
+		const actualWindowScroll = getWindowScroll();
+		const scrollChange = scroll[scrollElement] - droppable[scrollElement];
+		const windowScrollChange = initialWindowScroll[scrollProp] - actualWindowScroll[scrollProp];
+
+		return scrollChange + windowScrollChange;
+	};
 	// #region Drop events
 	const emitDroppingEventToSiblings = (
 		draggedElement: HTMLElement,
 		droppableConfig: DroppableConfig<T>,
+		initialWindowScroll: WindowScroll
 	) => {
 		const { droppable, config } = droppableConfig;
 		const siblings = getParentDraggableChildren(droppable);
@@ -264,38 +266,47 @@ export default function useDragAndDropEvents<T>(
 		if (!draggableSortable || !IsHTMLElement(draggableSortable)) {
 			return;
 		}
-		const draggableSortableTranslateX = getTranslate('horizontal', draggableSortable)
-		const draggableSortableTranslateY = getTranslate('vertical', draggableSortable)
+		let draggableSortableTranslateX = getTranslate('horizontal', draggableSortable);
+		let draggableSortableTranslateY = getTranslate('vertical', draggableSortable);
+
+		const scrollChange = getScrollChange(droppableConfig, droppable, initialWindowScroll);
+
+		if (direction == 'horizontal') {
+			draggableSortableTranslateX += scrollChange;
+		} else {
+			draggableSortableTranslateY += scrollChange;
+		}
+
 		settranslate(draggedElement, draggableSortableTranslateX, draggableSortableTranslateY);
-		moveValue(config)
-		removeDraggingStyles(siblings)
-		removeDraggableSortableClass(draggableSortable)
+		moveValue(config);
+		removeDraggingStyles(siblings);
+		removeDraggableSortableClass(draggableSortable);
 		setTimeout(() => {
-			removeFixedDraggableElement(draggedElement)
+			removeFixedDraggableElement(draggedElement);
 		}, animationDuration);
 	};
-	const moveValue=(config: CoreConfig<T>)=>{
+	const moveValue = (config: CoreConfig<T>) => {
 		const { onInsertEvent, onDragEnd } = config;
 		const value = onRemoveAtEvent(index, true);
 		if (value != undefined) {
 			onInsertEvent(actualIndex, value, true);
 			onDragEnd({ value, index: actualIndex });
 		}
-	}
-	const removeDraggableSortableClass=(sibling:Element)=>{
-		sibling.classList.remove(DRAGGING_SORTABLE_CLASS)
-	}
-	const removeDraggingStyles=(siblings:Element[])=>{
+	};
+	const removeDraggableSortableClass = (sibling: Element) => {
+		sibling.classList.remove(DRAGGING_SORTABLE_CLASS);
+	};
+	const removeDraggingStyles = (siblings: Element[]) => {
 		for (const sibling of siblings) {
 			if (!IsHTMLElement(sibling)) {
 				continue;
 			}
-			setTranslate(sibling, 0, 0)
-			removeElementDraggingStyles(sibling)
+			setTranslate(sibling, 0, 0);
+			removeElementDraggingStyles(sibling);
 		}
-	}
-	const removeFixedDraggableElement =(draggedElement:Element)=>{
-		document.body.removeChild(draggedElement)
-	}
+	};
+	const removeFixedDraggableElement = (draggedElement: Element) => {
+		document.body.removeChild(draggedElement);
+	};
 	return [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] as const;
 }

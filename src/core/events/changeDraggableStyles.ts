@@ -1,7 +1,12 @@
 import { Translate } from 'index';
 import { CoreConfig } from '..';
 import HandlerPublisher from '../HandlerPublisher';
-import { DRAGGING_CLASS, DRAGGING_HANDLER_CLASS, GRABBING_CLASS } from '../utils/classes';
+import {
+	DRAGGABLE_CLASS,
+	DRAGGING_CLASS,
+	DRAGGING_HANDLER_CLASS,
+	GRABBING_CLASS
+} from '../utils/classes';
 import { toggleClass } from '../utils/dom/classList';
 import { moveTranslate, setCustomFixedSize, setTranistion } from '../utils/SetStyles';
 import { draggableTargetTimingFunction } from '../utils';
@@ -30,12 +35,16 @@ export const useChangeDraggableStyles = <T>(
 		handlerPublisher.toggleGrabClass(!force);
 	};
 	const toogleHandlerDraggingClass = (force: boolean, element: Element) => {
-		const handlerElement = element.querySelector(handlerSelector);
+		const draggableElement = element.classList.contains(DRAGGABLE_CLASS)
+			? element
+			: element.querySelector(`.${DRAGGABLE_CLASS}`);
+
+		const handlerElement = draggableElement?.querySelector(handlerSelector);
 		toggleClass(document.body, GRABBING_CLASS, force);
 		if (handlerElement) {
 			toggleClass(handlerElement, DRAGGING_HANDLER_CLASS, force);
-		} else {
-			toggleClass(element, DRAGGING_HANDLER_CLASS, force);
+		} else if (draggableElement) {
+			toggleClass(draggableElement, DRAGGING_HANDLER_CLASS, force);
 		}
 	};
 	const dragEventOverElement = (element: Element, translation: Translate) => {

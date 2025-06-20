@@ -1,4 +1,5 @@
-import { Direction, HORIZONTAL, VERTICAL } from '..';
+import { draggableTargetTimingFunction } from '.';
+import { CoreConfig, Direction, HORIZONTAL, VERTICAL } from '..';
 import { DragMouseTouchEvent, fixedSize } from '../../../index';
 import { getPropByDirection, getValueFromProperty } from './GetStyles';
 import { IsHTMLElement, IsMouseEvent, isTouchEvent } from './typesCheckers';
@@ -260,4 +261,27 @@ export function setTranslate(element: Element, x: number, y: number) {
 	} else {
 		element.style.transform = `translate(var(${TRANSLATE_X}, 0), var(${TRANSLATE_Y}, 0))`;
 	}
+}
+export function setTranslateWithTransition<T>(
+	currentConfig: CoreConfig<T>,
+	element: Element,
+	x: number,
+	y: number
+) {
+	const { animationDuration } = currentConfig;
+	setTranslate(element, x, y);
+	setTranistion(element, animationDuration, draggableTargetTimingFunction);
+}
+export function setTranslateByDirection<T>(
+	currentConfig: CoreConfig<T>,
+	element: Element,
+	translate: number
+) {
+	const { animationDuration, direction } = currentConfig;
+	if (direction == 'horizontal') {
+		setTranslate(element, translate, 0);
+	} else {
+		setTranslate(element, 0, translate);
+	}
+	setTranistion(element, animationDuration, draggableTargetTimingFunction);
 }

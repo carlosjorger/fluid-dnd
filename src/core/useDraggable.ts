@@ -376,7 +376,6 @@ export default function useDraggable<T>(
 		updateDraggingStateBeforeDragging();
 		addClass(draggableElement, DRAGGING_SORTABLE_CLASS);
 		emitDraggingEvent(fixedDraggableElement, START_DRAG_EVENT, droppableConfigurator.current);
-		// setDraggingStyles(draggableElement);
 		updateTransformState(event, draggableElement, fixedDraggableElement);
 	};
 	const updateDraggingStateBeforeDragging = () => {

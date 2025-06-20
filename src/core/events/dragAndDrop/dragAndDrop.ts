@@ -5,7 +5,12 @@ import {
 	getWindowScroll
 } from '../../utils/GetStyles';
 import { WindowScroll } from '../../../../index';
-import { setTranistion, setTranslate } from '../../utils/SetStyles';
+import {
+	setTranistion,
+	setTranslate,
+	setTranslateByDirection,
+	setTranslateWithTransition
+} from '../../utils/SetStyles';
 import { CoreConfig, Direction } from '../..';
 import { DRAG_EVENT, draggableTargetTimingFunction, START_DRAG_EVENT } from '../../utils';
 import { DroppableConfig } from '../../config/configHandler';
@@ -121,7 +126,7 @@ export default function useDragAndDropEvents<T>(
 				(siblingIndex < actualIndex && siblingIndex < index) ||
 				(siblingIndex > actualIndex && siblingIndex > index)
 			) {
-				settranslate(sibling, 0, 0);
+				setTranslateWithTransition(currentConfig, sibling, 0, 0);
 			} else if (siblingIndex < actualIndex && index < siblingIndex) {
 				transleteSibling(sibling, siblingIndex);
 			} else if (siblingIndex > actualIndex && index > siblingIndex) {
@@ -141,8 +146,8 @@ export default function useDragAndDropEvents<T>(
 		}
 		return targetIndex;
 	};
-	const getDelta = (targetIndex: number, deltaIndex: number) => {
-		const targetPosition = positions[targetIndex] ?? 0;
+	const getDelta = (targetIndex: number, deltaIndex: number, nextIndex: number = targetIndex) => {
+		const targetPosition = positions[nextIndex] ?? 0;
 		const existingPosition = Boolean(positions[targetIndex - deltaIndex]);
 		return existingPosition ? positions[targetIndex - deltaIndex] - targetPosition : 0;
 	};
@@ -152,18 +157,12 @@ export default function useDragAndDropEvents<T>(
 			nextIndex += 1;
 			draggingDirection -= 1;
 		}
-		const targetPosition = positions[nextIndex] ?? 0;
-		const existingPosition = Boolean(positions[targetIndex - draggingDirection]);
-		return existingPosition ? positions[targetIndex - draggingDirection] - targetPosition : 0;
+		return getDelta(targetIndex, draggingDirection, nextIndex);
 	};
 	const translateDraggableSortable = (draggableSortable: Element, targetIndex: number) => {
 		const draggingDirection = actualIndex - index;
 		const deltaTargetPosition = getDeltaDraggableSortable(targetIndex, draggingDirection);
-		if (direction == 'horizontal') {
-			settranslate(draggableSortable, -deltaTargetPosition, 0);
-		} else {
-			settranslate(draggableSortable, 0, -deltaTargetPosition);
-		}
+		setTranslateByDirection(currentConfig, draggableSortable, -deltaTargetPosition);
 	};
 	const getTranslate = (direction: Direction, element: HTMLElement) => {
 		const tranlateProp = direction == 'horizontal' ? TRANSLATE_X : TRANSLATE_Y;
@@ -195,17 +194,8 @@ export default function useDragAndDropEvents<T>(
 			draggingDirection,
 			-1
 		);
-		if (direction == 'horizontal') {
-			settranslate(targetElement, deltaDraggableSortable, 0);
-		} else {
-			settranslate(targetElement, 0, deltaDraggableSortable);
-		}
+		setTranslateByDirection(currentConfig, targetElement, deltaDraggableSortable);
 	};
-
-	function settranslate(element: Element, x: number, y: number) {
-		setTranslate(element, x, y);
-		setTranistion(element, animationDuration, draggableTargetTimingFunction);
-	}
 	const canChangeDraggable = (
 		droppableConfig: DroppableConfig<T>,
 		sourceElement: Element,
@@ -277,7 +267,12 @@ export default function useDragAndDropEvents<T>(
 			draggableSortableTranslateY += scrollChange;
 		}
 
-		settranslate(draggedElement, draggableSortableTranslateX, draggableSortableTranslateY);
+		setTranslateWithTransition(
+			currentConfig,
+			draggedElement,
+			draggableSortableTranslateX,
+			draggableSortableTranslateY
+		);
 		moveValue(config);
 		removeDraggingStyles(siblings);
 		removeDraggableSortableClass(draggableSortable);

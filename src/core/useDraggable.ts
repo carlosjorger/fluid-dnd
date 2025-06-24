@@ -14,7 +14,6 @@ import {
 	DRAG_EVENT,
 	draggableTargetTimingFunction,
 	START_DRAG_EVENT,
-	START_DROP_EVENT
 } from './utils';
 import ConfigHandler, { DroppableConfig } from './config/configHandler';
 import { IsHTMLElement, isTouchEvent } from './utils/typesCheckers';
@@ -196,6 +195,7 @@ export default function useDraggable<T>(
 			!newdDroppableConfig?.droppable.isSameNode(oldDroppableConfig.droppable) &&
 			fixedDraggableElement
 		) {
+			console.log('change')
 			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, oldDroppableConfig);
 			removeTranslates(oldDroppableConfig.droppable);
 		}
@@ -223,8 +223,11 @@ export default function useDraggable<T>(
 			);
 		}
 	};
+	const updateConfig = (event: DragMouseTouchEvent, draggableElement: HTMLElement|undefined ) => {
+		return droppableConfigurator.updateConfig(event, draggableElement);
+	}
 	const onMove = (event: DragMouseTouchEvent, isTouchEvent: boolean = false) => {
-		droppableConfigurator.updateConfig(event);
+		updateConfig(event, fixedDraggableElement ?? draggableElement)
 		const isOutside = droppableConfigurator.isOutside(event);
 		toggleDroppableClass(isOutside);
 		if (draggingState === DraggingState.START_DRAGGING && !isTouchEvent) {
@@ -293,7 +296,7 @@ export default function useDraggable<T>(
 		return { index, element, value };
 	};
 	const startTouchMoveEvent = (event: DragMouseTouchEvent) => {
-		droppableConfigurator.updateConfig(event);
+		updateConfig(event, draggableElement)
 		toggleDroppableClass(droppableConfigurator.isOutside(event));
 		startDragging(event);
 	};
@@ -325,7 +328,7 @@ export default function useDraggable<T>(
 		};
 	};
 	const mousedownOnDraggablefunction = (event: DragMouseTouchEvent) => {
-		return droppableConfigurator.updateConfig(event);
+		return updateConfig(event, fixedDraggableElement);
 	};
 	const onLeave = (moveEvent: MoveEvent) => {
 		return (event: MouseEvent | TouchEvent) => {
@@ -338,8 +341,11 @@ export default function useDraggable<T>(
 		onDropDraggingEvent(droppableConfigurator.isOutside(convertedEvent));
 		clearTimeout(delayTimeout);
 		document.removeEventListener(moveEvent, handleMove);
-		droppableConfigurator.updateConfig(convertedEvent);
-		const currentConfig = droppableConfigurator.getCurrentConfig(convertedEvent);
+		updateConfig(convertedEvent, fixedDraggableElement)
+		if (!fixedDraggableElement) {
+			return
+		}
+		const currentConfig = droppableConfigurator.getCurrentConfig(convertedEvent, fixedDraggableElement);
 		if (currentConfig) {
 			const { droppable } = currentConfig;
 			removeOnScrollEvents(droppable);
@@ -363,9 +369,12 @@ export default function useDraggable<T>(
 	};
 	const createFixedDraggableElement = () => {
 		const clonedDraggable = draggableElement.cloneNode(true) as HTMLElement;
+		if (clonedDraggable.tagName.toLocaleLowerCase() == 'li') {
+			clonedDraggable.style.display = 'block'
+		}
 		clonedDraggable.style.width = '100%';
 		clonedDraggable.style.height = '100%';
-		const wrapper = document.createElement(parent.tagName);
+		const wrapper = document.createElement('div');
 		wrapper.appendChild(clonedDraggable);
 		document.body.appendChild(wrapper);
 		setDraggingStyles(wrapper);
@@ -448,17 +457,9 @@ export default function useDraggable<T>(
 		}
 	};
 	const insertAtFromElement = (targetIndex: number, value: T) => {
-		if (
-			targetIndex === index ||
-			(targetIndex === config.onGetLegth() && index === targetIndex - 1)
-		) {
-			emitInsertEventToSiblings(targetIndex, draggableElement, parent, value, () => {
-				addTempChildOnInsert(
-					draggableElement,
-					draggingState == DraggingState.START_DRAGGING,
-					droppableConfigurator.initial
-				);
-			});
+		const isLastIndex = targetIndex === config.onGetLegth() && index === targetIndex - 1;
+		if (targetIndex === index || isLastIndex) {
+			emitInsertEventToSiblings(targetIndex, draggableElement, value,droppableConfigurator.initial);
 		}
 	};
 	setCssStyles();

@@ -103,7 +103,6 @@ export default function useDragAndDropEvents<T>(
 	) => {
 		const { droppable } = droppableConfig;
 		const [siblings] = getSiblings(draggedElement, droppable);
-
 		const draggableSortable = getDraggableSortable(siblings);
 		if (!draggableSortable) {
 			return;

@@ -112,8 +112,7 @@ export class DroppableConfigurator<T> {
 	droppableIfInsideCurrent(droppable: Element | null | undefined, current: HTMLElement) {
 		return droppable && !droppable.isSameNode(current) && current.contains(droppable);
 	}
-	getCurrentConfig(event: DragMouseTouchEvent) {
-		const currentElement = this.draggableElement;
+	getCurrentConfig(event: DragMouseTouchEvent, currentElement: HTMLElement) {
 		const currentDroppable = this.getCurrent(currentElement, event);
 		if (
 			this.current &&
@@ -130,9 +129,13 @@ export class DroppableConfigurator<T> {
 		}
 		return this.getConfigFrom(currentDroppable);
 	}
-	updateConfig(event: DragMouseTouchEvent) {
+	// TODO: pass fixed draggable
+	updateConfig(event: DragMouseTouchEvent, currentElement?: HTMLElement) {
+		if(!currentElement){
+			return
+		}
 		const oldDroppableConfig = this.current;
-		this.current = this.getCurrentConfig(event);
+		this.current = this.getCurrentConfig(event, currentElement);
 		this.changeDroppable(this.current, oldDroppableConfig);
 	}
 	isOutside(event: DragMouseTouchEvent) {

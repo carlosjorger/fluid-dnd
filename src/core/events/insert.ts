@@ -2,12 +2,13 @@ import { getParentDraggableChildren, getSiblings } from '../utils/GetStyles';
 import { CoreConfig } from '../index';
 import getTranslationByDragging from '../events/dragAndDrop/getTranslationByDraggingAndEvent';
 import { IsHTMLElement } from '../utils/typesCheckers';
-import { removeTempChild } from '../tempChildren';
+import { addTempChildOnInsert, removeTempChild } from '../tempChildren';
 import { DISABLE_TRANSITION, DRAGGABLE_CLASS } from '../utils/classes';
 import { addClass, containClass, removeClass } from '../utils/dom/classList';
 import HandlerPublisher from '../HandlerPublisher';
 import { isTempElement, observeMutation } from '../utils/observer';
 import { useChangeDraggableStyles } from './changeDraggableStyles';
+import { DroppableConfig } from '../config/configHandler';
 
 export default function useInsertEvents<T>(
 	currentConfig: CoreConfig<T>,
@@ -25,10 +26,13 @@ export default function useInsertEvents<T>(
 	const emitInsertEventToSiblings = (
 		targetIndex: number,
 		draggedElement: HTMLElement,
-		droppable: HTMLElement,
 		value: T,
-		startInserting: () => void
+		droppableConfig?: DroppableConfig<T>
 	) => {
+		if (!droppableConfig) {
+			return;
+		}
+		const {droppable} = droppableConfig;
 		const translation = getTranslationByDragging(
 			draggedElement,
 			'insert',
@@ -45,7 +49,11 @@ export default function useInsertEvents<T>(
 				dragEventOverElement(sibling, translation);
 			}
 		}
-		startInserting();
+		addTempChildOnInsert(
+			draggedElement,
+			true,
+			droppableConfig
+		);
 		setTimeout(() => {
 			onInsertEvent(targetIndex, value);
 			onFinishInsertElement(targetIndex, droppable, currentConfig);

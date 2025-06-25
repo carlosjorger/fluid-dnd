@@ -12,13 +12,11 @@ import { moveTranslate, setCustomFixedSize, setTranistion } from '../utils/SetSt
 import { draggableTargetTimingFunction } from '../utils';
 export const useChangeDraggableStyles = <T>(
 	currentConfig: CoreConfig<T>,
-	handlerPublisher: HandlerPublisher,
-	endDraggingAction: () => void
+	handlerPublisher: HandlerPublisher
 ) => {
 	const { handlerSelector, animationDuration } = currentConfig;
 
 	const removeElementDraggingStyles = (element: HTMLElement) => {
-		endDraggingAction();
 		toggleDraggingClass(element, false);
 		element.style.transform = '';
 		element.style.transition = '';

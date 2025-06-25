@@ -10,14 +10,10 @@ import { usePositioning } from './positioning/usePositioning';
 import { Coordinate, DragMouseTouchEvent, MoveEvent, OnLeaveEvent } from '../../index';
 import { CoreConfig, DragStartEventData } from '.';
 import useRemoveEvents from './events/remove';
-import {
-	DRAG_EVENT,
-	draggableTargetTimingFunction,
-	START_DRAG_EVENT,
-} from './utils';
+import { DRAG_EVENT, draggableTargetTimingFunction, START_DRAG_EVENT } from './utils';
 import ConfigHandler, { DroppableConfig } from './config/configHandler';
 import { IsHTMLElement, isTouchEvent } from './utils/typesCheckers';
-import { addTempChild, addTempChildOnInsert, removeTempChildrens } from './tempChildren';
+import { addTempChild, removeTempChildrens } from './tempChildren';
 import { DroppableConfigurator } from './config/droppableConfigurator';
 import {
 	addClass,
@@ -87,8 +83,7 @@ export default function useDraggable<T>(
 	const [emitRemoveEventToSiblings, emitFinishRemoveEventToSiblings] = useRemoveEvents<T>(
 		config,
 		parent,
-		handlerPublisher,
-		endDraggingState
+		handlerPublisher
 	);
 	const [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] = useDragAndDropEvents<T>(
 		config,
@@ -98,12 +93,7 @@ export default function useDraggable<T>(
 		handlerPublisher,
 		endDraggingState
 	);
-	const [emitInsertEventToSiblings] = useInsertEvents(
-		config,
-		parent,
-		handlerPublisher,
-		endDraggingState
-	);
+	const [emitInsertEventToSiblings] = useInsertEvents(config, parent, handlerPublisher);
 	const setDraggable = () => {
 		addClass(draggableElement, DRAGGABLE_CLASS);
 	};
@@ -195,9 +185,12 @@ export default function useDraggable<T>(
 			!newdDroppableConfig?.droppable.isSameNode(oldDroppableConfig.droppable) &&
 			fixedDraggableElement
 		) {
-			console.log('change')
 			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, oldDroppableConfig);
 			removeTranslates(oldDroppableConfig.droppable);
+			var sortable = oldDroppableConfig.droppable.querySelector(`.${DRAGGING_SORTABLE_CLASS}`);
+			if (sortable) {
+				removeAtFromElementByDroppableConfig(index, oldDroppableConfig);
+			}
 		}
 	};
 	const droppableConfigurator = new DroppableConfigurator(
@@ -223,11 +216,11 @@ export default function useDraggable<T>(
 			);
 		}
 	};
-	const updateConfig = (event: DragMouseTouchEvent, draggableElement: HTMLElement|undefined ) => {
+	const updateConfig = (event: DragMouseTouchEvent, draggableElement: HTMLElement | undefined) => {
 		return droppableConfigurator.updateConfig(event, draggableElement);
-	}
+	};
 	const onMove = (event: DragMouseTouchEvent, isTouchEvent: boolean = false) => {
-		updateConfig(event, fixedDraggableElement ?? draggableElement)
+		updateConfig(event, fixedDraggableElement ?? draggableElement);
 		const isOutside = droppableConfigurator.isOutside(event);
 		toggleDroppableClass(isOutside);
 		if (draggingState === DraggingState.START_DRAGGING && !isTouchEvent) {
@@ -296,7 +289,7 @@ export default function useDraggable<T>(
 		return { index, element, value };
 	};
 	const startTouchMoveEvent = (event: DragMouseTouchEvent) => {
-		updateConfig(event, draggableElement)
+		updateConfig(event, draggableElement);
 		toggleDroppableClass(droppableConfigurator.isOutside(event));
 		startDragging(event);
 	};
@@ -341,11 +334,14 @@ export default function useDraggable<T>(
 		onDropDraggingEvent(droppableConfigurator.isOutside(convertedEvent));
 		clearTimeout(delayTimeout);
 		document.removeEventListener(moveEvent, handleMove);
-		updateConfig(convertedEvent, fixedDraggableElement)
+		updateConfig(convertedEvent, fixedDraggableElement);
 		if (!fixedDraggableElement) {
-			return
+			return;
 		}
-		const currentConfig = droppableConfigurator.getCurrentConfig(convertedEvent, fixedDraggableElement);
+		const currentConfig = droppableConfigurator.getCurrentConfig(
+			convertedEvent,
+			fixedDraggableElement
+		);
 		if (currentConfig) {
 			const { droppable } = currentConfig;
 			removeOnScrollEvents(droppable);
@@ -370,7 +366,7 @@ export default function useDraggable<T>(
 	const createFixedDraggableElement = () => {
 		const clonedDraggable = draggableElement.cloneNode(true) as HTMLElement;
 		if (clonedDraggable.tagName.toLocaleLowerCase() == 'li') {
-			clonedDraggable.style.display = 'block'
+			clonedDraggable.style.display = 'block';
 		}
 		clonedDraggable.style.width = '100%';
 		clonedDraggable.style.height = '100%';
@@ -432,6 +428,7 @@ export default function useDraggable<T>(
 	};
 	const removeAfterRemovingClass = (targetIndex: number, config: DroppableConfig<T>) => {
 		removeClass(draggableElement, removingClass);
+		removeClass(draggableElement, DRAGGING_SORTABLE_CLASS);
 		addTempChild(
 			draggableElement,
 			parent,
@@ -445,21 +442,31 @@ export default function useDraggable<T>(
 		onRemoveAtEvent(index, true);
 	};
 	const removeAtFromElement = (targetIndex: number) => {
-		if (!droppableConfigurator.initial) {
+		removeAtFromElementByDroppableConfig(targetIndex, droppableConfigurator.initial);
+	};
+	const removeAtFromElementByDroppableConfig = (
+		targetIndex: number,
+		droppableConfigurator?: DroppableConfig<T>
+	) => {
+		if (!droppableConfigurator) {
 			return;
 		}
-		const config = droppableConfigurator.initial as DroppableConfig<T>;
 		if (targetIndex == index) {
 			addClass(draggableElement, removingClass);
 			setTimeout(() => {
-				removeAfterRemovingClass(targetIndex, config);
+				removeAfterRemovingClass(targetIndex, droppableConfigurator);
 			}, delayBeforeRemove);
 		}
 	};
 	const insertAtFromElement = (targetIndex: number, value: T) => {
 		const isLastIndex = targetIndex === config.onGetLegth() && index === targetIndex - 1;
 		if (targetIndex === index || isLastIndex) {
-			emitInsertEventToSiblings(targetIndex, draggableElement, value,droppableConfigurator.initial);
+			emitInsertEventToSiblings(
+				targetIndex,
+				draggableElement,
+				value,
+				droppableConfigurator.initial
+			);
 		}
 	};
 	setCssStyles();

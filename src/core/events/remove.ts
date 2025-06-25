@@ -1,6 +1,11 @@
 import { getSiblings } from '../utils/GetStyles';
 import { Translate } from '../../../index';
-import { moveTranslate } from '../utils/SetStyles';
+import {
+	moveTranslate,
+	setTranslate,
+	setTranslateByDirection,
+	setTranslateWithTransition
+} from '../utils/SetStyles';
 import { CoreConfig } from '..';
 import getTranslationByDragging from './dragAndDrop/getTranslationByDraggingAndEvent';
 import { DroppableConfig } from '../config/configHandler';
@@ -12,15 +17,10 @@ import HandlerPublisher from '@/core/HandlerPublisher';
 export default function useRemoveEvents<T>(
 	currentConfig: CoreConfig<T>,
 	parent: HTMLElement,
-	handlerPublisher: HandlerPublisher,
-	endDraggingAction: () => void
+	handlerPublisher: HandlerPublisher
 ) {
 	const { animationDuration } = currentConfig;
-	const [removeElementDraggingStyles] = useChangeDraggableStyles(
-		currentConfig,
-		handlerPublisher,
-		endDraggingAction
-	);
+	const [removeElementDraggingStyles] = useChangeDraggableStyles(currentConfig, handlerPublisher);
 	const emitRemoveEventToSiblings = (
 		targetIndex: number,
 		draggedElement: HTMLElement,
@@ -41,6 +41,7 @@ export default function useRemoveEvents<T>(
 		);
 		for (const [index, sibling] of siblings.entries()) {
 			if (index >= targetIndex) {
+				removeTranslateWhitoutTransition(sibling);
 				startDragEventOverElement(sibling, translation);
 				setTimeout(() => {
 					onFinishRemoveEvent(sibling as HTMLElement);

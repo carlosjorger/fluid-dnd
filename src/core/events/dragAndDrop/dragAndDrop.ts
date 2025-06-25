@@ -41,8 +41,7 @@ export default function useDragAndDropEvents<T>(
 
 	const [removeElementDraggingStyles, toggleDraggingClass] = useChangeDraggableStyles(
 		currentConfig,
-		handlerPublisher,
-		endDraggingAction
+		handlerPublisher
 	);
 
 	const getPositionsArray = (droppable: HTMLElement, direction: Direction) => {
@@ -81,7 +80,16 @@ export default function useDragAndDropEvents<T>(
 		emitDroppingEventToSiblings(draggedElement, droppableConfig, initialWindowScroll);
 	};
 	let positions = [] as number[];
+	let currentDroppable = null as HTMLElement | null;
 	// #region Drag events
+	const changeCurrentDroppable = (droppable: HTMLElement) => {
+		if (currentDroppable && currentDroppable.isSameNode(droppable)) {
+			return;
+		}
+		positions = getPositionsArray(droppable, direction);
+		initialWindowScroll = getWindowScroll();
+		currentDroppable = droppable;
+	};
 	const getPosition = (
 		droppableConfig: DroppableConfig<T>,
 		element: HTMLElement,
@@ -104,19 +112,18 @@ export default function useDragAndDropEvents<T>(
 		const { droppable } = droppableConfig;
 		const [siblings] = getSiblings(draggedElement, droppable);
 		const draggableSortable = getDraggableSortable(siblings);
-		if (!draggableSortable) {
-			return;
-		}
-		if (event == 'startDrag') {
-			positions = getPositionsArray(droppable, direction);
-			initialWindowScroll = getWindowScroll();
-		}
+		changeCurrentDroppable(droppable);
 		for (const [siblingIndex, sibling] of siblings.toReversed().entries()) {
 			if (!containClass(sibling, DRAGGABLE_CLASS) || !IsHTMLElement(sibling)) {
 				continue;
 			}
 			const currentPosition = getIndex(siblingIndex, sibling);
 			const canChange = canChangeDraggable(droppableConfig, draggedElement, sibling, siblingIndex);
+
+			if (!draggableSortable) {
+				continue;
+			}
+
 			if (canChange && !sibling.isSameNode(draggableSortable) && actualIndex != currentPosition) {
 				actualIndex = currentPosition;
 				translateDraggableSortable(draggableSortable, actualIndex);

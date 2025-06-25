@@ -13,14 +13,12 @@ import { DroppableConfig } from '../config/configHandler';
 export default function useInsertEvents<T>(
 	currentConfig: CoreConfig<T>,
 	parent: HTMLElement,
-	handlerPublisher: HandlerPublisher,
-	endDraggingAction: () => void
+	handlerPublisher: HandlerPublisher
 ) {
 	const { delayBeforeInsert } = currentConfig;
 	const [removeElementDraggingStyles, _, dragEventOverElement] = useChangeDraggableStyles(
 		currentConfig,
-		handlerPublisher,
-		endDraggingAction
+		handlerPublisher
 	);
 	// #region Insert
 	const emitInsertEventToSiblings = (
@@ -32,7 +30,7 @@ export default function useInsertEvents<T>(
 		if (!droppableConfig) {
 			return;
 		}
-		const {droppable} = droppableConfig;
+		const { droppable } = droppableConfig;
 		const translation = getTranslationByDragging(
 			draggedElement,
 			'insert',
@@ -49,11 +47,7 @@ export default function useInsertEvents<T>(
 				dragEventOverElement(sibling, translation);
 			}
 		}
-		addTempChildOnInsert(
-			draggedElement,
-			true,
-			droppableConfig
-		);
+		addTempChildOnInsert(draggedElement, true, droppableConfig);
 		setTimeout(() => {
 			onInsertEvent(targetIndex, value);
 			onFinishInsertElement(targetIndex, droppable, currentConfig);

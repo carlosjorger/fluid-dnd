@@ -256,11 +256,7 @@ export function setTranslate(element: Element, x: number, y: number) {
 
 	element.style.setProperty(TRANSLATE_X, x + 'px');
 	element.style.setProperty(TRANSLATE_Y, y + 'px');
-	if (x == 0 && y == 0) {
-		element.style.transform = '';
-	} else {
-		element.style.transform = `translate(var(${TRANSLATE_X}, 0), var(${TRANSLATE_Y}, 0))`;
-	}
+	element.style.transform = `translate(var(${TRANSLATE_X}, 0), var(${TRANSLATE_Y}, 0))`;
 }
 export function setTranslateWithTransition<T>(
 	currentConfig: CoreConfig<T>,

@@ -30,13 +30,14 @@ export default function useDragAndDropEvents<T>(
 	parent: HTMLElement,
 	droppableGroupClass: string | null,
 	handlerPublisher: HandlerPublisher,
-	endDraggingAction: () => void
+	emitInsert: (targetIndex: number, value: T, endInsertEvent: () => void) => void
 ) {
 	let actualIndex = index;
 	let initialWindowScroll = {
 		scrollX: 0,
 		scrollY: 0
 	};
+	let value: T | undefined;
 	const { direction, onRemoveAtEvent, animationDuration } = currentConfig;
 
 	const [removeElementDraggingStyles, toggleDraggingClass] = useChangeDraggableStyles(
@@ -86,9 +87,14 @@ export default function useDragAndDropEvents<T>(
 		if (currentDroppable && currentDroppable.isSameNode(droppable)) {
 			return;
 		}
-		positions = getPositionsArray(droppable, direction);
-		initialWindowScroll = getWindowScroll();
+		initNewDroppableConfig(droppable);
 		currentDroppable = droppable;
+	};
+	const initNewDroppableConfig = (droppable: HTMLElement | null) => {
+		if (droppable) {
+			positions = getPositionsArray(droppable, direction);
+			initialWindowScroll = getWindowScroll();
+		}
 	};
 	const getPosition = (
 		droppableConfig: DroppableConfig<T>,
@@ -112,6 +118,9 @@ export default function useDragAndDropEvents<T>(
 		const { droppable } = droppableConfig;
 		const [siblings] = getSiblings(draggedElement, droppable);
 		const draggableSortable = getDraggableSortable(siblings);
+		if (event == START_DRAG_EVENT) {
+			value = currentConfig.onGetValue(index);
+		}
 		changeCurrentDroppable(droppable);
 		for (const [siblingIndex, sibling] of siblings.toReversed().entries()) {
 			if (!containClass(sibling, DRAGGABLE_CLASS) || !IsHTMLElement(sibling)) {
@@ -120,11 +129,23 @@ export default function useDragAndDropEvents<T>(
 			const currentPosition = getIndex(siblingIndex, sibling);
 			const canChange = canChangeDraggable(droppableConfig, draggedElement, sibling, siblingIndex);
 
+			if (!draggableSortable && canChange) {
+				insertDraggableSortable(currentPosition, () => {
+					initNewDroppableConfig(currentDroppable);
+					actualIndex = currentPosition;
+					index = currentPosition;
+				});
+				return;
+			}
 			if (!draggableSortable) {
 				continue;
 			}
-
-			if (canChange && !sibling.isSameNode(draggableSortable) && actualIndex != currentPosition) {
+			if (
+				draggableSortable &&
+				canChange &&
+				!sibling.isSameNode(draggableSortable) &&
+				actualIndex != currentPosition
+			) {
 				actualIndex = currentPosition;
 				translateDraggableSortable(draggableSortable, actualIndex);
 				transleteSibling(sibling, siblingIndex);
@@ -138,6 +159,11 @@ export default function useDragAndDropEvents<T>(
 			} else if (siblingIndex > actualIndex && index > siblingIndex) {
 				transleteSibling(sibling, siblingIndex);
 			}
+		}
+	};
+	const insertDraggableSortable = (targetIndex: number, endInsertEvent: () => void) => {
+		if (value) {
+			emitInsert(targetIndex, value, endInsertEvent);
 		}
 	};
 	const getIndex = (targetIndex: number, sibling: Element) => {

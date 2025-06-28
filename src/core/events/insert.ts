@@ -3,33 +3,32 @@ import { CoreConfig } from '../index';
 import getTranslationByDragging from '../events/dragAndDrop/getTranslationByDraggingAndEvent';
 import { IsHTMLElement } from '../utils/typesCheckers';
 import { addTempChildOnInsert, removeTempChild } from '../tempChildren';
-import { DISABLE_TRANSITION, DRAGGABLE_CLASS } from '../utils/classes';
+import { DISABLE_TRANSITION, DRAGGABLE_CLASS, DRAGGING_SORTABLE_CLASS } from '../utils/classes';
 import { addClass, containClass, removeClass } from '../utils/dom/classList';
 import HandlerPublisher from '../HandlerPublisher';
 import { isTempElement, observeMutation } from '../utils/observer';
 import { useChangeDraggableStyles } from './changeDraggableStyles';
 import { DroppableConfig } from '../config/configHandler';
 
-export default function useInsertEvents<T>(
-	currentConfig: CoreConfig<T>,
-	parent: HTMLElement,
-	handlerPublisher: HandlerPublisher
-) {
-	const { delayBeforeInsert } = currentConfig;
-	const [removeElementDraggingStyles, _, dragEventOverElement] = useChangeDraggableStyles(
-		currentConfig,
-		handlerPublisher
-	);
+export default function useInsertEvents<T>(handlerPublisher: HandlerPublisher) {
 	// #region Insert
 	const emitInsertEventToSiblings = (
 		targetIndex: number,
 		draggedElement: HTMLElement,
 		value: T,
-		droppableConfig?: DroppableConfig<T>
+		droppableConfig?: DroppableConfig<T>,
+		addDraggingSortableClass: boolean = false,
+		endInsertEvent: () => void = () => {}
 	) => {
 		if (!droppableConfig) {
 			return;
 		}
+		const currentConfig = droppableConfig.config;
+		const { delayBeforeInsert } = currentConfig;
+		const [removeElementDraggingStyles, _, dragEventOverElement] = useChangeDraggableStyles(
+			currentConfig,
+			handlerPublisher
+		);
 		const { droppable } = droppableConfig;
 		const translation = getTranslationByDragging(
 			draggedElement,
@@ -50,10 +49,16 @@ export default function useInsertEvents<T>(
 		addTempChildOnInsert(draggedElement, true, droppableConfig);
 		setTimeout(() => {
 			onInsertEvent(targetIndex, value);
-			onFinishInsertElement(targetIndex, droppable, currentConfig);
+			onFinishInsertElement(
+				targetIndex,
+				droppable,
+				currentConfig,
+				addDraggingSortableClass,
+				endInsertEvent
+			);
 			removeElementDraggingStyles(draggedElement);
-			removeTranslateFromSiblings(draggedElement, parent);
-			removeTempChild(parent, 0, true);
+			removeTranslateFromSiblings(draggedElement, droppable);
+			removeTempChild(droppable, 0, true);
 		}, delayBeforeInsert);
 	};
 
@@ -82,7 +87,9 @@ const childrenMutationFilter = (mutation: MutationRecord) => {
 const onFinishInsertElement = <T>(
 	targetIndex: number,
 	droppable: HTMLElement,
-	config: CoreConfig<T>
+	config: CoreConfig<T>,
+	addDraggingSortableClass: boolean = false,
+	endInsertEvent: () => void = () => {}
 ) => {
 	const { insertingFromClass, animationDuration } = config;
 	const observer = observeMutation(
@@ -91,10 +98,14 @@ const onFinishInsertElement = <T>(
 			const newElement = siblings[targetIndex];
 			addClass(newElement, insertingFromClass);
 			addClass(newElement, DISABLE_TRANSITION);
+			if (addDraggingSortableClass) {
+				addClass(newElement, DRAGGING_SORTABLE_CLASS);
+			}
 			setTimeout(() => {
 				removeClass(newElement, DISABLE_TRANSITION);
 				removeClass(newElement, insertingFromClass);
 				observer.disconnect();
+				endInsertEvent();
 			}, animationDuration);
 		},
 		droppable,

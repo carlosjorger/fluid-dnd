@@ -33,19 +33,22 @@ import {
 import HandlerPublisher from './HandlerPublisher';
 import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
 import useInsertEvents from './events/insert';
+import { parseIntEmpty } from './utils/GetStyles';
 
 const enum DraggingState {
 	NOT_DRAGGING,
 	START_DRAGGING,
 	DRAGING,
-	END_DRAGGING
+	END_DRAGGING,
+	INSERTING
 }
 export default function useDraggable<T>(
 	draggableElement: HTMLElement,
 	index: number,
 	config: CoreConfig<T>,
 	parent: HTMLElement,
-	handlerPublisher: HandlerPublisher
+	handlerPublisher: HandlerPublisher,
+	INDEX_ATTR: string
 ) {
 	const {
 		handlerSelector,
@@ -55,7 +58,6 @@ export default function useDraggable<T>(
 		delayBeforeRemove,
 		draggingClass,
 		removingClass,
-		onRemoveAtEvent,
 		droppableClass,
 		onDragStart,
 		delayBeforeTouchMoveEvent,
@@ -85,15 +87,36 @@ export default function useDraggable<T>(
 		parent,
 		handlerPublisher
 	);
+	const [emitInsertEventToSiblings] = useInsertEvents(handlerPublisher);
+	const emitInsertInActualDroppable = (
+		targetIndex: number,
+		value: T,
+		endInsertEvent: () => void
+	) => {
+		if (droppableConfigurator.current && draggingState !== DraggingState.INSERTING) {
+			const stateBeforeInserting = draggingState;
+			draggingState = DraggingState.INSERTING;
+			emitInsertEventToSiblings(
+				targetIndex,
+				draggableElement,
+				value,
+				droppableConfigurator.current as DroppableConfig<unknown>,
+				true,
+				() => {
+					draggingState = stateBeforeInserting;
+					endInsertEvent();
+				}
+			);
+		}
+	};
 	const [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] = useDragAndDropEvents<T>(
 		config,
 		index,
 		parent,
 		droppableGroupClass,
 		handlerPublisher,
-		endDraggingState
+		emitInsertInActualDroppable
 	);
-	const [emitInsertEventToSiblings] = useInsertEvents(config, parent, handlerPublisher);
 	const setDraggable = () => {
 		addClass(draggableElement, DRAGGABLE_CLASS);
 	};
@@ -152,7 +175,6 @@ export default function useDraggable<T>(
 		addClass(parent, DROPPABLE_CLASS);
 	};
 	const disableMousedownEventFromImages = (handlerElement: Element) => {
-		// Avoid dragging inner images
 		const images = handlerElement.querySelectorAll('img');
 		Array.from(images).forEach((image) => {
 			image.onmousedown = () => false;
@@ -167,7 +189,9 @@ export default function useDraggable<T>(
 		}
 		const { droppable, config } = droppableConfigurator.current;
 		setTransform(fixedDraggableElement, droppable, pagePosition, config.direction);
-		emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, droppableConfigurator.current);
+		if (draggingState !== DraggingState.INSERTING) {
+			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, droppableConfigurator.current);
+		}
 	};
 	const removeTranslates = (droppable: Element) => {
 		const drgagables = droppable.querySelectorAll(`.${DRAGGABLE_CLASS}`);
@@ -188,8 +212,9 @@ export default function useDraggable<T>(
 			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, oldDroppableConfig);
 			removeTranslates(oldDroppableConfig.droppable);
 			var sortable = oldDroppableConfig.droppable.querySelector(`.${DRAGGING_SORTABLE_CLASS}`);
-			if (sortable) {
-				removeAtFromElementByDroppableConfig(index, oldDroppableConfig);
+			if (sortable && IsHTMLElement(sortable)) {
+				const index = parseIntEmpty(sortable?.getAttribute(INDEX_ATTR));
+				removeAtFromElementByDroppableConfig(index, oldDroppableConfig, sortable);
 			}
 		}
 	};
@@ -225,7 +250,10 @@ export default function useDraggable<T>(
 		toggleDroppableClass(isOutside);
 		if (draggingState === DraggingState.START_DRAGGING && !isTouchEvent) {
 			startDragging(event);
-		} else if (draggingState === DraggingState.DRAGING) {
+		} else if (
+			draggingState === DraggingState.DRAGING ||
+			draggingState === DraggingState.INSERTING
+		) {
 			updateTempChildren(isOutside);
 			setTransformEvent(event);
 		}
@@ -426,37 +454,43 @@ export default function useDraggable<T>(
 		toggleClass(element, draggingClass, true);
 		element.style.transition = '';
 	};
-	const removeAfterRemovingClass = (targetIndex: number, config: DroppableConfig<T>) => {
-		removeClass(draggableElement, removingClass);
-		removeClass(draggableElement, DRAGGING_SORTABLE_CLASS);
+	const removeAfterRemovingClass = (
+		targetIndex: number,
+		elementToRemove: HTMLElement,
+		config: DroppableConfig<T>
+	) => {
+		const { onRemoveAtEvent } = config.config;
+		removeClass(elementToRemove, removingClass);
+		removeClass(elementToRemove, DRAGGING_SORTABLE_CLASS);
 		addTempChild(
-			draggableElement,
+			elementToRemove,
 			parent,
 			draggingState == DraggingState.START_DRAGGING,
 			droppableConfigurator.initial
 		);
-		emitRemoveEventToSiblings(targetIndex, draggableElement, config, (sibling) => {
+		emitRemoveEventToSiblings(targetIndex, elementToRemove, config, (sibling) => {
 			removeDraggingStyles(sibling);
-			emitFinishRemoveEventToSiblings(draggableElement);
+			emitFinishRemoveEventToSiblings(elementToRemove);
 		});
-		onRemoveAtEvent(index, true);
+		onRemoveAtEvent(targetIndex, true);
 	};
 	const removeAtFromElement = (targetIndex: number) => {
-		removeAtFromElementByDroppableConfig(targetIndex, droppableConfigurator.initial);
+		if (targetIndex == index) {
+			removeAtFromElementByDroppableConfig(targetIndex, droppableConfigurator.initial);
+		}
 	};
 	const removeAtFromElementByDroppableConfig = (
 		targetIndex: number,
-		droppableConfigurator?: DroppableConfig<T>
+		droppableConfigurator?: DroppableConfig<T>,
+		elementToRemove: HTMLElement = draggableElement
 	) => {
 		if (!droppableConfigurator) {
 			return;
 		}
-		if (targetIndex == index) {
-			addClass(draggableElement, removingClass);
-			setTimeout(() => {
-				removeAfterRemovingClass(targetIndex, droppableConfigurator);
-			}, delayBeforeRemove);
-		}
+		addClass(elementToRemove, removingClass);
+		setTimeout(() => {
+			removeAfterRemovingClass(targetIndex, elementToRemove, droppableConfigurator);
+		}, delayBeforeRemove);
 	};
 	const insertAtFromElement = (targetIndex: number, value: T) => {
 		const isLastIndex = targetIndex === config.onGetLegth() && index === targetIndex - 1;

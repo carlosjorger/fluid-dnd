@@ -253,7 +253,6 @@ export function setTranslate(element: Element, x: number, y: number) {
 	if (!IsHTMLElement(element)) {
 		return;
 	}
-
 	element.style.setProperty(TRANSLATE_X, x + 'px');
 	element.style.setProperty(TRANSLATE_Y, y + 'px');
 	element.style.transform = `translate(var(${TRANSLATE_X}, 0), var(${TRANSLATE_Y}, 0))`;

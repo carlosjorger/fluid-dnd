@@ -63,7 +63,8 @@ export default function useDroppable<T>(
 				numberIndex,
 				coreConfig,
 				droppable,
-				handlerPublisher
+				handlerPublisher,
+				INDEX_ATTR
 			);
 			removeAtFromElementList.push(removeAtFromElement);
 			insertAtFromElementList.push(insertAtFromElement);

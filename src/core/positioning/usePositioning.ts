@@ -5,19 +5,17 @@ import {
 	getValueFromProperty
 } from '../utils/GetStyles';
 import { CoordinateMap, Direction, HORIZONTAL, VERTICAL } from '..';
-import { useScroll } from './autoScroll';
+import { updateScrollByPosition } from './autoScroll';
 import { HANDLER_CLASS, DRAGGING_CLASS } from '../utils/classes';
 import { containClass } from '../utils/dom/classList';
 import { setTranslate } from '../utils/SetStyles';
 
 export const usePositioning = (
-	draggedElement: HTMLElement,
 	coordinateTransforms: CoordinateMap[]
 ) => {
 	let currentOffset = { offsetX: 0, offsetY: 0 };
 	let position = { top: 0, left: 0 };
 	let translate = { x: 0, y: 0 };
-	const [updateScrollByPosition] = useScroll(draggedElement);
 	const updateTranform = (newTranslate: Coordinate, element: HTMLElement) => {
 		setTranslate(element,newTranslate.x, newTranslate.y)
 	};
@@ -71,15 +69,15 @@ export const usePositioning = (
 					margin -
 					scrollValue -
 					beforefixecParentValue;
-				updateScroll(translateDirection);
+				updateScroll(translateDirection, draggedElement);
 				return newTranslate;
 			}
 			const defaultTransalation = translate[axis];
 			return defaultTransalation;
 		};
-		const updateScroll = (translateDirection: Direction) => {
+		const updateScroll = (translateDirection: Direction, draggedElement: Element) => {
 			if (element && containClass(element, DRAGGING_CLASS) && translateDirection === direction) {
-				updateScrollByPosition(direction, parent, position, translate);
+				updateScrollByPosition(direction, parent, draggedElement ,position, translate);
 			}
 		};
 		const updateTranlateByDirection = (direction: Direction) => {

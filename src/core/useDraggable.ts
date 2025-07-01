@@ -76,8 +76,7 @@ export default function useDraggable<T>(
 	let delayTimeout: NodeJS.Timeout | undefined;
 	let initialTouch: Coordinate | undefined;
 	const [setTransform, updateTransformState] = usePositioning(
-		draggableElement,
-		coordinateTransform
+		coordinateTransform,
 	);
 	const endDraggingState = () => {
 		draggingState = DraggingState.NOT_DRAGGING;

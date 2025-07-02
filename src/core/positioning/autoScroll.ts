@@ -58,7 +58,6 @@ export const updateScrollByPosition = (
 	lastScrollAmount =
 		Math.sign(scrollAmount) *
 		Math.min(Math.abs(scrollAmount), Math.abs(lastScrollAmount) + minScrollAmountDiff);
-	console.log({distanceValue, percent, draggedElement})
 	scrollByDirection(parent, direction, lastScrollAmount);
 };
 const scrollFuncionToStart = (relativePosition: number, infLimit: number) => {

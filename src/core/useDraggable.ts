@@ -64,6 +64,7 @@ export default function useDraggable<T>(
 		coordinateTransform
 	} = config;
 	let fixedDraggableElement: HTMLElement | undefined;
+	const value = config.onGetValue(index)
 	const droppableGroupClass = getClassesList(droppableGroup)
 		.map((classGroup) => `droppable-group-${classGroup}`)
 		.join(' ');
@@ -245,7 +246,7 @@ export default function useDraggable<T>(
 	};
 	const onMove = (event: DragMouseTouchEvent, isTouchEvent: boolean = false) => {
 		updateConfig(event, fixedDraggableElement ?? draggableElement);
-		const isOutside = droppableConfigurator.isOutside(event);
+		const isOutside = droppableConfigurator.isOutside(event, fixedDraggableElement);
 		toggleDroppableClass(isOutside);
 		if (draggingState === DraggingState.START_DRAGGING && !isTouchEvent) {
 			startDragging(event);
@@ -317,7 +318,7 @@ export default function useDraggable<T>(
 	};
 	const startTouchMoveEvent = (event: DragMouseTouchEvent) => {
 		updateConfig(event, draggableElement);
-		toggleDroppableClass(droppableConfigurator.isOutside(event));
+		toggleDroppableClass(droppableConfigurator.isOutside(event, fixedDraggableElement));
 		startDragging(event);
 	};
 	const onmousedown = (moveEvent: MoveEvent, onLeaveEvent: OnLeaveEvent) => {
@@ -358,7 +359,7 @@ export default function useDraggable<T>(
 	const disableDragging = (moveEvent: MoveEvent, event: MouseEvent | TouchEvent) => {
 		toggleDroppableClass(true);
 		const convertedEvent = convetEventToDragMouseTouchEvent(event);
-		onDropDraggingEvent(droppableConfigurator.isOutside(convertedEvent));
+		onDropDraggingEvent(droppableConfigurator.isOutside(convertedEvent, fixedDraggableElement));
 		clearTimeout(delayTimeout);
 		document.removeEventListener(moveEvent, handleMove);
 		updateConfig(convertedEvent, fixedDraggableElement);
@@ -435,7 +436,6 @@ export default function useDraggable<T>(
 				fixedDraggableElement,
 				isOutsideAllDroppables ? droppableConfigurator.initial : droppableConfigurator.current,
 				windowScroll,
-				index
 			);
 		}
 	};

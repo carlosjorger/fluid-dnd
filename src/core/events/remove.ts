@@ -1,10 +1,7 @@
 import { getSiblings } from '../utils/GetStyles';
 import { Translate } from '../../../index';
 import {
-	moveTranslate,
-	setTranslate,
-	setTranslateByDirection,
-	setTranslateWithTransition
+	moveTranslate
 } from '../utils/SetStyles';
 import { CoreConfig } from '..';
 import getTranslationByDragging from './dragAndDrop/getTranslationByDraggingAndEvent';

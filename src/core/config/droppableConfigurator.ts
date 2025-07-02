@@ -138,8 +138,10 @@ export class DroppableConfigurator<T> {
 		this.current = this.getCurrentConfig(event, currentElement);
 		this.changeDroppable(this.current, oldDroppableConfig);
 	}
-	isOutside(event: DragMouseTouchEvent) {
-		const currentElement = this.draggableElement;
-		return !Boolean(this.getCurrent(currentElement, event));
+	isOutside(event: DragMouseTouchEvent,draggableElement:HTMLElement|undefined) {
+		if (draggableElement) {
+			return !Boolean(this.getCurrent(draggableElement, event));
+		}
+		return false
 	}
 }

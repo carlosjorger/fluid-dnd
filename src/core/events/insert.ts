@@ -56,15 +56,14 @@ export default function useInsertEvents<T>(handlerPublisher: HandlerPublisher) {
 				addDraggingSortableClass,
 				endInsertEvent
 			);
-			removeElementDraggingStyles(draggedElement);
-			removeTranslateFromSiblings(draggedElement, droppable);
+			removeTranslateFromSiblings(droppable);
 			removeTempChild(droppable, 0, true);
 		}, delayBeforeInsert);
 	};
 
-	const removeTranslateFromSiblings = (element: HTMLElement, parent: HTMLElement) => {
-		const [siblings] = getSiblings(element, parent);
-		for (const sibling of [...siblings, element]) {
+	const removeTranslateFromSiblings = (parent: HTMLElement) => {
+		const siblings = getParentDraggableChildren(parent);
+		for (const sibling of siblings) {
 			removeTranslateWhitoutTransition(sibling);
 		}
 	};

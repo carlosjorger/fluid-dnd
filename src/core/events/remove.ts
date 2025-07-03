@@ -1,6 +1,7 @@
 import { getSiblings } from '../utils/GetStyles';
 import { Translate } from '../../../index';
 import {
+	addTranslate,
 	moveTranslate
 } from '../utils/SetStyles';
 import { CoreConfig } from '..';
@@ -39,6 +40,7 @@ export default function useRemoveEvents<T>(
 		for (const [index, sibling] of siblings.entries()) {
 			if (index >= targetIndex) {
 				removeTranslateWhitoutTransition(sibling);
+				// addTranslate(sibling, translation.width, translation.height);
 				startDragEventOverElement(sibling, translation);
 				setTimeout(() => {
 					onFinishRemoveEvent(sibling as HTMLElement);

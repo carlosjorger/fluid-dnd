@@ -249,6 +249,19 @@ const setCustomProperty = (
 ) => {
 	return element && element.style.setProperty(fixedProp, newFixedSize);
 };
+const getTranslate = (direction: Direction, element: HTMLElement) => {
+	const tranlateProp = direction == 'horizontal' ? TRANSLATE_X : TRANSLATE_Y;
+	const currentTranslate = parseFloat(element.style.getPropertyValue(tranlateProp) || '0');
+	return currentTranslate;
+};
+export function addTranslate(element: Element, x: number, y: number) {
+	if (!IsHTMLElement(element)) {
+		return;
+	}
+	const currentTranslateX = getTranslate('horizontal',element);
+	const currentTranslateY = getTranslate('vertical',element);
+	setTranslate(element, currentTranslateX + x, currentTranslateY + y);
+}
 export function setTranslate(element: Element, x: number, y: number) {
 	if (!IsHTMLElement(element)) {
 		return;

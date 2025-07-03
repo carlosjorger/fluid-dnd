@@ -193,12 +193,6 @@ export default function useDraggable<T>(
 			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, droppableConfigurator.current);
 		}
 	};
-	const removeTranslates = (droppable: Element) => {
-		const drgagables = droppable.querySelectorAll(`.${DRAGGABLE_CLASS}`);
-		for (const draggable of drgagables) {
-			moveTranslate(draggable, 0, 0);
-		}
-	};
 	const changeDroppable = (
 		newdDroppableConfig: DroppableConfig<T> | undefined,
 		oldDroppableConfig: DroppableConfig<T> | undefined
@@ -210,7 +204,6 @@ export default function useDraggable<T>(
 			fixedDraggableElement
 		) {
 			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, oldDroppableConfig);
-			removeTranslates(oldDroppableConfig.droppable);
 			var sortable = oldDroppableConfig.droppable.querySelector(`.${DRAGGING_SORTABLE_CLASS}`);
 			if (sortable && IsHTMLElement(sortable)) {
 				const index = parseIntEmpty(sortable?.getAttribute(INDEX_ATTR));

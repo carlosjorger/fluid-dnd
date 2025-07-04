@@ -262,6 +262,15 @@ export function addTranslate(element: Element, x: number, y: number) {
 	const currentTranslateY = getTranslate('vertical',element);
 	setTranslate(element, currentTranslateX + x, currentTranslateY + y);
 }
+export function removeTranslate(element: Element) {
+	if (!IsHTMLElement(element)) {
+		return;
+	}
+	element.style.removeProperty(TRANSLATE_X);
+	element.style.removeProperty(TRANSLATE_Y);
+	element.style.transform = '';
+	element.style.transition = '';
+}
 export function setTranslate(element: Element, x: number, y: number) {
 	if (!IsHTMLElement(element)) {
 		return;

@@ -64,21 +64,15 @@ export default function useDraggable<T>(
 		coordinateTransform
 	} = config;
 	let fixedDraggableElement: HTMLElement | undefined;
-	const value = config.onGetValue(index)
 	const droppableGroupClass = getClassesList(droppableGroup)
 		.map((classGroup) => `droppable-group-${classGroup}`)
 		.join(' ');
 	let draggingState: DraggingState = DraggingState.NOT_DRAGGING;
-	let windowScroll = {
-		scrollX: 0,
-		scrollY: 0
-	};
+
 	let pagePosition = { pageX: 0, pageY: 0 };
 	let delayTimeout: NodeJS.Timeout | undefined;
 	let initialTouch: Coordinate | undefined;
-	const [setTransform, updateTransformState] = usePositioning(
-		coordinateTransform,
-	);
+	const [setTransform, updateTransformState] = usePositioning(coordinateTransform);
 	const endDraggingState = () => {
 		draggingState = DraggingState.NOT_DRAGGING;
 	};
@@ -112,8 +106,6 @@ export default function useDraggable<T>(
 	const [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] = useDragAndDropEvents<T>(
 		config,
 		index,
-		parent,
-		droppableGroupClass,
 		handlerPublisher,
 		emitInsertInActualDroppable
 	);
@@ -212,7 +204,6 @@ export default function useDraggable<T>(
 		}
 	};
 	const droppableConfigurator = new DroppableConfigurator(
-		draggableElement,
 		droppableGroupClass,
 		parent,
 		setTransformDragEvent,
@@ -320,8 +311,6 @@ export default function useDraggable<T>(
 				return;
 			}
 			ConfigHandler.updateScrolls(parent, droppableGroupClass);
-			const { scrollX, scrollY } = window;
-			windowScroll = { scrollX, scrollY };
 			if (draggingState === DraggingState.NOT_DRAGGING) {
 				draggingState = DraggingState.START_DRAGGING;
 				const data = getDragStartEventData(draggableElement);
@@ -427,8 +416,7 @@ export default function useDraggable<T>(
 		if (fixedDraggableElement?.classList.contains(DRAGGING_CLASS)) {
 			emitDroppingEvent(
 				fixedDraggableElement,
-				isOutsideAllDroppables ? droppableConfigurator.initial : droppableConfigurator.current,
-				windowScroll,
+				isOutsideAllDroppables ? droppableConfigurator.initial : droppableConfigurator.current
 			);
 		}
 	};

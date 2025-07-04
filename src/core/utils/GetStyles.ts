@@ -187,3 +187,62 @@ export const getDimensionsWithMargin = (element: HTMLElement) => {
 		height: rect.height + marginTop + marginBottom
 	};
 };
+
+/**
+ * Determines if one element is positioned after another element
+ * @param element1 - The first element to compare
+ * @param element2 - The second element to compare
+ * @param direction - The direction to check (horizontal or vertical)
+ * @returns true if element1 is positioned after element2 in the specified direction
+ * 
+ * @example
+ * ```typescript
+ * import { isElementAfter, HORIZONTAL, VERTICAL } from './utils/GetStyles';
+ * 
+ * // Check if element1 is positioned to the right of element2
+ * const isAfterHorizontally = isElementAfter(element1, element2, HORIZONTAL);
+ * 
+ * // Check if element1 is positioned below element2
+ * const isAfterVertically = isElementAfter(element1, element2, VERTICAL);
+ * ```
+ */
+export const isElementAfter = (
+	element1: Element,
+	element2: Element,
+	direction: Direction
+): boolean => {
+	const rect1 = getRect(element1);
+	const rect2 = getRect(element2);
+	const { before } = getPropByDirection(direction);
+	return rect1[before] > rect2[before];
+};
+
+/**
+ * Determines if one element is positioned before another element
+ * @param element1 - The first element to compare
+ * @param element2 - The second element to compare
+ * @param direction - The direction to check (horizontal or vertical)
+ * @returns true if element1 is positioned before element2 in the specified direction
+ * 
+ * @example
+ * ```typescript
+ * import { isElementBefore, HORIZONTAL, VERTICAL } from './utils/GetStyles';
+ * 
+ * // Check if element1 is positioned to the left of element2
+ * const isBeforeHorizontally = isElementBefore(element1, element2, HORIZONTAL);
+ * 
+ * // Check if element1 is positioned above element2
+ * const isBeforeVertically = isElementBefore(element1, element2, VERTICAL);
+ * ```
+ */
+export const isElementBefore = (
+	element1: Element,
+	element2: Element,
+	direction: Direction
+): boolean => {
+	const rect1 = getRect(element1);
+	const rect2 = getRect(element2);
+	const { before } = getPropByDirection(direction);
+	
+	return rect1[before] < rect2[before];
+};

@@ -27,7 +27,6 @@ export class DroppableConfigurator<T> {
 	initial: DroppableConfig<any> | undefined;
 	current: DroppableConfig<T> | undefined;
 	private parent: HTMLElement;
-	private draggableElement: HTMLElement;
 	private groupClass: string | null;
 	private dragEvent: () => void;
 	private changeDroppable: (
@@ -36,7 +35,6 @@ export class DroppableConfigurator<T> {
 	) => void;
 	private mapFrom: MapFrom<T>;
 	constructor(
-		draggableElement: HTMLElement,
 		droppableGroupClass: string | null,
 		parent: HTMLElement,
 		setTransformDragEvent: () => void,
@@ -47,7 +45,6 @@ export class DroppableConfigurator<T> {
 		mapFrom: MapFrom<T>
 	) {
 		this.parent = parent;
-		this.draggableElement = draggableElement;
 		this.groupClass = droppableGroupClass;
 		this.dragEvent = setTransformDragEvent;
 		this.mapFrom = mapFrom;
@@ -131,17 +128,17 @@ export class DroppableConfigurator<T> {
 	}
 	// TODO: pass fixed draggable
 	updateConfig(event: DragMouseTouchEvent, currentElement?: HTMLElement) {
-		if(!currentElement){
-			return
+		if (!currentElement) {
+			return;
 		}
 		const oldDroppableConfig = this.current;
 		this.current = this.getCurrentConfig(event, currentElement);
 		this.changeDroppable(this.current, oldDroppableConfig);
 	}
-	isOutside(event: DragMouseTouchEvent,draggableElement:HTMLElement|undefined) {
+	isOutside(event: DragMouseTouchEvent, draggableElement: HTMLElement | undefined) {
 		if (draggableElement) {
 			return !Boolean(this.getCurrent(draggableElement, event));
 		}
-		return false
+		return false;
 	}
 }

@@ -1,4 +1,4 @@
-import { getParentDraggableChildren, getSiblings } from '../utils/GetStyles';
+import { getParentDraggableChildren } from '../utils/GetStyles';
 import { CoreConfig } from '../index';
 import getTranslationByDragging from '../events/dragAndDrop/getTranslationByDraggingAndEvent';
 import { IsHTMLElement } from '../utils/typesCheckers';
@@ -25,10 +25,7 @@ export default function useInsertEvents<T>(handlerPublisher: HandlerPublisher) {
 		}
 		const currentConfig = droppableConfig.config;
 		const { delayBeforeInsert } = currentConfig;
-		const [removeElementDraggingStyles, _, dragEventOverElement] = useChangeDraggableStyles(
-			currentConfig,
-			handlerPublisher
-		);
+		const [, , dragEventOverElement] = useChangeDraggableStyles(currentConfig, handlerPublisher);
 		const { droppable } = droppableConfig;
 		const translation = getTranslationByDragging(
 			draggedElement,

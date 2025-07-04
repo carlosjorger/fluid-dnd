@@ -37,9 +37,9 @@ const getTranslationByDragging = (
 	nextElement: Element | null
 ) => {
 	const {
-		afterMargin,
-		beforeMargin,
-		distance,
+		endMargin: afterMargin,
+		startMargin: beforeMargin,
+		size: distance,
 		gap: gapStyle,
 		getRect
 	} = getPropByDirection(direction);

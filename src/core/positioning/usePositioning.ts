@@ -10,14 +10,12 @@ import { HANDLER_CLASS, DRAGGING_CLASS } from '../utils/classes';
 import { containClass } from '../utils/dom/classList';
 import { setTranslate } from '../utils/SetStyles';
 
-export const usePositioning = (
-	coordinateTransforms: CoordinateMap[]
-) => {
+export const usePositioning = (coordinateTransforms: CoordinateMap[]) => {
 	let currentOffset = { offsetX: 0, offsetY: 0 };
 	let position = { top: 0, left: 0 };
 	let translate = { x: 0, y: 0 };
 	const updateTranform = (newTranslate: Coordinate, element: HTMLElement) => {
-		setTranslate(element,newTranslate.x, newTranslate.y)
+		setTranslate(element, newTranslate.x, newTranslate.y);
 	};
 	const updatePosition = (newPosition: ElementPosition, element: HTMLElement) => {
 		element.style.top = `${newPosition.top}px`;
@@ -37,14 +35,14 @@ export const usePositioning = (
 		}
 		const getTranslateWihtDirection = (translateDirection: Direction) => {
 			const {
-				beforeMargin,
-				borderBeforeWidth,
-				before,
+				startMargin,
+				borderWidth,
+				start,
 				offset,
 				scroll,
 				page,
 				inner,
-				distance,
+				size: distance,
 				axis,
 				getRect
 			} = getPropByDirection(translateDirection);
@@ -53,8 +51,8 @@ export const usePositioning = (
 			const innerDistance = window[inner];
 			const distanceValue = getRect(element)[distance];
 			const [draggedElement] = element.children;
-			const border = getValueFromProperty(draggedElement, borderBeforeWidth);
-			const margin = getValueFromProperty(draggedElement, beforeMargin);
+			const border = getValueFromProperty(draggedElement, borderWidth);
+			const margin = getValueFromProperty(draggedElement, startMargin);
 			const elementPosittion = pageValue - currentOffset[offset];
 
 			const beforefixecParentValue = getNearestFixedParentPosition(element, translateDirection);
@@ -64,7 +62,7 @@ export const usePositioning = (
 			) {
 				const newTranslate =
 					elementPosittion -
-					position[before] -
+					position[start] -
 					border -
 					margin -
 					scrollValue -
@@ -77,7 +75,7 @@ export const usePositioning = (
 		};
 		const updateScroll = (translateDirection: Direction, draggedElement: Element) => {
 			if (element && containClass(element, DRAGGING_CLASS) && translateDirection === direction) {
-				updateScrollByPosition(direction, parent, draggedElement ,position, translate);
+				updateScrollByPosition(direction, parent, draggedElement, position, translate);
 			}
 		};
 		const updateTranlateByDirection = (direction: Direction) => {
@@ -113,11 +111,11 @@ export const usePositioning = (
 };
 
 const getOffsetWithDraggable = (direction: Direction, element: Element, draggable: Element) => {
-	const { borderBeforeWidth, before, getRect } = getPropByDirection(direction);
+	const { borderWidth, start, getRect } = getPropByDirection(direction);
 	return (
-		getRect(element)[before] -
-		getRect(draggable)[before] -
-		getValueFromProperty(draggable, borderBeforeWidth)
+		getRect(element)[start] -
+		getRect(draggable)[start] -
+		getValueFromProperty(draggable, borderWidth)
 	);
 };
 const getOffset = (event: TransformEvent, draggable: Element) => {
@@ -150,7 +148,13 @@ const getPositionByDistance = (
 		offsetY: number;
 	}
 ) => {
-	const { offset, beforeMargin, page, borderBeforeWidth, scroll } = getPropByDirection(direction);
+	const {
+		offset,
+		startMargin: beforeMargin,
+		page,
+		borderWidth,
+		scroll
+	} = getPropByDirection(direction);
 
 	const beforefixecParentValue = getNearestFixedParentPosition(element, direction);
 
@@ -158,7 +162,7 @@ const getPositionByDistance = (
 		event[page] -
 		offsetEvent[offset] -
 		getValueFromProperty(element, beforeMargin) -
-		getValueFromProperty(element, borderBeforeWidth) -
+		getValueFromProperty(element, borderWidth) -
 		window[scroll] -
 		beforefixecParentValue
 	);

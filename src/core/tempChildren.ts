@@ -16,16 +16,16 @@ const DELAY_TIME = 50;
 const getDistance = (droppable: HTMLElement, draggedElement: HTMLElement, direction: Direction) => {
 	let distances = getTranslationByDragging(draggedElement, START_DRAG_EVENT, direction, droppable);
 	const gap = getGapPixels(droppable, direction);
-	const { distance } = getPropByDirection(direction);
-	distances[distance] -= gap;
+	const { size } = getPropByDirection(direction);
+	distances[size] -= gap;
 	const [large, largeDistance] = getlarge(direction, draggedElement);
 	distances[largeDistance] = large;
 	return distances;
 };
 const getlarge = (direction: Direction, draggedElement: HTMLElement) => {
 	const largeDirection = direction == HORIZONTAL ? VERTICAL : HORIZONTAL;
-	const { distance, getRect } = getPropByDirection(largeDirection);
-	return [getRect(draggedElement)[distance], distance] as const;
+	const { size, getRect } = getPropByDirection(largeDirection);
+	return [getRect(draggedElement)[size], size] as const;
 };
 const setSizes = (element: HTMLElement, height: number, width: number) => {
 	setSizeStyles(element, height, width);
@@ -49,8 +49,8 @@ const scrollPercent = (
 	droppable: HTMLElement,
 	droppableScroll: ElementScroll
 ) => {
-	const { scrollDistance, clientDistance, scrollElement } = getPropByDirection(direction);
-	return droppableScroll[scrollElement] / (droppable[scrollDistance] - droppable[clientDistance]);
+	const { scrollSize, clientSize, scrollElement } = getPropByDirection(direction);
+	return droppableScroll[scrollElement] / (droppable[scrollSize] - droppable[clientSize]);
 };
 const fixScrollInitialChange = <T>(
 	droppableConfig: DroppableConfig<T>,
@@ -63,9 +63,9 @@ const fixScrollInitialChange = <T>(
 	const { direction } = config;
 
 	const scrollCompleted = scrollPercent(config.direction, droppable, scroll) > 0.99;
-	const { scrollDistance, clientDistance, scrollElement } = getPropByDirection(direction);
+	const { scrollSize, clientSize, scrollElement } = getPropByDirection(direction);
 	if (scrollCompleted) {
-		droppable[scrollElement] = droppable[scrollDistance] - droppable[clientDistance];
+		droppable[scrollElement] = droppable[scrollSize] - droppable[clientSize];
 	}
 };
 const getTempChild = <T>(

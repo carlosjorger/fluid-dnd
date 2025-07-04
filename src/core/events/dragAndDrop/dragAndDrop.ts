@@ -6,11 +6,12 @@ import {
 } from '../../utils/GetStyles';
 import { WindowScroll } from '../../../../index';
 import {
+	getTranslate,
 	setTranslate,
 	setTranslateByDirection,
 	setTranslateWithTransition
 } from '../../utils/SetStyles';
-import { CoreConfig, Direction } from '../..';
+import { CoreConfig, Direction, HORIZONTAL, VERTICAL } from '../..';
 import { DRAG_EVENT, START_DRAG_EVENT } from '../../utils';
 import { DroppableConfig } from '../../config/configHandler';
 import { IsHTMLElement } from '../../utils/typesCheckers';
@@ -21,8 +22,8 @@ import { useChangeDraggableStyles } from '../changeDraggableStyles';
 import { getGapPixels } from '../../utils/ParseStyles';
 
 type DraggingEvent = typeof DRAG_EVENT | typeof START_DRAG_EVENT;
-const TRANSLATE_X = '--translate-x';
-const TRANSLATE_Y = '--translate-y';
+
+// TODO: Refactor this file
 export default function useDragAndDropEvents<T>(
 	currentConfig: CoreConfig<T>,
 	index: number,
@@ -46,11 +47,11 @@ export default function useDragAndDropEvents<T>(
 		const siblings = [...droppable.children].filter((child) =>
 			child.classList.contains(DRAGGABLE_CLASS)
 		);
-		const { before, after, getRect } = getPropByDirection(direction);
-		const positions = siblings.map((sibling) => getRect(sibling)[before]);
+		const { start, end, getRect } = getPropByDirection(direction);
+		const positions = siblings.map((sibling) => getRect(sibling)[start]);
 		const lastSibling = siblings.at(-1);
 		if (lastSibling) {
-			const lastSiblingPosition = getRect(lastSibling)[after];
+			const lastSiblingPosition = getRect(lastSibling)[end];
 			const gap = getGapPixels(droppable, direction);
 			positions.push(lastSiblingPosition + gap);
 		}
@@ -200,15 +201,10 @@ export default function useDragAndDropEvents<T>(
 		const deltaTargetPosition = getDeltaDraggableSortable(targetIndex, draggingDirection);
 		setTranslateByDirection(config, draggableSortable, -deltaTargetPosition);
 	};
-	const getTranslate = (direction: Direction, element: HTMLElement) => {
-		const tranlateProp = direction == 'horizontal' ? TRANSLATE_X : TRANSLATE_Y;
-		const currentTranslate = parseFloat(element.style.getPropertyValue(tranlateProp) || '0');
-		return currentTranslate;
-	};
 	const getAbsolutePosition = (direction: Direction, element: HTMLElement) => {
 		const transalte = getTranslate(direction, element);
-		const { getRect, before } = getPropByDirection(direction);
-		return getRect(element)[before] - transalte;
+		const { getRect, start } = getPropByDirection(direction);
+		return getRect(element)[start] - transalte;
 	};
 	const getDeltaTargetPosition = (
 		targetIndex: number,
@@ -247,15 +243,15 @@ export default function useDragAndDropEvents<T>(
 		targetIndex: number
 	) => {
 		const { direction } = droppableConfig.config;
-		const { before, distance, getRect } = getPropByDirection(direction);
+		const { start, size, getRect } = getPropByDirection(direction);
 		const currentBoundingClientRect = getRect(sourceElement);
 		const targetBoundingClientRect = getRect(targetElement);
 
-		const currentPosition = currentBoundingClientRect[before];
-		const currentSize = currentBoundingClientRect[distance];
+		const currentPosition = currentBoundingClientRect[start];
+		const currentSize = currentBoundingClientRect[size];
 		const currentEndPosition = currentPosition + currentSize;
 		const targetPosition = getPosition(droppableConfig, targetElement, targetIndex, direction);
-		const targetSize = targetBoundingClientRect[distance];
+		const targetSize = targetBoundingClientRect[size];
 		const targetMiddle = targetSize / 2;
 		const targetEndPosition = targetPosition + targetSize;
 
@@ -291,11 +287,11 @@ export default function useDragAndDropEvents<T>(
 
 	// #region Drop events
 	const getInitialPosition = (draggedElement: HTMLElement, draggableSortable: HTMLElement) => {
-		const draggedElementX = getAbsolutePosition('horizontal', draggedElement);
-		const draggedElementY = getAbsolutePosition('vertical', draggedElement);
+		const draggedElementX = getAbsolutePosition(HORIZONTAL, draggedElement);
+		const draggedElementY = getAbsolutePosition(VERTICAL, draggedElement);
 
-		const draggableSortableX = getAbsolutePosition('horizontal', draggableSortable);
-		const draggableSortableY = getAbsolutePosition('vertical', draggableSortable);
+		const draggableSortableX = getAbsolutePosition(HORIZONTAL, draggableSortable);
+		const draggableSortableY = getAbsolutePosition(VERTICAL, draggableSortable);
 		return {
 			initialX: draggableSortableX - draggedElementX,
 			initialY: draggableSortableY - draggedElementY
@@ -313,8 +309,8 @@ export default function useDragAndDropEvents<T>(
 		}
 		const { initialX, initialY } = getInitialPosition(draggedElement, draggableSortable);
 
-		let draggableSortableTranslateX = getTranslate('horizontal', draggableSortable) + initialX;
-		let draggableSortableTranslateY = getTranslate('vertical', draggableSortable) + initialY;
+		const draggableSortableTranslateX = getTranslate(HORIZONTAL, draggableSortable) + initialX;
+		const draggableSortableTranslateY = getTranslate(VERTICAL, draggableSortable) + initialY;
 
 		setTranslateWithTransition(
 			droppableConfig.config,

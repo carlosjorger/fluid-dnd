@@ -33,7 +33,7 @@ import {
 import HandlerPublisher from './HandlerPublisher';
 import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
 import useInsertEvents from './events/insert';
-import { parseIntEmpty } from './utils/GetStyles';
+import { getRect, parseIntEmpty } from './utils/GetStyles';
 
 const enum DraggingState {
 	NOT_DRAGGING,
@@ -425,7 +425,7 @@ export default function useDraggable<T>(
 		moveTranslate(element, 0, 0);
 	};
 	const setDraggingStyles = (element: HTMLElement) => {
-		const { height, width } = draggableElement.getBoundingClientRect();
+		const { height, width } = getRect(draggableElement);
 		setCustomFixedSize(element, {
 			fixedHeight: `${height}px`,
 			fixedWidth: `${width}px`

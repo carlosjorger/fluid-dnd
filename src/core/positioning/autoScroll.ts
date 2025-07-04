@@ -21,20 +21,18 @@ export const updateScrollByPosition = (
 		top: number;
 		left: number;
 	},
-	translate: Coordinate,
-
+	translate: Coordinate
 ) => {
 	if (!draggedElement || !IsHTMLElement(draggedElement)) {
 		return;
 	}
-	const { before, distance, axis, getRect } = getPropByDirection(direction);
-	const distanceValue = getRect(draggedElement)[distance];
+	const { start, size, axis, getRect } = getPropByDirection(direction);
+	const distanceValue = getRect(draggedElement)[size];
 
 	const parentBoundingClientRect = getRect(parent);
-	const positionInsideParent =
-		position[before] - parentBoundingClientRect[before] + translate[axis];
+	const positionInsideParent = position[start] - parentBoundingClientRect[start] + translate[axis];
 
-	const parentDistance = parentBoundingClientRect[distance];
+	const parentDistance = parentBoundingClientRect[size];
 	const totalDistance = parentDistance - distanceValue;
 	const relativePosition = positionInsideParent / totalDistance;
 	const relativeDistanceValue = distanceValue / totalDistance;

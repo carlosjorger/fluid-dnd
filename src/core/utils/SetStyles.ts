@@ -1,7 +1,7 @@
 import { draggableTargetTimingFunction } from '.';
 import { CoreConfig, Direction, HORIZONTAL, VERTICAL } from '..';
 import { DragMouseTouchEvent, fixedSize } from '../../../index';
-import { getPropByDirection, getValueFromProperty } from './GetStyles';
+import { getPropByDirection, getRect, getValueFromProperty } from './GetStyles';
 import { IsHTMLElement, IsMouseEvent, isTouchEvent } from './typesCheckers';
 
 type onTouchEvent = 'ontouchstart' | 'ontouchmove' | 'ontouchend';
@@ -31,7 +31,7 @@ export const fixSizeStyle = (element: HTMLElement | undefined | null) => {
 	if (!element) {
 		return;
 	}
-	const { height, width } = element.getBoundingClientRect();
+	const { height, width } = getRect(element);
 	setSizeStyles(element, height, width);
 };
 export const moveTranslate = (
@@ -163,13 +163,13 @@ const getOffset = (
 	direction: Direction,
 	element: Element
 ) => {
-	const { page, scroll, before, borderBeforeWidth, getRect } = getPropByDirection(direction);
+	const { page, scroll, start, borderWidth, getRect } = getPropByDirection(direction);
 	const boundingClientRect = getRect(element);
 	return (
 		event[page] -
 		window[scroll] -
-		boundingClientRect[before] -
-		getValueFromProperty(element, borderBeforeWidth)
+		boundingClientRect[start] -
+		getValueFromProperty(element, borderWidth)
 	);
 };
 export const setTranistion = (
@@ -249,8 +249,8 @@ const setCustomProperty = (
 ) => {
 	return element && element.style.setProperty(fixedProp, newFixedSize);
 };
-const getTranslate = (direction: Direction, element: HTMLElement) => {
-	const tranlateProp = direction == 'horizontal' ? TRANSLATE_X : TRANSLATE_Y;
+export const getTranslate = (direction: Direction, element: HTMLElement) => {
+	const tranlateProp = direction == HORIZONTAL ? TRANSLATE_X : TRANSLATE_Y;
 	const currentTranslate = parseFloat(element.style.getPropertyValue(tranlateProp) || '0');
 	return currentTranslate;
 };
@@ -258,8 +258,8 @@ export function addTranslate(element: Element, x: number, y: number) {
 	if (!IsHTMLElement(element)) {
 		return;
 	}
-	const currentTranslateX = getTranslate('horizontal',element);
-	const currentTranslateY = getTranslate('vertical',element);
+	const currentTranslateX = getTranslate(HORIZONTAL, element);
+	const currentTranslateY = getTranslate(VERTICAL, element);
 	setTranslate(element, currentTranslateX + x, currentTranslateY + y);
 }
 export function removeTranslate(element: Element) {
@@ -295,7 +295,7 @@ export function setTranslateByDirection<T>(
 	translate: number
 ) {
 	const { animationDuration, direction } = currentConfig;
-	if (direction == 'horizontal') {
+	if (direction == HORIZONTAL) {
 		setTranslate(element, translate, 0);
 	} else {
 		setTranslate(element, 0, translate);

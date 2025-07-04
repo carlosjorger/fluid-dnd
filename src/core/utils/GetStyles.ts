@@ -76,15 +76,15 @@ const getIntersection = (element1: Element, element2: Element) => {
 	};
 };
 const intersectionByDirection = (rect1: DOMRect, rect2: DOMRect, direction: Direction) => {
-	const { before, distance } = getPropByDirection(direction);
+	const { start, size } = getPropByDirection(direction);
 	return intersection(
 		{
-			x1: rect1[before],
-			x2: rect1[before] + rect1[distance]
+			x1: rect1[start],
+			x2: rect1[start] + rect1[size]
 		},
 		{
-			x1: rect2[before],
-			x2: rect2[before] + rect2[distance]
+			x1: rect2[start],
+			x2: rect2[start] + rect2[size]
 		}
 	);
 };
@@ -101,29 +101,27 @@ export const getScrollElement = (element: HTMLElement) => {
 	const { scrollLeft, scrollTop } = element;
 	return { scrollLeft, scrollTop };
 };
-const getRect = (element: Element) => {
+export const getRect = (element: Element) => {
 	return element.getBoundingClientRect();
 };
 export const getPropByDirection = (direction: Direction) => {
 	const ifHorizontal = direction == HORIZONTAL;
 	return {
-		beforeMargin: ifHorizontal ? 'marginLeft' : 'marginTop',
-		afterMargin: ifHorizontal ? 'marginRight' : 'marginBottom',
-		borderBeforeWidth: ifHorizontal ? 'borderLeftWidth' : 'borderTopWidth',
-		before: ifHorizontal ? 'left' : 'top',
-		after: ifHorizontal ? 'right' : 'bottom',
+		startMargin: ifHorizontal ? 'marginLeft' : 'marginTop',
+		endMargin: ifHorizontal ? 'marginRight' : 'marginBottom',
+		borderWidth: ifHorizontal ? 'borderLeftWidth' : 'borderTopWidth',
+		start: ifHorizontal ? 'left' : 'top',
+		end: ifHorizontal ? 'right' : 'bottom',
 		gap: ifHorizontal ? 'columnGap' : 'rowGap',
-		distance: ifHorizontal ? 'width' : 'height',
+		size: ifHorizontal ? 'width' : 'height',
 		axis: ifHorizontal ? 'x' : 'y',
 		offset: ifHorizontal ? 'offsetX' : 'offsetY',
 		scroll: ifHorizontal ? 'scrollX' : 'scrollY',
 		scrollElement: ifHorizontal ? 'scrollLeft' : 'scrollTop',
 		page: ifHorizontal ? 'pageX' : 'pageY',
 		inner: ifHorizontal ? 'innerWidth' : 'innerHeight',
-		offsetElement: ifHorizontal ? 'offsetLeft' : 'offsetTop',
-		scrollDistance: ifHorizontal ? 'scrollWidth' : 'scrollHeight',
-		clientDistance: ifHorizontal ? 'clientWidth' : 'clientHeight',
-		paddingBefore: ifHorizontal ? 'paddingLeft' : 'paddingTop',
+		scrollSize: ifHorizontal ? 'scrollWidth' : 'scrollHeight',
+		clientSize: ifHorizontal ? 'clientWidth' : 'clientHeight',
 		getRect
 	} as const;
 };
@@ -167,14 +165,14 @@ const getNearestFixedParent = (element: Element) => {
 };
 
 export const getNearestFixedParentPosition = (element: Element, direction: Direction) => {
-	const { before, borderBeforeWidth } = getPropByDirection(direction);
+	const { start, borderWidth: borderStartWidth } = getPropByDirection(direction);
 	const fixedParent = getNearestFixedParent(element);
 	return fixedParent
-		? getRect(fixedParent)[before] + getValueFromProperty(fixedParent, borderBeforeWidth)
+		? getRect(fixedParent)[start] + getValueFromProperty(fixedParent, borderStartWidth)
 		: 0;
 };
 export const getDimensionsWithMargin = (element: HTMLElement) => {
-	const rect = element.getBoundingClientRect();
+	const rect = getRect(element);
 	const styles = window.getComputedStyle(element);
 
 	const marginTop = parseFloat(styles.marginTop);
@@ -194,14 +192,14 @@ export const getDimensionsWithMargin = (element: HTMLElement) => {
  * @param element2 - The second element to compare
  * @param direction - The direction to check (horizontal or vertical)
  * @returns true if element1 is positioned after element2 in the specified direction
- * 
+ *
  * @example
  * ```typescript
  * import { isElementAfter, HORIZONTAL, VERTICAL } from './utils/GetStyles';
- * 
+ *
  * // Check if element1 is positioned to the right of element2
  * const isAfterHorizontally = isElementAfter(element1, element2, HORIZONTAL);
- * 
+ *
  * // Check if element1 is positioned below element2
  * const isAfterVertically = isElementAfter(element1, element2, VERTICAL);
  * ```
@@ -213,36 +211,6 @@ export const isElementAfter = (
 ): boolean => {
 	const rect1 = getRect(element1);
 	const rect2 = getRect(element2);
-	const { before } = getPropByDirection(direction);
-	return rect1[before] > rect2[before];
-};
-
-/**
- * Determines if one element is positioned before another element
- * @param element1 - The first element to compare
- * @param element2 - The second element to compare
- * @param direction - The direction to check (horizontal or vertical)
- * @returns true if element1 is positioned before element2 in the specified direction
- * 
- * @example
- * ```typescript
- * import { isElementBefore, HORIZONTAL, VERTICAL } from './utils/GetStyles';
- * 
- * // Check if element1 is positioned to the left of element2
- * const isBeforeHorizontally = isElementBefore(element1, element2, HORIZONTAL);
- * 
- * // Check if element1 is positioned above element2
- * const isBeforeVertically = isElementBefore(element1, element2, VERTICAL);
- * ```
- */
-export const isElementBefore = (
-	element1: Element,
-	element2: Element,
-	direction: Direction
-): boolean => {
-	const rect1 = getRect(element1);
-	const rect2 = getRect(element2);
-	const { before } = getPropByDirection(direction);
-	
-	return rect1[before] < rect2[before];
+	const { start } = getPropByDirection(direction);
+	return rect1[start] > rect2[start];
 };

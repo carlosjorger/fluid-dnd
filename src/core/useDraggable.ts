@@ -42,6 +42,7 @@ const enum DraggingState {
 	END_DRAGGING,
 	INSERTING
 }
+// TODO: Refactor this file
 export default function useDraggable<T>(
 	draggableElement: HTMLElement,
 	index: number,
@@ -81,7 +82,7 @@ export default function useDraggable<T>(
 		parent,
 		handlerPublisher
 	);
-	const [emitInsertEventToSiblings] = useInsertEvents(handlerPublisher);
+	const [emitInsertEvent] = useInsertEvents(handlerPublisher);
 	const emitInsertInActualDroppable = (
 		targetIndex: number,
 		value: T,
@@ -90,7 +91,7 @@ export default function useDraggable<T>(
 		if (droppableConfigurator.current && draggingState !== DraggingState.INSERTING) {
 			const stateBeforeInserting = draggingState;
 			draggingState = DraggingState.INSERTING;
-			emitInsertEventToSiblings(
+			emitInsertEvent(
 				targetIndex,
 				draggableElement,
 				value,
@@ -475,12 +476,7 @@ export default function useDraggable<T>(
 	const insertAtFromElement = (targetIndex: number, value: T) => {
 		const isLastIndex = targetIndex === config.onGetLegth() && index === targetIndex - 1;
 		if (targetIndex === index || isLastIndex) {
-			emitInsertEventToSiblings(
-				targetIndex,
-				draggableElement,
-				value,
-				droppableConfigurator.initial
-			);
+			emitInsertEvent(targetIndex, draggableElement, value, droppableConfigurator.initial);
 		}
 	};
 	setCssStyles();

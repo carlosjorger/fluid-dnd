@@ -1,5 +1,5 @@
 import { Coordinate, Direction } from '..';
-import { draggableIsCompleteOutside, getPropByDirection } from '../utils/GetStyles';
+import { getAxisValue, getPropByDirection, getSize } from '../utils/GetStyles';
 import { IsHTMLElement } from '../utils/typesCheckers';
 const scrollByDirection = (element: HTMLElement, direction: Direction, scrollAmount: number) => {
 	if (scrollAmount == 0) {
@@ -26,13 +26,14 @@ export const updateScrollByPosition = (
 	if (!draggedElement || !IsHTMLElement(draggedElement)) {
 		return;
 	}
-	const { start, size, axis, getRect } = getPropByDirection(direction);
-	const distanceValue = getRect(draggedElement)[size];
+	const { start } = getPropByDirection(direction);
+	const [_, draggedElementSize] = getSize(draggedElement, direction);
+	const distanceValue = draggedElementSize;
+	const [parentPosition, parentSize] = getSize(parent, direction);
+	const axis = getAxisValue(translate, direction);
+	const positionInsideParent = position[start] - parentPosition + axis;
 
-	const parentBoundingClientRect = getRect(parent);
-	const positionInsideParent = position[start] - parentBoundingClientRect[start] + translate[axis];
-
-	const parentDistance = parentBoundingClientRect[size];
+	const parentDistance = parentSize;
 	const totalDistance = parentDistance - distanceValue;
 	const relativePosition = positionInsideParent / totalDistance;
 	const relativeDistanceValue = distanceValue / totalDistance;
@@ -41,14 +42,9 @@ export const updateScrollByPosition = (
 	const infLimit = 0.2;
 	const upperLimit = 0.8;
 	let percent = 0;
-	const isOutside = draggableIsCompleteOutside(draggedElement, parent);
-	if (!isOutside && relativePosition < infLimit && relativePosition > -relativeDistanceValue) {
+	if (relativePosition < infLimit && relativePosition > -relativeDistanceValue) {
 		percent = scrollFuncionToStart(relativePosition < 0 ? 0 : relativePosition, infLimit);
-	} else if (
-		!isOutside &&
-		relativePosition > upperLimit &&
-		relativePosition < 1 + relativeDistanceValue
-	) {
+	} else if (relativePosition > upperLimit && relativePosition < 1 + relativeDistanceValue) {
 		percent = scrollFuncionToEnd(relativePosition, upperLimit);
 	}
 	const scrollAmount = velocity * distanceValue * percent;

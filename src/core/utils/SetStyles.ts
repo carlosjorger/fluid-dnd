@@ -1,7 +1,7 @@
 import { draggableTargetTimingFunction } from '.';
 import { CoreConfig, Direction, HORIZONTAL, VERTICAL } from '..';
 import { DragMouseTouchEvent, fixedSize } from '../../../index';
-import { getPropByDirection, getRect, getValueFromProperty } from './GetStyles';
+import { getPositionWithBorder, getPropByDirection, getRect } from './GetStyles';
 import { IsHTMLElement, IsMouseEvent, isTouchEvent } from './typesCheckers';
 
 type onTouchEvent = 'ontouchstart' | 'ontouchmove' | 'ontouchend';
@@ -163,14 +163,9 @@ const getOffset = (
 	direction: Direction,
 	element: Element
 ) => {
-	const { page, scroll, start, borderWidth, getRect } = getPropByDirection(direction);
-	const boundingClientRect = getRect(element);
-	return (
-		event[page] -
-		window[scroll] -
-		boundingClientRect[start] -
-		getValueFromProperty(element, borderWidth)
-	);
+	const { page, scroll } = getPropByDirection(direction);
+	const positionWithBorder = getPositionWithBorder(element, direction);
+	return event[page] - window[scroll] - positionWithBorder;
 };
 export const setTranistion = (
 	element: Element | undefined,
@@ -291,7 +286,7 @@ export function setTranslateWithTransition<T>(
 }
 export function setTranslateByDirection<T>(
 	currentConfig: CoreConfig<T>,
-	element: Element,
+	element: HTMLElement,
 	translate: number
 ) {
 	const { animationDuration, direction } = currentConfig;

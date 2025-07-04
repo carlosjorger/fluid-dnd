@@ -33,10 +33,13 @@ export const getBeforeStyles = (element: HTMLElement): [number, number] => {
 	return [getNumberFromPixels(top), getNumberFromPixels(left)];
 };
 export const getGapPixels = (element: HTMLElement, direction: Direction) => {
-	const { gap: gapStyle } = getPropByDirection(direction);
-	const [gap, hasGaps] = gapAndDisplayInformation(element, gapStyle);
+	const [gap, hasGaps] = getGapInfo(element, direction);
 	if (hasGaps) {
 		return gap;
 	}
 	return 0;
+};
+export const getGapInfo = (element: HTMLElement | null, direction: Direction) => {
+	const { gap: gapStyle } = getPropByDirection(direction);
+	return gapAndDisplayInformation(element, gapStyle);
 };

@@ -1,4 +1,4 @@
-import { Direction, HORIZONTAL, VERTICAL } from '..';
+import { Coordinate, Direction, HORIZONTAL, VERTICAL } from '..';
 import { BeforeMargin, AfterMargin, BorderWidth, PaddingBefore, Before } from '../../../index';
 import { DRAGGABLE_CLASS } from './classes';
 import { containClass } from './dom/classList';
@@ -54,20 +54,13 @@ const hasIntersection = (element1: Element, element2: Element) => {
 		intersectionX >= Math.min(rect1.width, rect2.width) / 2
 	);
 };
-export const draggableIsCompleteOutside = (draggable: Element, droppable: Element) => {
-	return !hasCompleteIntersection(draggable, droppable);
-};
-const hasCompleteIntersection = (element1: Element, element2: Element) => {
-	const { intersectionX, intersectionY } = getIntersection(element1, element2);
 
-	return intersectionY >= 0 && intersectionX >= 0;
-};
 const getIntersection = (element1: Element, element2: Element) => {
 	const rect1 = getRect(element1);
 	const rect2 = getRect(element2);
 
-	const intersectionY = intersectionByDirection(rect1, rect2, VERTICAL);
-	const intersectionX = intersectionByDirection(rect1, rect2, HORIZONTAL);
+	const intersectionY = intersectionByDirection(element1, element2, VERTICAL);
+	const intersectionX = intersectionByDirection(element1, element2, HORIZONTAL);
 	return {
 		rect1,
 		rect2,
@@ -75,16 +68,24 @@ const getIntersection = (element1: Element, element2: Element) => {
 		intersectionY
 	};
 };
-const intersectionByDirection = (rect1: DOMRect, rect2: DOMRect, direction: Direction) => {
-	const { start, size } = getPropByDirection(direction);
+export const getSize = (sibling: Element, direction: Direction) => {
+	const { getRect, size, start } = getPropByDirection(direction);
+	const siblingRect = getRect(sibling);
+	const siblingPosition = siblingRect[start];
+	const siblingSize = siblingRect[size];
+	return [siblingPosition, siblingSize, siblingRect] as const;
+};
+const intersectionByDirection = (element1: Element, element2: Element, direction: Direction) => {
+	const [element1Position, element1Size] = getSize(element1, direction);
+	const [element2Position, element2Size] = getSize(element2, direction);
 	return intersection(
 		{
-			x1: rect1[start],
-			x2: rect1[start] + rect1[size]
+			x1: element1Position,
+			x2: element1Position + element1Size
 		},
 		{
-			x1: rect2[start],
-			x2: rect2[start] + rect2[size]
+			x1: element2Position,
+			x2: element2Position + element2Size
 		}
 	);
 };
@@ -135,7 +136,9 @@ export const getGroupDroppables = (currentDroppable: HTMLElement, droppableGroup
 	return Array.from(document.querySelectorAll(`.droppable-group-${droppableGroup}`));
 };
 export const getParentDraggableChildren = (parent: HTMLElement) => {
-	const siblings = [...parent.children].filter((child) => containClass(child, DRAGGABLE_CLASS));
+	const siblings = [...parent.children].filter((child): child is HTMLElement =>
+		containClass(child, DRAGGABLE_CLASS)
+	);
 	return siblings;
 };
 export const getSiblingsByParent = (current: HTMLElement, parent: HTMLElement) => {
@@ -163,13 +166,21 @@ const getNearestFixedParent = (element: Element) => {
 
 	return null; // No fixed parent found
 };
-
+export const getPositionWithBorder = (element: Element, direction: Direction) => {
+	const { borderWidth, start } = getPropByDirection(direction);
+	return getRect(element)[start] + getValueFromProperty(element, borderWidth);
+};
+export const getAxis = (direction: Direction) => {
+	const { axis } = getPropByDirection(direction);
+	return axis;
+};
+export const getAxisValue = (translate: Coordinate, direction: Direction) => {
+	const axis = getAxis(direction);
+	return translate[axis];
+};
 export const getNearestFixedParentPosition = (element: Element, direction: Direction) => {
-	const { start, borderWidth: borderStartWidth } = getPropByDirection(direction);
 	const fixedParent = getNearestFixedParent(element);
-	return fixedParent
-		? getRect(fixedParent)[start] + getValueFromProperty(fixedParent, borderStartWidth)
-		: 0;
+	return fixedParent ? getPositionWithBorder(fixedParent, direction) : 0;
 };
 export const getDimensionsWithMargin = (element: HTMLElement) => {
 	const rect = getRect(element);

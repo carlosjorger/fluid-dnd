@@ -1,7 +1,11 @@
 import { Coordinate, DragMouseTouchEvent, ElementPosition, TransformEvent } from '../../../index';
 import {
+	getAxis,
+	getAxisValue,
 	getNearestFixedParentPosition,
+	getPositionWithBorder,
 	getPropByDirection,
+	getSize,
 	getValueFromProperty
 } from '../utils/GetStyles';
 import { CoordinateMap, Direction, HORIZONTAL, VERTICAL } from '..';
@@ -34,22 +38,12 @@ export const usePositioning = (coordinateTransforms: CoordinateMap[]) => {
 			return;
 		}
 		const getTranslateWihtDirection = (translateDirection: Direction) => {
-			const {
-				startMargin,
-				borderWidth,
-				start,
-				offset,
-				scroll,
-				page,
-				inner,
-				size: distance,
-				axis,
-				getRect
-			} = getPropByDirection(translateDirection);
+			const { startMargin, borderWidth, start, offset, scroll, page, inner, size, getRect } =
+				getPropByDirection(translateDirection);
 			const pageValue = pagePosition[page];
 			const scrollValue = window[scroll];
 			const innerDistance = window[inner];
-			const distanceValue = getRect(element)[distance];
+			const distanceValue = getRect(element)[size];
 			const [draggedElement] = element.children;
 			const border = getValueFromProperty(draggedElement, borderWidth);
 			const margin = getValueFromProperty(draggedElement, startMargin);
@@ -70,7 +64,7 @@ export const usePositioning = (coordinateTransforms: CoordinateMap[]) => {
 				updateScroll(translateDirection, draggedElement);
 				return newTranslate;
 			}
-			const defaultTransalation = translate[axis];
+			const defaultTransalation = getAxisValue(translate, translateDirection);
 			return defaultTransalation;
 		};
 		const updateScroll = (translateDirection: Direction, draggedElement: Element) => {
@@ -79,7 +73,7 @@ export const usePositioning = (coordinateTransforms: CoordinateMap[]) => {
 			}
 		};
 		const updateTranlateByDirection = (direction: Direction) => {
-			const { axis } = getPropByDirection(direction);
+			const axis = getAxis(direction);
 			translate[axis] = getTranslateWihtDirection(direction);
 
 			updateTranform(mapCoordinate(element), element);
@@ -111,12 +105,9 @@ export const usePositioning = (coordinateTransforms: CoordinateMap[]) => {
 };
 
 const getOffsetWithDraggable = (direction: Direction, element: Element, draggable: Element) => {
-	const { borderWidth, start, getRect } = getPropByDirection(direction);
-	return (
-		getRect(element)[start] -
-		getRect(draggable)[start] -
-		getValueFromProperty(draggable, borderWidth)
-	);
+	const [elementPosittion] = getSize(element, direction);
+	const draggablePositionWithBorder = getPositionWithBorder(draggable, direction);
+	return elementPosittion - draggablePositionWithBorder;
 };
 const getOffset = (event: TransformEvent, draggable: Element) => {
 	let { offsetX, offsetY, target } = event;

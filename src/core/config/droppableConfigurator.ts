@@ -126,7 +126,6 @@ export class DroppableConfigurator<T> {
 		}
 		return this.getConfigFrom(currentDroppable);
 	}
-	// TODO: pass fixed draggable
 	updateConfig(event: DragMouseTouchEvent, currentElement?: HTMLElement) {
 		if (!currentElement) {
 			return;

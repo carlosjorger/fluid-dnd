@@ -6,7 +6,7 @@ import {
 	getPropByDirection,
 	getValueFromProperty
 } from '../../utils/GetStyles';
-import { gapAndDisplayInformation } from '../../utils/ParseStyles';
+import { getGapInfo } from '../../utils/ParseStyles';
 
 export default function getTranslationByDraggingAndEvent(
 	current: HTMLElement,
@@ -36,21 +36,15 @@ const getTranslationByDragging = (
 	previous: Element | null,
 	nextElement: Element | null
 ) => {
-	const {
-		endMargin: afterMargin,
-		startMargin: beforeMargin,
-		size: distance,
-		gap: gapStyle,
-		getRect
-	} = getPropByDirection(direction);
+	const { endMargin, startMargin, size, getRect } = getPropByDirection(direction);
 
-	const after = getValueFromProperty(current, afterMargin);
-	const before = getValueFromProperty(current, beforeMargin);
-	const nextBefore = getValueFromProperty(nextElement, beforeMargin);
+	const after = getValueFromProperty(current, endMargin);
+	const before = getValueFromProperty(current, startMargin);
+	const nextBefore = getValueFromProperty(nextElement, startMargin);
 
-	const [gap, hasGaps] = gapAndDisplayInformation(current.parentElement, gapStyle);
+	const [gap, hasGaps] = getGapInfo(current.parentElement, direction);
 
-	const space = getRect(current)[distance];
+	const space = getRect(current)[size];
 	if (hasGaps) {
 		return getTranslation(space, before, after, gap, 0, direction);
 	}
@@ -59,7 +53,7 @@ const getTranslationByDragging = (
 		nextBefore,
 		after,
 		before,
-		afterMargin
+		endMargin
 	);
 	return getTranslation(space, beforeScace, afterSpace, 0, rest, direction);
 };

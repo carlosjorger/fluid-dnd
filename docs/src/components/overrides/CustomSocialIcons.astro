@@ -6,7 +6,6 @@ import Github from "../icons/logos/github.astro";
 const githubRepo = "https://github.com/carlosjorger/fluid-dnd"
 
 ---
-<!-- TODO: add get github stars api https://github.com/formkit/drag-and-drop/blob/main/docs/server/api/stars.ts -->
 <script>
     async function getGitHubStarsNoAuth(owner:string, repo:string  ) {
       if (typeof window === 'undefined') {

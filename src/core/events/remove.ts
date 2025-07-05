@@ -1,5 +1,5 @@
 import { getSiblings, isElementAfter } from '../utils/GetStyles';
-import { setTranslate } from '../utils/SetStyles';
+import { removeTranslate, setTranslate } from '../utils/SetStyles';
 import { CoreConfig } from '..';
 import getTranslationByDragging from './dragAndDrop/getTranslationByDraggingAndEvent';
 import { DroppableConfig } from '../config/configHandler';
@@ -16,7 +16,7 @@ export default function useRemoveEvents<T>(
 	const { animationDuration } = currentConfig;
 	const [removeElementDraggingStyles] = useChangeDraggableStyles(currentConfig, handlerPublisher);
 
-	const emitRemoveEventToSiblings = (
+	const emitRemoveEvent = (
 		targetIndex: number,
 		draggedElement: HTMLElement,
 		droppableConfig: DroppableConfig<T>,
@@ -62,9 +62,8 @@ export default function useRemoveEvents<T>(
 	};
 	const removeTranslateWhitoutTransition = (element?: Element) => {
 		if (IsHTMLElement(element)) {
-			element.style.transition = '';
-			element.style.transform = '';
+			removeTranslate(element);
 		}
 	};
-	return [emitRemoveEventToSiblings, emitFinishRemoveEventToSiblings] as const;
+	return [emitRemoveEvent, emitFinishRemoveEventToSiblings] as const;
 }

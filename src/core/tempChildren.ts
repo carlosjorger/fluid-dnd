@@ -12,7 +12,7 @@ import { addClass, getClassesSelector } from './utils/dom/classList';
 const START_DRAG_EVENT = 'startDrag';
 const timingFunction = 'cubic-bezier(0.2, 0, 0, 1)';
 const DELAY_TIME = 50;
-
+// TODO: recactor getPropByDirection
 const getDistance = (droppable: HTMLElement, draggedElement: HTMLElement, direction: Direction) => {
 	let distances = getTranslationByDragging(draggedElement, START_DRAG_EVENT, direction, droppable);
 	const gap = getGapPixels(droppable, direction);

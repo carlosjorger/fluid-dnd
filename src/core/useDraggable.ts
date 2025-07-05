@@ -13,7 +13,7 @@ import useRemoveEvents from './events/remove';
 import { DRAG_EVENT, draggableTargetTimingFunction, START_DRAG_EVENT } from './utils';
 import ConfigHandler, { DroppableConfig } from './config/configHandler';
 import { IsHTMLElement, isTouchEvent } from './utils/typesCheckers';
-import { addTempChild, removeTempChildrens } from './tempChildren';
+import { addTempChild } from './tempChildren';
 import { DroppableConfigurator } from './config/droppableConfigurator';
 import {
 	addClass,
@@ -42,7 +42,7 @@ const enum DraggingState {
 	END_DRAGGING,
 	INSERTING
 }
-// TODO: Refactor this file
+// TODO: pass tempChildren dependencies to insert and remove
 export default function useDraggable<T>(
 	draggableElement: HTMLElement,
 	index: number,
@@ -77,7 +77,7 @@ export default function useDraggable<T>(
 	const endDraggingState = () => {
 		draggingState = DraggingState.NOT_DRAGGING;
 	};
-	const [emitRemoveEventToSiblings, emitFinishRemoveEventToSiblings] = useRemoveEvents<T>(
+	const [emitRemoveEvent, emitFinishRemoveEventToSiblings] = useRemoveEvents<T>(
 		config,
 		parent,
 		handlerPublisher
@@ -239,25 +239,8 @@ export default function useDraggable<T>(
 			draggingState === DraggingState.DRAGING ||
 			draggingState === DraggingState.INSERTING
 		) {
-			updateTempChildren(isOutside);
 			setTransformEvent(event);
 		}
-	};
-	const updateTempChildren = (isOutside: boolean = true) => {
-		if (!droppableConfigurator.current) {
-			return;
-		}
-		const { droppable } = droppableConfigurator.current;
-		removeTempChildrens(droppable, parent, droppableGroupClass, animationDuration, isOutside);
-		if (isOutside) {
-			return;
-		}
-		addTempChild(
-			draggableElement,
-			parent,
-			draggingState == DraggingState.START_DRAGGING,
-			droppableConfigurator.current
-		);
 	};
 	const cursorWasNotMoved = (event: MouseEvent | TouchEvent) => {
 		if (isTouchEvent(event) && initialTouch && draggingState == DraggingState.START_DRAGGING) {
@@ -435,26 +418,7 @@ export default function useDraggable<T>(
 		toggleClass(element, draggingClass, true);
 		element.style.transition = '';
 	};
-	const removeAfterRemovingClass = (
-		targetIndex: number,
-		elementToRemove: HTMLElement,
-		config: DroppableConfig<T>
-	) => {
-		const { onRemoveAtEvent } = config.config;
-		removeClass(elementToRemove, removingClass);
-		removeClass(elementToRemove, DRAGGING_SORTABLE_CLASS);
-		addTempChild(
-			elementToRemove,
-			parent,
-			draggingState == DraggingState.START_DRAGGING,
-			droppableConfigurator.initial
-		);
-		emitRemoveEventToSiblings(targetIndex, elementToRemove, config, (sibling) => {
-			removeDraggingStyles(sibling);
-			emitFinishRemoveEventToSiblings(elementToRemove);
-		});
-		onRemoveAtEvent(targetIndex, true);
-	};
+
 	const removeAtFromElement = (targetIndex: number) => {
 		if (targetIndex == index) {
 			removeAtFromElementByDroppableConfig(targetIndex, droppableConfigurator.initial);
@@ -472,6 +436,26 @@ export default function useDraggable<T>(
 		setTimeout(() => {
 			removeAfterRemovingClass(targetIndex, elementToRemove, droppableConfigurator);
 		}, delayBeforeRemove);
+	};
+	const removeAfterRemovingClass = (
+		targetIndex: number,
+		elementToRemove: HTMLElement,
+		config: DroppableConfig<T>
+	) => {
+		const { onRemoveAtEvent } = config.config;
+		removeClass(elementToRemove, removingClass);
+		removeClass(elementToRemove, DRAGGING_SORTABLE_CLASS);
+		addTempChild(
+			elementToRemove,
+			parent,
+			draggingState == DraggingState.START_DRAGGING,
+			droppableConfigurator.initial
+		);
+		emitRemoveEvent(targetIndex, elementToRemove, config, (sibling) => {
+			removeDraggingStyles(sibling);
+			emitFinishRemoveEventToSiblings(elementToRemove);
+		});
+		onRemoveAtEvent(targetIndex, true);
 	};
 	const insertAtFromElement = (targetIndex: number, value: T) => {
 		const isLastIndex = targetIndex === config.onGetLegth() && index === targetIndex - 1;

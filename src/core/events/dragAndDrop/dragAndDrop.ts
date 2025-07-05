@@ -21,7 +21,6 @@ import { getGapPixels } from '../../utils/ParseStyles';
 
 type DraggingEvent = typeof DRAG_EVENT | typeof START_DRAG_EVENT;
 
-// TODO: Refactor this file
 export default function useDragAndDropEvents<T>(
 	currentConfig: CoreConfig<T>,
 	index: number,
@@ -112,7 +111,6 @@ export default function useDragAndDropEvents<T>(
 		for (const [siblingIndex, sibling] of siblings.entries()) {
 			const currentPosition = getIndex(siblingIndex, sibling, direction);
 			const canChange = canChangeDraggable(droppableConfig, draggedElement, sibling, siblingIndex);
-
 			if (!draggableSortable && canChange) {
 				insertDraggableSortable(currentPosition, () => {
 					initNewDroppableConfig(currentDroppable, direction);
@@ -170,21 +168,8 @@ export default function useDragAndDropEvents<T>(
 		const deltaTargetPosition = getDeltaDraggableSortable(targetIndex, draggingDirection);
 		setTranslateByDirection(config, draggableSortable, -deltaTargetPosition);
 	};
-
-	const getDeltaTargetPosition = (
-		targetIndex: number,
-		targetElement: HTMLElement,
-		draggingDirection: number,
-		direction: Direction
-	) => {
+	const getDeltaTargetPosition = (targetIndex: number, draggingDirection: number) => {
 		const deltaTargetPosition = draggingDirection * Math.abs(getDelta(targetIndex, -1));
-		if (deltaTargetPosition != 0) {
-			const currentTranslate = getTranslate(direction, targetElement);
-			const diff = Math.sign(currentTranslate) * Math.sign(deltaTargetPosition);
-			if (currentTranslate != 0 && diff == -1) {
-				return 0;
-			}
-		}
 		return deltaTargetPosition;
 	};
 	const transleteSibling = (
@@ -192,15 +177,8 @@ export default function useDragAndDropEvents<T>(
 		targetIndex: number,
 		config: CoreConfig<T>
 	) => {
-		const { direction } = config;
 		const draggingDirection = index < targetIndex ? -1 : 1;
-
-		const deltaDraggableSortable = getDeltaTargetPosition(
-			index,
-			targetElement,
-			draggingDirection,
-			direction
-		);
+		const deltaDraggableSortable = getDeltaTargetPosition(index, draggingDirection);
 		setTranslateByDirection(config, targetElement, deltaDraggableSortable);
 	};
 	const canChangeDraggable = (
@@ -221,17 +199,17 @@ export default function useDragAndDropEvents<T>(
 
 		const isIntersected = (actualTargetPosition: number, actualCurrentPosition: number) => {
 			const instersection = Math.abs(actualTargetPosition - actualCurrentPosition);
-			return (
-				instersection > targetMiddle &&
-				instersection < targetSize &&
-				currentPosition > targetPosition &&
-				currentPosition < targetEndPosition
-			);
+			return instersection > targetMiddle && instersection < targetSize;
 		};
 		const isIntersectedAtTheBeggining = isIntersected(targetEndPosition, currentPosition);
 		const isIntersectedAtTheEnd = isIntersected(targetPosition, currentEndPosition);
+		const intersected = isIntersectedAtTheBeggining || isIntersectedAtTheEnd;
 
-		return isIntersectedAtTheBeggining || isIntersectedAtTheEnd;
+		const currentPositionInsideTarget =
+			currentPosition > targetPosition && currentPosition < targetEndPosition;
+		const targetPositionInsideCurrent =
+			targetPosition > currentPosition && targetPosition < currentEndPosition;
+		return intersected && (targetPositionInsideCurrent || currentPositionInsideTarget);
 	};
 	const getScrollChange = (
 		droppableConfig: DroppableConfig<T>,

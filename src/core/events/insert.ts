@@ -9,6 +9,7 @@ import HandlerPublisher from '../HandlerPublisher';
 import { isTempElement, observeMutation } from '../utils/observer';
 import { useChangeDraggableStyles } from './changeDraggableStyles';
 import { DroppableConfig } from '../config/configHandler';
+import { removeTranslate } from '../utils/SetStyles';
 
 export default function useInsertEvents<T>(handlerPublisher: HandlerPublisher) {
 	// #region Insert
@@ -66,8 +67,7 @@ export default function useInsertEvents<T>(handlerPublisher: HandlerPublisher) {
 	};
 	const removeTranslateWhitoutTransition = (element?: Element) => {
 		if (IsHTMLElement(element)) {
-			element.style.transition = '';
-			element.style.transform = '';
+			removeTranslate(element);
 		}
 	};
 

@@ -220,11 +220,31 @@ export default defineConfig({
 			head: [
 				{
 					tag: "meta",
+					attrs: {
+						name: "description",
+						content:
+							"Official documentation for Fluid DnD, a fluid, agnostic and versatil drag and drop library for lists with Vue."
+					}
+				},
+				{
+					tag: "meta",
 					attrs: { property: "og:image", content: site + "org.webp?v=1" }
 				},
 				{
 					tag: "meta",
-					attrs: { property: "twitter:image", content: site + "og.webp?v=1" }
+					attrs: { property: "twitter:image", content: site + "org.webp?v=1" }
+				},
+				{
+					tag: "meta",
+					attrs: {
+						property: "twitter:description",
+						content:
+							"Official documentation for Fluid DnD, a fluid, agnostic and versatil drag and drop library for lists with Vue."
+					}
+				},
+				{
+					tag: "meta",
+					attrs: { property: "twitter:title", content: "Fluid DnD" }
 				}
 			],
 			customCss: [

@@ -110,6 +110,7 @@ export default function useDragAndDropEvents<T>(
 		for (const [siblingIndex, sibling] of siblings.entries()) {
 			const currentPosition = getIndex(siblingIndex, sibling, direction);
 			const canChange = canChangeDraggable(droppableConfig, draggedElement, sibling, siblingIndex);
+			// TODO: fix canChange that work first and last positon
 			if (!draggableSortable && canChange) {
 				insertDraggableSortable(currentPosition, () => {
 					initNewDroppableConfig(currentDroppable, direction);

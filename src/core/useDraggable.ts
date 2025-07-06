@@ -33,7 +33,7 @@ import {
 import HandlerPublisher from './HandlerPublisher';
 import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
 import useInsertEvents from './events/insert';
-import { getRect, parseIntEmpty } from './utils/GetStyles';
+import { getDraggableSortable, getRect, parseIntEmpty } from './utils/GetStyles';
 
 const enum DraggingState {
 	NOT_DRAGGING,
@@ -73,6 +73,7 @@ export default function useDraggable<T>(
 	let pagePosition = { pageX: 0, pageY: 0 };
 	let delayTimeout: NodeJS.Timeout | undefined;
 	let initialTouch: Coordinate | undefined;
+
 	const [setTransform, updateTransformState] = usePositioning(coordinateTransform);
 	const endDraggingState = () => {
 		draggingState = DraggingState.NOT_DRAGGING;
@@ -91,6 +92,8 @@ export default function useDraggable<T>(
 		if (droppableConfigurator.current && draggingState !== DraggingState.INSERTING) {
 			const stateBeforeInserting = draggingState;
 			draggingState = DraggingState.INSERTING;
+			// TODO insert into empty droppables
+			// TODO make remove in this function
 			fixedDraggableElement &&
 				emitInsertEvent(
 					targetIndex,
@@ -198,7 +201,7 @@ export default function useDraggable<T>(
 			fixedDraggableElement
 		) {
 			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, oldDroppableConfig);
-			var sortable = oldDroppableConfig.droppable.querySelector(`.${DRAGGING_SORTABLE_CLASS}`);
+			var sortable = getDraggableSortable(oldDroppableConfig.droppable);
 			if (sortable && IsHTMLElement(sortable)) {
 				const index = parseIntEmpty(sortable?.getAttribute(INDEX_ATTR));
 				removeAtFromElementByDroppableConfig(index, oldDroppableConfig, sortable);
@@ -343,6 +346,7 @@ export default function useDraggable<T>(
 		}
 		parent.onscroll = null;
 		endDraggingState();
+		toggleDraggingClass(fixedDraggableElement, false);
 	};
 	const removeOnScrollEvents = (droppable: HTMLElement) => {
 		droppable.onscroll = null;

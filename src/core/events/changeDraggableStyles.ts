@@ -8,7 +8,12 @@ import {
 	GRABBING_CLASS
 } from '../utils/classes';
 import { toggleClass } from '../utils/dom/classList';
-import { moveTranslate, removeTranslate, setCustomFixedSize, setTranistion } from '../utils/SetStyles';
+import {
+	moveTranslate,
+	removeTranslate,
+	setCustomFixedSize,
+	setTranistion
+} from '../utils/SetStyles';
 import { draggableTargetTimingFunction } from '../utils';
 export const useChangeDraggableStyles = <T>(
 	currentConfig: CoreConfig<T>,
@@ -17,7 +22,6 @@ export const useChangeDraggableStyles = <T>(
 	const { handlerSelector, animationDuration } = currentConfig;
 
 	const removeElementDraggingStyles = (element: HTMLElement) => {
-		toggleDraggingClass(element, false);
 		removeTranslate(element);
 		element.style.top = '';
 		element.style.left = '';
@@ -27,7 +31,9 @@ export const useChangeDraggableStyles = <T>(
 		});
 	};
 	const toggleDraggingClass = (element: Element, force: boolean) => {
-		toggleClass(element, DRAGGING_CLASS, force);
+		if (force) {
+			toggleClass(element, DRAGGING_CLASS, force);
+		}
 		toogleHandlerDraggingClass(force, element);
 		handlerPublisher.toggleGrabClass(!force);
 	};

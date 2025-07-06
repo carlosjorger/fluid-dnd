@@ -15,11 +15,11 @@
         droppableGroup: 'nested-group'
    });
 </script>
-<ul use:dragAnDrop>
+<ul use:dragAnDrop class="flex flex-col gap-2 p-6">
     {#each tasksState as task, index (task.name)}
-        <li data-index={index} class="border-2 border-slate-200 rounded-md m-2">
+        <li data-index={index} class="border-2 border-slate-200 rounded-md">
             <span class="bg-slate-400" >{task.name}</span>
-            <div class="p-2 bg-slate-700 min-h-16">
+            <div class="bg-slate-700 min-h-16">
                 <NestedTask tasks={task.tasks}/>
             </div>
         </li>

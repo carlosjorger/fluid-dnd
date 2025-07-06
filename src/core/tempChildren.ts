@@ -12,7 +12,7 @@ import { addClass, getClassesSelector } from './utils/dom/classList';
 const START_DRAG_EVENT = 'startDrag';
 const timingFunction = 'cubic-bezier(0.2, 0, 0, 1)';
 const DELAY_TIME = 50;
-// TODO: recactor getPropByDirection
+
 const getDistance = (droppable: HTMLElement, draggedElement: HTMLElement, direction: Direction) => {
 	let distances = getTranslationByDragging(draggedElement, START_DRAG_EVENT, direction, droppable);
 	const gap = getGapPixels(droppable, direction);
@@ -44,13 +44,18 @@ const updateChildAfterCreated = (
 		observer.disconnect();
 	};
 };
+const getHiddenOverflow = (droppable: HTMLElement, direction: Direction) => {
+	const { scrollSize, clientSize } = getPropByDirection(direction);
+	return droppable[scrollSize] - droppable[clientSize];
+};
 const scrollPercent = (
 	direction: Direction,
 	droppable: HTMLElement,
 	droppableScroll: ElementScroll
 ) => {
-	const { scrollSize, clientSize, scrollElement } = getPropByDirection(direction);
-	return droppableScroll[scrollElement] / (droppable[scrollSize] - droppable[clientSize]);
+	const { scrollElement } = getPropByDirection(direction);
+	const hiddenOverflow = getHiddenOverflow(droppable, direction);
+	return droppableScroll[scrollElement] / hiddenOverflow;
 };
 const fixScrollInitialChange = <T>(
 	droppableConfig: DroppableConfig<T>,
@@ -63,9 +68,10 @@ const fixScrollInitialChange = <T>(
 	const { direction } = config;
 
 	const scrollCompleted = scrollPercent(config.direction, droppable, scroll) > 0.99;
-	const { scrollSize, clientSize, scrollElement } = getPropByDirection(direction);
+	const hiddenOverflow = getHiddenOverflow(droppable, direction);
+	const { scrollElement } = getPropByDirection(direction);
 	if (scrollCompleted) {
-		droppable[scrollElement] = droppable[scrollSize] - droppable[clientSize];
+		droppable[scrollElement] = hiddenOverflow;
 	}
 };
 const getTempChild = <T>(

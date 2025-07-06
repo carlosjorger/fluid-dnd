@@ -1,4 +1,5 @@
 import {
+	getDraggableSortable,
 	getParentDraggableChildren,
 	getPropByDirection,
 	getSize,
@@ -87,9 +88,7 @@ export default function useDragAndDropEvents<T>(
 		const scrollChange = getScrollChange(droppableConfig, droppable, initialWindowScroll);
 		return positions[index] + scrollChange + transalte;
 	};
-	const getDraggableSortable = (droppable: Element) => {
-		return droppable.querySelector(`.${DRAGGING_SORTABLE_CLASS}`) as HTMLElement | undefined;
-	};
+
 	const emitDraggingEvent = (
 		draggedElement: HTMLElement,
 		event: DraggingEvent,
@@ -209,6 +208,7 @@ export default function useDragAndDropEvents<T>(
 			currentPosition > targetPosition && currentPosition < targetEndPosition;
 		const targetPositionInsideCurrent =
 			targetPosition > currentPosition && targetPosition < currentEndPosition;
+
 		return intersected && (targetPositionInsideCurrent || currentPositionInsideTarget);
 	};
 	const getScrollChange = (

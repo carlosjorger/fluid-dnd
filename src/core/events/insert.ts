@@ -13,7 +13,7 @@ import { removeTranslate } from '../utils/SetStyles';
 
 export default function useInsertEvents<T>(handlerPublisher: HandlerPublisher) {
 	// #region Insert
-	const emitInsertEventToSiblings = (
+	const emitInsertEvent = (
 		targetIndex: number,
 		draggedElement: HTMLElement,
 		value: T,
@@ -71,7 +71,7 @@ export default function useInsertEvents<T>(handlerPublisher: HandlerPublisher) {
 		}
 	};
 
-	return [emitInsertEventToSiblings] as const;
+	return [emitInsertEvent] as const;
 }
 const childrenMutationFilter = (mutation: MutationRecord) => {
 	const addedNodes = mutation.addedNodes

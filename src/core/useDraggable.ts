@@ -91,17 +91,18 @@ export default function useDraggable<T>(
 		if (droppableConfigurator.current && draggingState !== DraggingState.INSERTING) {
 			const stateBeforeInserting = draggingState;
 			draggingState = DraggingState.INSERTING;
-			emitInsertEvent(
-				targetIndex,
-				draggableElement,
-				value,
-				droppableConfigurator.current as DroppableConfig<unknown>,
-				true,
-				() => {
-					draggingState = stateBeforeInserting;
-					endInsertEvent();
-				}
-			);
+			fixedDraggableElement &&
+				emitInsertEvent(
+					targetIndex,
+					fixedDraggableElement,
+					value,
+					droppableConfigurator.current as DroppableConfig<unknown>,
+					true,
+					() => {
+						draggingState = stateBeforeInserting;
+						endInsertEvent();
+					}
+				);
 		}
 	};
 	const [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] = useDragAndDropEvents<T>(

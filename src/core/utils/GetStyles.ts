@@ -1,6 +1,6 @@
 import { Coordinate, Direction, HORIZONTAL, VERTICAL } from '..';
 import { BeforeMargin, AfterMargin, BorderWidth, PaddingBefore, Before } from '../../../index';
-import { DRAGGABLE_CLASS } from './classes';
+import { DRAGGABLE_CLASS, DRAGGING_SORTABLE_CLASS } from './classes';
 import { containClass } from './dom/classList';
 
 export const getWindowScroll = () => {
@@ -197,24 +197,6 @@ export const getDimensionsWithMargin = (element: HTMLElement) => {
 	};
 };
 
-/**
- * Determines if one element is positioned after another element
- * @param element1 - The first element to compare
- * @param element2 - The second element to compare
- * @param direction - The direction to check (horizontal or vertical)
- * @returns true if element1 is positioned after element2 in the specified direction
- *
- * @example
- * ```typescript
- * import { isElementAfter, HORIZONTAL, VERTICAL } from './utils/GetStyles';
- *
- * // Check if element1 is positioned to the right of element2
- * const isAfterHorizontally = isElementAfter(element1, element2, HORIZONTAL);
- *
- * // Check if element1 is positioned below element2
- * const isAfterVertically = isElementAfter(element1, element2, VERTICAL);
- * ```
- */
 export const isElementAfter = (
 	element1: Element,
 	element2: Element,
@@ -224,4 +206,8 @@ export const isElementAfter = (
 	const rect2 = getRect(element2);
 	const { start } = getPropByDirection(direction);
 	return rect1[start] > rect2[start];
+};
+
+export const getDraggableSortable = (droppable: Element) => {
+	return droppable.querySelector(`.${DRAGGING_SORTABLE_CLASS}`) as HTMLElement | undefined;
 };

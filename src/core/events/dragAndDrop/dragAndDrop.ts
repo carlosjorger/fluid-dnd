@@ -117,12 +117,26 @@ export default function useDragAndDropEvents<T>(
 			insertDraggableSortableToDroppable(0, direction);
 			return;
 		}
+		const siblingCount = siblings.length;
 		for (const [siblingIndex, sibling] of siblings.entries()) {
 			const currentPosition = getIndex(siblingIndex, sibling, direction);
-			const canChange = canChangeDraggable(droppableConfig, draggedElement, sibling, siblingIndex);
-			// TODO: fix canChange that work first and last positon
+			const [canChange, isAtTheEnd, isAtTheBeggining] = canChangeDraggable(
+				droppableConfig,
+				draggedElement,
+				sibling,
+				siblingIndex,
+				siblingCount
+			);
 			if (!draggableSortable && canChange) {
 				insertDraggableSortableToDroppable(currentPosition, direction);
+				return;
+			}
+			if (!draggableSortable && isAtTheEnd) {
+				insertDraggableSortableToDroppable(siblingCount, direction);
+				return;
+			}
+			if (!draggableSortable && isAtTheBeggining) {
+				insertDraggableSortableToDroppable(0, direction);
 				return;
 			}
 			if (!draggableSortable) {
@@ -191,7 +205,8 @@ export default function useDragAndDropEvents<T>(
 		droppableConfig: DroppableConfig<T>,
 		sourceElement: Element,
 		targetElement: HTMLElement,
-		targetIndex: number
+		targetIndex: number,
+		siblingCount: number
 	) => {
 		const { direction } = droppableConfig.config;
 
@@ -215,8 +230,13 @@ export default function useDragAndDropEvents<T>(
 			currentPosition > targetPosition && currentPosition < targetEndPosition;
 		const targetPositionInsideCurrent =
 			targetPosition > currentPosition && targetPosition < currentEndPosition;
-
-		return intersected && (targetPositionInsideCurrent || currentPositionInsideTarget);
+		const isAtTheEnd = siblingCount - 1 === targetIndex && currentPosition > targetPosition;
+		const isAtTheBeggining = targetIndex === 0 && currentEndPosition < targetPosition;
+		return [
+			intersected && (targetPositionInsideCurrent || currentPositionInsideTarget),
+			isAtTheEnd,
+			isAtTheBeggining
+		] as const;
 	};
 	const getScrollChange = (
 		droppableConfig: DroppableConfig<T>,

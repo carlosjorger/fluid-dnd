@@ -88,7 +88,13 @@ export default function useDragAndDropEvents<T>(
 		const scrollChange = getScrollChange(droppableConfig, droppable, initialWindowScroll);
 		return positions[index] + scrollChange + transalte;
 	};
-
+	const insertDraggableSortableToDroppable = (currentPosition: number, direction: Direction) => {
+		insertDraggableSortable(currentPosition, () => {
+			initNewDroppableConfig(currentDroppable, direction);
+			actualIndex = currentPosition;
+			index = currentPosition;
+		});
+	};
 	const emitDraggingEvent = (
 		draggedElement: HTMLElement,
 		event: DraggingEvent,
@@ -107,16 +113,16 @@ export default function useDragAndDropEvents<T>(
 			value = currentConfig.onGetValue(index);
 		}
 		changeCurrentDroppable(droppable, direction, event);
+		if (!draggableSortable && siblings.length === 0) {
+			insertDraggableSortableToDroppable(0, direction);
+			return;
+		}
 		for (const [siblingIndex, sibling] of siblings.entries()) {
 			const currentPosition = getIndex(siblingIndex, sibling, direction);
 			const canChange = canChangeDraggable(droppableConfig, draggedElement, sibling, siblingIndex);
 			// TODO: fix canChange that work first and last positon
 			if (!draggableSortable && canChange) {
-				insertDraggableSortable(currentPosition, () => {
-					initNewDroppableConfig(currentDroppable, direction);
-					actualIndex = currentPosition;
-					index = currentPosition;
-				});
+				insertDraggableSortableToDroppable(currentPosition, direction);
 				return;
 			}
 			if (!draggableSortable) {

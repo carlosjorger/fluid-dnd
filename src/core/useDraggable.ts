@@ -92,7 +92,6 @@ export default function useDraggable<T>(
 		if (droppableConfigurator.current && draggingState !== DraggingState.INSERTING) {
 			const stateBeforeInserting = draggingState;
 			draggingState = DraggingState.INSERTING;
-			// TODO insert into empty droppables
 			// TODO make remove in this function
 			fixedDraggableElement &&
 				emitInsertEvent(

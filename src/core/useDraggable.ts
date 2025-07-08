@@ -65,6 +65,7 @@ export default function useDraggable<T>(
 		coordinateTransform
 	} = config;
 	let fixedDraggableElement: HTMLElement | undefined;
+	let previousDroppableConfig: DroppableConfig<T> | undefined;
 	const droppableGroupClass = getClassesList(droppableGroup)
 		.map((classGroup) => `droppable-group-${classGroup}`)
 		.join(' ');
@@ -92,7 +93,6 @@ export default function useDraggable<T>(
 		if (droppableConfigurator.current && draggingState !== DraggingState.INSERTING) {
 			const stateBeforeInserting = draggingState;
 			draggingState = DraggingState.INSERTING;
-			// TODO make remove in this function
 			fixedDraggableElement &&
 				emitInsertEvent(
 					targetIndex,
@@ -105,6 +105,13 @@ export default function useDraggable<T>(
 						endInsertEvent();
 					}
 				);
+			if (previousDroppableConfig) {
+				var sortable = getDraggableSortable(previousDroppableConfig.droppable);
+				if (sortable) {
+					const index = parseIntEmpty(sortable?.getAttribute(INDEX_ATTR));
+					removeAtFromElementByDroppableConfig(index, previousDroppableConfig, sortable);
+				}
+			}
 		}
 	};
 	const [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] = useDragAndDropEvents<T>(
@@ -200,11 +207,7 @@ export default function useDraggable<T>(
 			fixedDraggableElement
 		) {
 			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, oldDroppableConfig);
-			var sortable = getDraggableSortable(oldDroppableConfig.droppable);
-			if (sortable && IsHTMLElement(sortable)) {
-				const index = parseIntEmpty(sortable?.getAttribute(INDEX_ATTR));
-				removeAtFromElementByDroppableConfig(index, oldDroppableConfig, sortable);
-			}
+			previousDroppableConfig = oldDroppableConfig;
 		}
 	};
 	const droppableConfigurator = new DroppableConfigurator(

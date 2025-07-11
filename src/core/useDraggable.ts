@@ -1,10 +1,10 @@
 import {
 	assignDraggingEvent,
 	convetEventToDragMouseTouchEvent,
-	moveTranslate,
 	setCustomFixedSize,
 	setEventWithInterval,
-	setTranistion
+	setTranistion,
+	setTranslate
 } from './utils/SetStyles';
 import { usePositioning } from './positioning/usePositioning';
 import { Coordinate, DragMouseTouchEvent, MoveEvent, OnLeaveEvent } from '../../index';
@@ -413,7 +413,7 @@ export default function useDraggable<T>(
 	};
 	const removeDraggingStyles = (element: Element) => {
 		setTranistion(element, animationDuration, draggableTargetTimingFunction);
-		moveTranslate(element, 0, 0);
+		setTranslate(element, 0, 0);
 	};
 	const setDraggingStyles = (element: HTMLElement) => {
 		const { height, width } = getRect(draggableElement);

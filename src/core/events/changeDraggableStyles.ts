@@ -9,10 +9,10 @@ import {
 } from '../utils/classes';
 import { toggleClass } from '../utils/dom/classList';
 import {
-	moveTranslate,
 	removeTranslate,
 	setCustomFixedSize,
-	setTranistion
+	setTranistion,
+	setTranslate
 } from '../utils/SetStyles';
 import { draggableTargetTimingFunction } from '../utils';
 export const useChangeDraggableStyles = <T>(
@@ -52,7 +52,7 @@ export const useChangeDraggableStyles = <T>(
 	};
 	const dragEventOverElement = (element: Element, translation: Translate) => {
 		const { width, height } = translation;
-		moveTranslate(element, height, width);
+		setTranslate(element, width, height);
 		setTranistion(element, animationDuration, draggableTargetTimingFunction);
 	};
 	return [removeElementDraggingStyles, toggleDraggingClass, dragEventOverElement] as const;

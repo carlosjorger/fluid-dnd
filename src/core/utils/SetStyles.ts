@@ -34,20 +34,7 @@ export const fixSizeStyle = (element: HTMLElement | undefined | null) => {
 	const { height, width } = getRect(element);
 	setSizeStyles(element, height, width);
 };
-export const moveTranslate = (
-	element: Element | undefined | null,
-	height: number,
-	width: number
-) => {
-	if (!element || !IsHTMLElement(element)) {
-		return;
-	}
-	if (width == 0 && height == 0) {
-		element.style.transform = '';
-	} else {
-		element.style.transform = `translate(${width}px,${height}px)`;
-	}
-};
+
 const assignDraggingTouchEvent = (
 	element: HTMLElement,
 	onEvent: onTouchEvent,

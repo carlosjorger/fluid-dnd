@@ -1,7 +1,6 @@
  <h1 align="center">
-    <img src="public/fluid-dnd.svg"
-    alt="Icon" width="150" height="140" />
-  <br>Fluid DnD<br>
+    <img src="public/fluid-dnd-logo.png"
+    alt="Icon" width="200" height="200" />
 </h1>
 
 <div align="center">
@@ -11,14 +10,19 @@
 [![version](https://img.shields.io/npm/v/fluid-dnd)](https://www.npmjs.com/package/fluid-dnd)
 ![GitHub issues](https://img.shields.io/github/issues/carlosjorger/fluid-dnd)
 ![GitHub stars](https://img.shields.io/github/stars/carlosjorger/fluid-dnd)
-[![test_coverage](https://api.codeclimate.com/v1/badges/6b27047dcf150ccddfac/test_coverage)](https://codeclimate.com/github/carlosjorger/fluid-dnd/test_coverage)
+
+_Drag and drop elements of your list smoothly and effortlessly_
+
+[📖 **Documentation**](https://fluid-dnd.netlify.app/) | [🤹 **Examples**](https://fluid-dnd.netlify.app/vue/example/vertical-list/single-vertical-list/)
+
+<img src="https://github.com/user-attachments/assets/1b7ac5e3-48e9-43f9-a577-e78c6b9eacae" width="100%"/>
 
 </div>
 
-Fluid DnD is a [**fluid**, **agnostic** and **versatile** drag and drop
-library for lists; with support for **Vue**, **React** and **Svelte**](https://fluid-dnd.netlify.app/). It's a **lightweight** tool ~8 Kb (gzip) with no depenencies.
+## 🪪 About
 
-<img src="https://github.com/user-attachments/assets/1b7ac5e3-48e9-43f9-a577-e78c6b9eacae" width="100%"/>
+Fluid DnD is a **fluid**, **agnostic** and **versatile** drag and drop
+library for lists; with support for **Vue**, **React** and **Svelte**. It's a **lightweight** tool ~8 Kb (gzip) with no depenencies.
 
 ## 🧰 Features
 
@@ -50,21 +54,16 @@ library for lists; with support for **Vue**, **React** and **Svelte**](https://f
    pnpm i fluid-dnd
    ```
 
-3. **Documentation**
-
-- 📚 Check out all the [docs](https://fluid-dnd.netlify.app/).
-- 🛠️ Edit this example [here](https://codesandbox.io/s/nifty-hooks-5plkpl).
-- 📘 See other examples [here](https://fluid-dnd.netlify.app/vue/example/vertical-list/single-vertical-list/).
-
 ## 📚 Libraries Support
+
 - **Vue** >=3.0.0
 - **React** >= 18.0.0
 - **Svelte** >= 5.0.0
 
 ## 🤝 Contributing
 
-If you're interested in contributing to [fluid-dnd](https://github.com/carlosjorger/fluid-dnd), please read our [CONTRIBUTING  GUIDELINES](./CONTRIBUTING.md) before submitting a pull request.
+If you're interested in contributing to [fluid-dnd](https://github.com/carlosjorger/fluid-dnd), please read our [CONTRIBUTING GUIDELINES](./CONTRIBUTING.md) before submitting a pull request.
 
 ## 🔑 License
 
-- [MIT](https://github.com/carlosjorger/fluid-dnd/blob/main/LICENSE).   
+- [MIT](https://github.com/carlosjorger/fluid-dnd/blob/main/LICENSE).

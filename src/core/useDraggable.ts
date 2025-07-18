@@ -32,6 +32,7 @@ import { DRAGGABLE_CLASS, DRAGGING_CLASS, DROPPABLE_CLASS, HANDLER_CLASS } from 
 import HandlerPublisher from './HandlerPublisher';
 import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
 import useInsertEvents from './events/insert';
+import { getRect } from './utils/GetStyles';
 
 const enum DraggingState {
 	NOT_DRAGGING,
@@ -39,6 +40,9 @@ const enum DraggingState {
 	DRAGING,
 	END_DRAGGING
 }
+
+const ON_MOUSEDOWN = 'onmousedown';
+
 export default function useDraggable<T>(
 	draggableElement: HTMLElement,
 	index: number,
@@ -136,7 +140,7 @@ export default function useDraggable<T>(
 	const setSlotRefElementParams = (element: HTMLElement) => {
 		const handlerElement = (getHandler(element) ?? element) as HTMLElement;
 		if (handlerElement && isDraggable(element)) {
-			assignDraggingEvent(handlerElement, 'onmousedown', onmousedown('mousemove', 'mouseup'));
+			assignDraggingEvent(handlerElement, ON_MOUSEDOWN, onmousedown('mousemove', 'mouseup'));
 			assignDraggingEvent(
 				handlerElement,
 				'ontouchstart',
@@ -151,7 +155,7 @@ export default function useDraggable<T>(
 			disableMousedownEventFromImages(handlerElement);
 		}
 		if (!element?.isSameNode(handlerElement)) {
-			assignDraggingEvent(element, 'onmousedown', mousedownOnDraggablefunction);
+			assignDraggingEvent(element, ON_MOUSEDOWN, mousedownOnDraggablefunction);
 		}
 		addClass(parent, DROPPABLE_CLASS);
 	};
@@ -401,7 +405,7 @@ export default function useDraggable<T>(
 		moveTranslate(element, 0, 0);
 	};
 	const setDraggingStyles = (element: HTMLElement) => {
-		const { height, width } = element.getBoundingClientRect();
+		const { height, width } = getRect(element);
 		setCustomFixedSize(element, {
 			fixedHeight: `${height}px`,
 			fixedWidth: `${width}px`

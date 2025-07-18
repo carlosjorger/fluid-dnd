@@ -101,9 +101,12 @@ export const getScrollElement = (element: HTMLElement) => {
 	const { scrollLeft, scrollTop } = element;
 	return { scrollLeft, scrollTop };
 };
-const getRect = (element: Element) => {
+export const getRect = (element: Element) => {
 	return element.getBoundingClientRect();
 };
+// export const getDistance = (element: Element, direction: Direction) => {
+// 	return element.getBoundingClientRect();
+// };
 export const getPropByDirection = (direction: Direction) => {
 	const ifHorizontal = direction == HORIZONTAL;
 	return {

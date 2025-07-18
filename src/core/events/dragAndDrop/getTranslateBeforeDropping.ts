@@ -7,7 +7,7 @@ import {
 	Translate,
 	WindowScroll
 } from '../../../../index';
-import { getPropByDirection, getValueFromProperty } from '../../utils/GetStyles';
+import { getPropByDirection, getRect, getValueFromProperty } from '../../utils/GetStyles';
 import { gapAndDisplayInformation, getBeforeStyles } from '../../utils/ParseStyles';
 const getContentPosition = (direction: Direction, droppable: HTMLElement) => {
 	const { borderBeforeWidth, paddingBefore, axis, getRect } = getPropByDirection(direction);
@@ -176,7 +176,7 @@ const spaceWithMargins = (
 	let afterSpace = 0;
 	let space = -beforeSpace;
 	for (const [index, sibling] of siblings.entries()) {
-		const siblingSpace = sibling.getBoundingClientRect()[distance];
+		const siblingSpace = getRect(sibling)[distance];
 		const siblingBeforeMargin = getValueFromProperty(sibling, beforeMargin);
 		if (hasGaps) {
 			afterSpace += siblingBeforeMargin;

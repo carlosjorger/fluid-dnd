@@ -3,7 +3,7 @@ import { CoreConfig } from '..';
 import HandlerPublisher from '../HandlerPublisher';
 import { DRAGGING_CLASS, DRAGGING_HANDLER_CLASS, GRABBING_CLASS } from '../utils/classes';
 import { toggleClass } from '../utils/dom/classList';
-import { moveTranslate, setCustomFixedSize, setTranistion } from '../utils/SetStyles';
+import { moveTranslate, removeTranslateWhitoutTransition, setCustomFixedSize, setTranistion } from '../utils/SetStyles';
 import { draggableTargetTimingFunction } from '../utils';
 export const useChangeDraggableStyles = <T>(
 	currentConfig: CoreConfig<T>,
@@ -15,8 +15,7 @@ export const useChangeDraggableStyles = <T>(
 	const removeElementDraggingStyles = (element: HTMLElement) => {
 		endDraggingAction();
 		toggleDraggingClass(element, false);
-		element.style.transform = '';
-		element.style.transition = '';
+		removeTranslateWhitoutTransition(element);
 		element.style.top = '';
 		element.style.left = '';
 		setCustomFixedSize(element, {

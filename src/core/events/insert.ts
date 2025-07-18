@@ -1,13 +1,13 @@
 import { getParentDraggableChildren, getSiblings } from '../utils/GetStyles';
 import { CoreConfig } from '../index';
 import getTranslationByDragging from '../events/dragAndDrop/getTranslationByDraggingAndEvent';
-import { IsHTMLElement } from '../utils/typesCheckers';
 import { removeTempChild } from '../tempChildren';
 import { DISABLE_TRANSITION, DRAGGABLE_CLASS } from '../utils/classes';
 import { addClass, containClass, removeClass } from '../utils/dom/classList';
 import HandlerPublisher from '../HandlerPublisher';
 import { isTempElement, observeMutation } from '../utils/observer';
 import { useChangeDraggableStyles } from './changeDraggableStyles';
+import { removeTranslateWhitoutTransition } from '../utils/SetStyles';
 
 export default function useInsertEvents<T>(
 	currentConfig: CoreConfig<T>,
@@ -59,12 +59,6 @@ export default function useInsertEvents<T>(
 		const [siblings] = getSiblings(element, parent);
 		for (const sibling of [...siblings, element]) {
 			removeTranslateWhitoutTransition(sibling);
-		}
-	};
-	const removeTranslateWhitoutTransition = (element?: Element) => {
-		if (IsHTMLElement(element)) {
-			element.style.transition = '';
-			element.style.transform = '';
 		}
 	};
 

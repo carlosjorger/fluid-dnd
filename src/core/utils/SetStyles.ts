@@ -1,6 +1,6 @@
 import { Direction, HORIZONTAL, VERTICAL } from '..';
 import { DragMouseTouchEvent, fixedSize } from '../../../index';
-import { getPropByDirection, getValueFromProperty } from './GetStyles';
+import { getPropByDirection, getRect, getValueFromProperty } from './GetStyles';
 import { IsHTMLElement, IsMouseEvent, isTouchEvent } from './typesCheckers';
 
 type onTouchEvent = 'ontouchstart' | 'ontouchmove' | 'ontouchend';
@@ -29,7 +29,7 @@ export const fixSizeStyle = (element: HTMLElement | undefined | null) => {
 	if (!element) {
 		return;
 	}
-	const { height, width } = element.getBoundingClientRect();
+	const { height, width } = getRect(element);
 	setSizeStyles(element, height, width);
 };
 export const moveTranslate = (
@@ -246,4 +246,10 @@ const setCustomProperty = (
 	newFixedSize: string
 ) => {
 	return element && element.style.setProperty(fixedProp, newFixedSize);
+};
+export const removeTranslateWhitoutTransition = (element?: Element) => {
+	if (IsHTMLElement(element)) {
+		element.style.transition = '';
+		element.style.transform = '';
+	}
 };

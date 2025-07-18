@@ -6,7 +6,7 @@ import {
 	getWindowScroll
 } from '../../utils/GetStyles';
 import { Translate, WindowScroll } from '../../../../index';
-import { moveTranslate } from '../../utils/SetStyles';
+import { moveTranslate, removeTranslateWhitoutTransition } from '../../utils/SetStyles';
 import { CoreConfig, Direction } from '../..';
 import getTranslationByDragging from './getTranslationByDraggingAndEvent';
 import getTranslateBeforeDropping from './getTranslateBeforeDropping';
@@ -320,12 +320,6 @@ export default function useDragAndDropEvents<T>(
 		const [siblings] = getSiblings(element, parent);
 		for (const sibling of [...siblings, element]) {
 			removeTranslateWhitoutTransition(sibling);
-		}
-	};
-	const removeTranslateWhitoutTransition = (element?: Element) => {
-		if (IsHTMLElement(element)) {
-			element.style.transition = '';
-			element.style.transform = '';
 		}
 	};
 

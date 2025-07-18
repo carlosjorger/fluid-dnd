@@ -128,6 +128,16 @@ export const getBeforeMarginValue = (direction: Direction, element: Element | nu
 	const { beforeMargin } = getPropByDirection(direction);
 	return getValueFromProperty(element, beforeMargin);
 };
+
+export const getBeforeMargin = (direction: Direction, element: Element | null) => {
+	const { beforeMargin } = getPropByDirection(direction);
+	return getValueFromProperty(element, beforeMargin);
+};
+
+export const getAfterMargin = (direction: Direction, element: Element | null) => {
+	const { afterMargin } = getPropByDirection(direction);
+	return getValueFromProperty(element, afterMargin);
+};
 export const getPropByDirection = (direction: Direction) => {
 	const ifHorizontal = direction == HORIZONTAL;
 	return {

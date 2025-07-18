@@ -1,14 +1,9 @@
 import { Direction, HORIZONTAL, VERTICAL } from '../..';
+import { Distance, ScrollElement, Translate, WindowScroll } from '../../../../index';
 import {
-	AfterMargin,
-	BeforeMargin,
-	Distance,
-	ScrollElement,
-	Translate,
-	WindowScroll
-} from '../../../../index';
-import {
+	getAfterMargin,
 	getAxisValue,
+	getBeforeMargin,
 	getBorderBeforeWidthValue,
 	getPropByDirection,
 	getRect,
@@ -69,32 +64,24 @@ export default function getTranslateBeforeDropping(
 		width += x;
 	}
 
-	const {
-		scrollElement,
-		beforeMargin: beforeMarginProp,
-		afterMargin: afterMarginProp,
-		distance: spaceProp,
-		gap: gapStyle
-	} = getPropByDirection(direction);
+	const { scrollElement, distance: spaceProp, gap: gapStyle } = getPropByDirection(direction);
 	const [gap, hasGaps] = gapAndDisplayInformation(droppable, gapStyle);
 
 	const [afterMarginOutside, beforeMarginOutside, spaceBeforeDraggedElement] =
 		getBeforeAfterMarginBaseOnDraggedDirection(
-			beforeMarginProp,
-			afterMarginProp,
 			sourceElement,
 			targetElement?.previousElementSibling,
 			isDraggedFoward,
 			hasGaps,
-			isGroupDropping
+			isGroupDropping,
+			direction
 		);
 	const [beforeSpace, space, afterSpace] = spaceWithMargins(
-		beforeMarginProp,
-		afterMarginProp,
 		spaceProp,
 		siblingsBetween,
 		gap,
-		hasGaps
+		hasGaps,
+		direction
 	);
 	const spaceBetween = getSpaceBetween(
 		space,
@@ -125,6 +112,7 @@ export default function getTranslateBeforeDropping(
 		isGroupDropping
 	);
 }
+
 const getScrollChange = (
 	scrollElement: ScrollElement,
 	parentElement: HTMLElement,
@@ -168,22 +156,21 @@ const getElementsRange = (
 	return [sourceElement, targetElement, siblingsBetween, isDraggedFoward] as const;
 };
 const spaceWithMargins = (
-	beforeMargin: BeforeMargin,
-	afterMargin: AfterMargin,
 	distance: Distance,
 	siblings: Element[],
 	gap: number,
-	hasGaps: boolean
+	hasGaps: boolean,
+	direction: Direction
 ) => {
 	if (siblings.length == 0) {
 		return [0, 0, 0] as const;
 	}
-	const beforeSpace = getValueFromProperty(siblings[0], beforeMargin);
+	const beforeSpace = getAfterMargin(direction, siblings[0]);
 	let afterSpace = 0;
 	let space = -beforeSpace;
 	for (const [index, sibling] of siblings.entries()) {
 		const siblingSpace = getRect(sibling)[distance];
-		const siblingBeforeMargin = getValueFromProperty(sibling, beforeMargin);
+		const siblingBeforeMargin = getBeforeMargin(direction, sibling);
 		if (hasGaps) {
 			afterSpace += siblingBeforeMargin;
 		}
@@ -193,7 +180,7 @@ const spaceWithMargins = (
 			afterSpace = Math.max(afterSpace, siblingBeforeMargin);
 		}
 		space += afterSpace + siblingSpace;
-		afterSpace = getValueFromProperty(sibling, afterMargin);
+		afterSpace = getAfterMargin(direction, sibling);
 	}
 	return [beforeSpace, space, afterSpace] as const;
 };
@@ -214,43 +201,37 @@ const addScrollToTranslate = (
 	return translate;
 };
 const getBeforeAfterMarginBaseOnDraggedDirection = (
-	beforeMarginProp: BeforeMargin,
-	afterMarginProp: AfterMargin,
 	draggedElement: Element,
 	previousElement: Element | null,
 	isDraggedFoward: boolean,
 	hasGaps: boolean,
-	isGroupDropping: boolean
+	isGroupDropping: boolean,
+	direction: Direction
 ) => {
 	const previousElementByDirection = isDraggedFoward
 		? draggedElement.previousElementSibling
 		: previousElement;
 	return getBeforeAfterMargin(
-		beforeMarginProp,
-		afterMarginProp,
 		previousElementByDirection,
 		draggedElement,
 		hasGaps,
-		isGroupDropping
+		isGroupDropping,
+		direction
 	);
 };
 const getBeforeAfterMargin = (
-	beforeMarginProp: BeforeMargin,
-	afterMarginProp: AfterMargin,
 	previousElement: HTMLElement | Element | null,
 	nextElement: HTMLElement | Element | null,
 	hasGaps: boolean,
-	isGroupDropping: boolean
+	isGroupDropping: boolean,
+	direction: Direction
 ) => {
 	if (hasGaps) {
 		return [0, 0, 0] as const;
 	}
-	const afterMargin = getValueFromProperty(
-		isGroupDropping ? null : previousElement,
-		afterMarginProp
-	);
-	const beforeMargin = getValueFromProperty(nextElement, beforeMarginProp);
+	const afterMarginValue = getAfterMargin(direction, isGroupDropping ? null : previousElement);
+	const beforeMarginValue = getBeforeMargin(direction, nextElement);
 
-	let spaceBeforeDraggedElement = Math.max(afterMargin, beforeMargin);
-	return [afterMargin, beforeMargin, spaceBeforeDraggedElement] as const;
+	let spaceBeforeDraggedElement = Math.max(afterMarginValue, beforeMarginValue);
+	return [afterMarginValue, beforeMarginValue, spaceBeforeDraggedElement] as const;
 };

@@ -1,11 +1,10 @@
 import { Direction, HORIZONTAL } from '../..';
 import { DragAndDropEvent, DRAG_EVENT } from '../../utils';
-import { AfterMargin } from '../../../../index';
 import {
 	draggableIsOutside,
+	getAfterMargin,
 	getBeforeMarginValue,
-	getPropByDirection,
-	getValueFromProperty
+	getPropByDirection
 } from '../../utils/GetStyles';
 import { gapAndDisplayInformation } from '../../utils/ParseStyles';
 
@@ -37,9 +36,9 @@ const getTranslationByDragging = (
 	previous: Element | null,
 	nextElement: Element | null
 ) => {
-	const { afterMargin, distance, gap: gapStyle, getRect } = getPropByDirection(direction);
+	const { distance, gap: gapStyle, getRect } = getPropByDirection(direction);
 
-	const after = getValueFromProperty(current, afterMargin);
+	const after = getAfterMargin(direction, current);
 	const before = getBeforeMarginValue(direction, current);
 	const nextBefore = getBeforeMarginValue(direction, nextElement);
 
@@ -54,7 +53,7 @@ const getTranslationByDragging = (
 		nextBefore,
 		after,
 		before,
-		afterMargin
+		direction
 	);
 	return getTranslation(space, beforeScace, afterSpace, 0, rest, direction);
 };
@@ -63,14 +62,14 @@ const getTranslationByDraggingWithoutGaps = (
 	nextBeforeMargin: number,
 	currentAfterMargin: number,
 	currentBeforeMargin: number,
-	afterMargin: AfterMargin
+	direction: Direction
 ) => {
 	const afterSpace = Math.max(nextBeforeMargin, currentAfterMargin);
 	let beforeScace = currentBeforeMargin;
 	let rest = nextBeforeMargin;
 
 	if (previousElement) {
-		const previousAfterMargin = getValueFromProperty(previousElement, afterMargin);
+		const previousAfterMargin = getAfterMargin(direction, previousElement);
 		beforeScace = Math.max(previousAfterMargin, currentBeforeMargin);
 		rest = Math.max(rest, previousAfterMargin);
 	}

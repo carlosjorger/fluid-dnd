@@ -93,6 +93,7 @@ export default function useDraggable<T>(
 		if (droppableConfigurator.current && draggingState !== DraggingState.INSERTING) {
 			const stateBeforeInserting = draggingState;
 			draggingState = DraggingState.INSERTING;
+
 			fixedDraggableElement &&
 				emitInsertEvent(
 					targetIndex,
@@ -206,6 +207,8 @@ export default function useDraggable<T>(
 			!newdDroppableConfig?.droppable.isSameNode(oldDroppableConfig.droppable) &&
 			fixedDraggableElement
 		) {
+			newdDroppableConfig &&
+				ConfigHandler.updateScrolls(newdDroppableConfig.droppable, droppableGroupClass);
 			emitDraggingEvent(fixedDraggableElement, DRAG_EVENT, oldDroppableConfig);
 			previousDroppableConfig = oldDroppableConfig;
 		}
@@ -241,10 +244,7 @@ export default function useDraggable<T>(
 		toggleDroppableClass(isOutside);
 		if (draggingState === DraggingState.START_DRAGGING && !isTouchEvent) {
 			startDragging(event);
-		} else if (
-			draggingState === DraggingState.DRAGING ||
-			draggingState === DraggingState.INSERTING
-		) {
+		} else if (draggingState === DraggingState.DRAGING) {
 			setTransformEvent(event);
 		}
 	};

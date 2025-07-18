@@ -230,12 +230,15 @@ export default function useDragAndDropEvents<T>(
 			currentPosition > targetPosition && currentPosition < targetEndPosition;
 		const targetPositionInsideCurrent =
 			targetPosition > currentPosition && targetPosition < currentEndPosition;
+
+		const canChange = intersected && (targetPositionInsideCurrent || currentPositionInsideTarget);
 		const isAtTheEnd = siblingCount - 1 === targetIndex && currentPosition > targetPosition;
-		const isAtTheBeggining = targetIndex === 0 && currentEndPosition < targetPosition;
+		const isAtTheBeggining = targetIndex === 0 && currentPosition < targetPosition;
+	
 		return [
-			intersected && (targetPositionInsideCurrent || currentPositionInsideTarget),
+			canChange,
 			isAtTheEnd,
-			isAtTheBeggining
+			isAtTheBeggining 
 		] as const;
 	};
 	const getScrollChange = (

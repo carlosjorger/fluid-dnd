@@ -1,6 +1,6 @@
 import ConfigHandler, { DroppableConfig } from './configHandler';
 import { DragMouseTouchEvent } from '../../../index';
-import { draggableIsOutside } from '../utils/GetStyles';
+import { draggableIsOutside, isSameNode } from '../utils/GetStyles';
 import { IsHTMLElement } from '../utils/typesCheckers';
 import { setEventWithInterval } from '../utils/SetStyles';
 import { getClassesSelector } from '../utils/dom/classList';
@@ -57,7 +57,7 @@ export class DroppableConfigurator<T> {
 	private getDraggableAncestor(clientX: number, clientY: number, draggable: Element | null) {
 		return document
 			.elementsFromPoint(clientX, clientY)
-			.filter((element) => !element.isSameNode(draggable));
+			.filter((element) => !isSameNode(draggable, element));
 	}
 	private getElementBelow(currentElement: HTMLElement, event: DragMouseTouchEvent) {
 		const getElementBelow = (config: DroppableConfigurator<T>) => {
@@ -101,7 +101,7 @@ export class DroppableConfigurator<T> {
 		if (!coreConfig) {
 			return undefined;
 		}
-		if (element.isSameNode(this.parent)) {
+		if (isSameNode(this.parent, element)) {
 			return coreConfig;
 		}
 		return {
@@ -110,7 +110,7 @@ export class DroppableConfigurator<T> {
 		};
 	}
 	droppableIfInsideCurrent(droppable: Element | null | undefined, current: HTMLElement) {
-		return droppable && !droppable.isSameNode(current) && current.contains(droppable);
+		return droppable && !isSameNode(current, droppable) && current.contains(droppable);
 	}
 	getCurrentConfig(event: DragMouseTouchEvent) {
 		const currentElement = this.draggableElement;

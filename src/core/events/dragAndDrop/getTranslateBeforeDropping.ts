@@ -7,14 +7,20 @@ import {
 	Translate,
 	WindowScroll
 } from '../../../../index';
-import { getPropByDirection, getRect, getValueFromProperty } from '../../utils/GetStyles';
+import {
+	getAxisValue,
+	getBorderBeforeWidthValue,
+	getPropByDirection,
+	getRect,
+	getValueFromProperty
+} from '../../utils/GetStyles';
 import { gapAndDisplayInformation, getBeforeStyles } from '../../utils/ParseStyles';
 const getContentPosition = (direction: Direction, droppable: HTMLElement) => {
-	const { borderBeforeWidth, paddingBefore, axis, getRect } = getPropByDirection(direction);
+	const { paddingBefore, getRect } = getPropByDirection(direction);
 
-	const borderBeforeWidthDroppable = getValueFromProperty(droppable, borderBeforeWidth);
+	const borderBeforeWidthDroppable = getBorderBeforeWidthValue(direction, droppable);
 	const paddingBeforeDroppable = getValueFromProperty(droppable, paddingBefore);
-	const axisValue = getRect(droppable)[axis];
+	const axisValue = getAxisValue(direction, getRect(droppable));
 
 	return borderBeforeWidthDroppable + paddingBeforeDroppable + axisValue;
 };

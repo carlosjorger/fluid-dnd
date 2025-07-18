@@ -1,9 +1,12 @@
 import {
 	draggableIsOutside,
+	getAxisValue,
+	getDistanceValue,
 	getPropByDirection,
 	getSiblings,
 	getTransform,
-	getWindowScroll
+	getWindowScroll,
+	isSameNode
 } from '../../utils/GetStyles';
 import { Translate, WindowScroll } from '../../../../index';
 import { moveTranslate, removeTranslateWhitoutTransition } from '../../utils/SetStyles';
@@ -113,7 +116,7 @@ export default function useDragAndDropEvents<T>(
 		targetElement: Element,
 		translation: Translate
 	) => {
-		const { before, distance, axis, getRect } = getPropByDirection(direction);
+		const { before, distance, getRect } = getPropByDirection(direction);
 		const currentBoundingClientRect = getRect(sourceElement);
 		const targetBoundingClientRect = getRect(targetElement);
 
@@ -123,7 +126,7 @@ export default function useDragAndDropEvents<T>(
 		const targetSize = targetBoundingClientRect[distance];
 		const targetMiddle = targetPosition + targetSize / 2;
 
-		const targetTransform = getTransform(targetElement)[axis];
+		const targetTransform = getAxisValue(direction, getTransform(targetElement));
 		const targetMiddleWithoutTransform = targetMiddle - targetTransform;
 
 		if (currentPosition > targetMiddleWithoutTransform) {
@@ -139,8 +142,8 @@ export default function useDragAndDropEvents<T>(
 	) => {
 		const itemsCount = siblings.filter((sibling) => containClass(sibling, DRAGGABLE_CLASS)).length;
 
-		const { distance } = getPropByDirection(direction);
-		if (translation[distance] == 0) {
+		const [distance] = getDistanceValue(direction, translation);
+		if (distance == 0) {
 			actualIndex = Math.max(actualIndex, siblingIndex);
 		} else {
 			actualIndex = Math.min(actualIndex, siblingIndex - 1);
@@ -296,7 +299,7 @@ export default function useDragAndDropEvents<T>(
 		}, animationDuration);
 	};
 	const removeTempChildOnDroppables = (parent: HTMLElement, droppable: HTMLElement) => {
-		if (parent.isSameNode(droppable)) {
+		if (isSameNode(parent, droppable)) {
 			removeTempChild(parent, animationDuration);
 		} else {
 			removeTempChild(parent, animationDuration, true);
@@ -304,7 +307,7 @@ export default function useDragAndDropEvents<T>(
 		}
 	};
 	const reduceTempchildSize = (droppable: HTMLElement) => {
-		if (parent.isSameNode(droppable)) {
+		if (isSameNode(parent, droppable)) {
 			return;
 		}
 		var [lastChildren] = parent.querySelectorAll(`.${TEMP_CHILD_CLASS}`);

@@ -1,6 +1,6 @@
 import { Direction, HORIZONTAL, VERTICAL } from '..';
 import { DragMouseTouchEvent, fixedSize } from '../../../index';
-import { getPropByDirection, getRect, getValueFromProperty } from './GetStyles';
+import { getBorderBeforeWidthValue, getPropByDirection, getRect } from './GetStyles';
 import { IsHTMLElement, IsMouseEvent, isTouchEvent } from './typesCheckers';
 
 type onTouchEvent = 'ontouchstart' | 'ontouchmove' | 'ontouchend';
@@ -161,13 +161,13 @@ const getOffset = (
 	direction: Direction,
 	element: Element
 ) => {
-	const { page, scroll, before, borderBeforeWidth, getRect } = getPropByDirection(direction);
+	const { page, scroll, before, getRect } = getPropByDirection(direction);
 	const boundingClientRect = getRect(element);
 	return (
 		event[page] -
 		window[scroll] -
 		boundingClientRect[before] -
-		getValueFromProperty(element, borderBeforeWidth)
+		getBorderBeforeWidthValue(direction, element)
 	);
 };
 export const setTranistion = (

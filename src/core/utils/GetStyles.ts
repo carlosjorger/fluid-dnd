@@ -1,5 +1,13 @@
 import { Direction, HORIZONTAL, VERTICAL } from '..';
-import { BeforeMargin, AfterMargin, BorderWidth, PaddingBefore, Before } from '../../../index';
+import {
+	BeforeMargin,
+	AfterMargin,
+	BorderWidth,
+	PaddingBefore,
+	Before,
+	Translate,
+	Coordinate
+} from '../../../index';
 import { DRAGGABLE_CLASS } from './classes';
 import { containClass } from './dom/classList';
 
@@ -104,9 +112,22 @@ export const getScrollElement = (element: HTMLElement) => {
 export const getRect = (element: Element) => {
 	return element.getBoundingClientRect();
 };
-// export const getDistance = (element: Element, direction: Direction) => {
-// 	return element.getBoundingClientRect();
-// };
+export const getDistanceValue = (direction: Direction, translation: Translate) => {
+	const { distance } = getPropByDirection(direction);
+	return [translation[distance], distance] as const;
+};
+export const getAxisValue = (direction: Direction, coordinate: Coordinate) => {
+	const { axis } = getPropByDirection(direction);
+	return coordinate[axis];
+};
+export const getBorderBeforeWidthValue = (direction: Direction, element: Element) => {
+	const { borderBeforeWidth } = getPropByDirection(direction);
+	return getValueFromProperty(element, borderBeforeWidth);
+};
+export const getBeforeMarginValue = (direction: Direction, element: Element | null) => {
+	const { beforeMargin } = getPropByDirection(direction);
+	return getValueFromProperty(element, beforeMargin);
+};
 export const getPropByDirection = (direction: Direction) => {
 	const ifHorizontal = direction == HORIZONTAL;
 	return {
@@ -170,9 +191,12 @@ const getNearestFixedParent = (element: Element) => {
 };
 
 export const getNearestFixedParentPosition = (element: Element, direction: Direction) => {
-	const { before, borderBeforeWidth } = getPropByDirection(direction);
+	const { before } = getPropByDirection(direction);
 	const fixedParent = getNearestFixedParent(element);
 	return fixedParent
-		? getRect(fixedParent)[before] + getValueFromProperty(fixedParent, borderBeforeWidth)
+		? getRect(fixedParent)[before] + getBorderBeforeWidthValue(direction, fixedParent)
 		: 0;
+};
+export const isSameNode = (element1: Element | null | undefined, element2: Element | null) => {
+	return element1?.isSameNode(element2);
 };

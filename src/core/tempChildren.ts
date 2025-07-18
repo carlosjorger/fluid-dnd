@@ -1,7 +1,7 @@
 import { DroppableConfig } from './config/configHandler';
 import { ElementScroll, Translate } from '../../index';
 import { Direction, HORIZONTAL, VERTICAL } from '.';
-import { getPropByDirection } from './utils/GetStyles';
+import { getDistanceValue, getPropByDirection, getRect, isSameNode } from './utils/GetStyles';
 import { getGapPixels } from './utils/ParseStyles';
 import { setSizeStyles, setTranistion } from './utils/SetStyles';
 import { observeMutation } from './utils/observer';
@@ -24,8 +24,8 @@ const getDistance = (droppable: HTMLElement, draggedElement: HTMLElement, direct
 };
 const getlarge = (direction: Direction, draggedElement: HTMLElement) => {
 	const largeDirection = direction == HORIZONTAL ? VERTICAL : HORIZONTAL;
-	const { distance, getRect } = getPropByDirection(largeDirection);
-	return [getRect(draggedElement)[distance], distance] as const;
+	const distanceValue = getDistanceValue(largeDirection, getRect(draggedElement));
+	return distanceValue;
 };
 const setSizes = (element: HTMLElement, height: number, width: number) => {
 	setSizeStyles(element, height, width);
@@ -116,7 +116,7 @@ export const addTempChild = <T>(
 		return;
 	}
 	const [child, distances, droppable] = result;
-	if (parent.isSameNode(droppable)) {
+	if (isSameNode(parent, droppable)) {
 		setSizes(child, distances.height, distances.width);
 	}
 	observeMutation(updateChildAfterCreated(child, droppable, distances), droppable, {
@@ -163,8 +163,8 @@ export const removeTempChildrens = (
 	children.forEach((tempChild) => {
 		const childParent = tempChild.parentElement;
 		if (
-			childParent?.isSameNode(parent) ||
-			(!draggedElementIsOutside && childParent?.isSameNode(droppable))
+			isSameNode(parent, childParent) ||
+			(!draggedElementIsOutside && isSameNode(droppable, childParent))
 		) {
 			return;
 		}

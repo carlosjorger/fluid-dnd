@@ -1,5 +1,5 @@
 import { Coordinate, Direction } from '..';
-import { draggableIsCompleteOutside, getPropByDirection } from '../utils/GetStyles';
+import { draggableIsCompleteOutside, getAxisValue, getPropByDirection } from '../utils/GetStyles';
 const scrollByDirection = (element: HTMLElement, direction: Direction, scrollAmount: number) => {
 	if (scrollAmount == 0) {
 		return;
@@ -22,12 +22,12 @@ export const useScroll = (draggedElement: HTMLElement) => {
 		},
 		translate: Coordinate
 	) => {
-		const { before, distance, axis, getRect } = getPropByDirection(direction);
+		const { before, distance, getRect } = getPropByDirection(direction);
 		const distanceValue = getRect(draggedElement)[distance];
 
 		const parentBoundingClientRect = getRect(parent);
 		const positionInsideParent =
-			position[before] - parentBoundingClientRect[before] + translate[axis];
+			position[before] - parentBoundingClientRect[before] + getAxisValue(direction, translate);
 
 		const parentDistance = parentBoundingClientRect[distance];
 		const totalDistance = parentDistance - distanceValue;

@@ -1,6 +1,6 @@
 import { ElementScroll } from '../../../index';
 import { CoreConfig } from '..';
-import { getScrollElement } from '../utils/GetStyles';
+import { getScrollElement, isSameNode } from '../utils/GetStyles';
 import { containstClasses } from '../utils/dom/classList';
 
 export type DroppableConfig<T> = {
@@ -12,7 +12,7 @@ export default class ConfigHandler {
 	static configs = [] as DroppableConfig<any>[];
 	static addConfig<T>(droppable: HTMLElement, config: CoreConfig<T>) {
 		const configs = ConfigHandler.configs.filter(
-			(configHandler) => !configHandler.droppable.isSameNode(droppable)
+			(configHandler) => !isSameNode(configHandler.droppable, droppable)
 		);
 		const scroll = getScrollElement(droppable);
 		configs.push({
@@ -34,7 +34,7 @@ export default class ConfigHandler {
 
 			if (
 				(droppableGroupClass && containstClasses(droppable, droppableGroupClass)) ||
-				droppable.isSameNode(currentDroppable)
+				isSameNode(currentDroppable, droppable)
 			) {
 				configHandler.scroll = getScrollElement(droppable);
 			}
@@ -42,7 +42,7 @@ export default class ConfigHandler {
 	}
 	static getConfig(curerntDroppable: Element) {
 		const config = ConfigHandler.configs.find(({ droppable }) =>
-			droppable.isSameNode(curerntDroppable)
+			isSameNode(curerntDroppable, droppable)
 		);
 		return config;
 	}

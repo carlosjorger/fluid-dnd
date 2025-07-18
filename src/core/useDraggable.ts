@@ -32,7 +32,7 @@ import { DRAGGABLE_CLASS, DRAGGING_CLASS, DROPPABLE_CLASS, HANDLER_CLASS } from 
 import HandlerPublisher from './HandlerPublisher';
 import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
 import useInsertEvents from './events/insert';
-import { getRect } from './utils/GetStyles';
+import { getRect, isSameNode } from './utils/GetStyles';
 
 const enum DraggingState {
 	NOT_DRAGGING,
@@ -131,7 +131,7 @@ export default function useDraggable<T>(
 			handler &&
 			handlerParent &&
 			containClass(handlerParent, DROPPABLE_CLASS) &&
-			!handlerParent.isSameNode(parent)
+			!isSameNode(parent, handlerParent)
 		) {
 			return null;
 		}
@@ -154,13 +154,12 @@ export default function useDraggable<T>(
 			);
 			disableMousedownEventFromImages(handlerElement);
 		}
-		if (!element?.isSameNode(handlerElement)) {
+		if (!isSameNode(element, handlerElement)) {
 			assignDraggingEvent(element, ON_MOUSEDOWN, mousedownOnDraggablefunction);
 		}
 		addClass(parent, DROPPABLE_CLASS);
 	};
 	const disableMousedownEventFromImages = (handlerElement: Element) => {
-		// Avoid dragging inner images
 		const images = handlerElement.querySelectorAll('img');
 		Array.from(images).forEach((image) => {
 			image.onmousedown = () => false;
@@ -190,7 +189,7 @@ export default function useDraggable<T>(
 		if (
 			oldDroppableConfig &&
 			draggingState == DraggingState.DRAGING &&
-			!newdDroppableConfig?.droppable.isSameNode(oldDroppableConfig.droppable)
+			!isSameNode(newdDroppableConfig?.droppable, oldDroppableConfig.droppable)
 		) {
 			emitDraggingEvent(draggableElement, DRAG_EVENT, oldDroppableConfig);
 			removeTranslates(oldDroppableConfig.droppable);
@@ -215,7 +214,7 @@ export default function useDraggable<T>(
 		for (const droppable of droppables) {
 			droppable.classList.toggle(
 				droppableClass,
-				!isOutside && droppable.isSameNode(droppableConfigurator.current.droppable)
+				!isOutside && isSameNode(droppable, droppableConfigurator.current.droppable)
 			);
 		}
 	};
@@ -282,7 +281,7 @@ export default function useDraggable<T>(
 		const { clientX, clientY } = event;
 		const elementBelow = document.elementFromPoint(clientX, clientY);
 		const draggableAncestor = elementBelow?.closest(`.${DRAGGABLE_CLASS}`);
-		return draggableAncestor && element.isSameNode(draggableAncestor);
+		return draggableAncestor && isSameNode(element, draggableAncestor);
 	};
 	const getDragStartEventData = (element: Element): DragStartEventData<T> | undefined => {
 		const value = config.onGetValue(index);

@@ -3,6 +3,7 @@ import { DragAndDropEvent, DRAG_EVENT } from '../../utils';
 import { AfterMargin } from '../../../../index';
 import {
 	draggableIsOutside,
+	getBeforeMarginValue,
 	getPropByDirection,
 	getValueFromProperty
 } from '../../utils/GetStyles';
@@ -36,17 +37,11 @@ const getTranslationByDragging = (
 	previous: Element | null,
 	nextElement: Element | null
 ) => {
-	const {
-		afterMargin,
-		beforeMargin,
-		distance,
-		gap: gapStyle,
-		getRect
-	} = getPropByDirection(direction);
+	const { afterMargin, distance, gap: gapStyle, getRect } = getPropByDirection(direction);
 
 	const after = getValueFromProperty(current, afterMargin);
-	const before = getValueFromProperty(current, beforeMargin);
-	const nextBefore = getValueFromProperty(nextElement, beforeMargin);
+	const before = getBeforeMarginValue(direction, current);
+	const nextBefore = getBeforeMarginValue(direction, nextElement);
 
 	const [gap, hasGaps] = gapAndDisplayInformation(current.parentElement, gapStyle);
 

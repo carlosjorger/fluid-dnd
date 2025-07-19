@@ -1,10 +1,17 @@
 import { Coordinate, DragMouseTouchEvent, ElementPosition, TransformEvent } from '../../../index';
 import {
 	getAxisValue,
+	getBefore,
 	getBeforeMarginValue,
 	getBorderBeforeWidthValue,
+	getDistanceValue,
+	getInnerDistance,
 	getNearestFixedParentPosition,
+	getOffsetValue,
+	getPageValue,
 	getPropByDirection,
+	getRect,
+	getScrollValue,
 	isSameNode
 } from '../utils/GetStyles';
 import { CoordinateMap, Direction, HORIZONTAL, VERTICAL } from '..';
@@ -37,15 +44,13 @@ export const usePositioning = (
 		direction?: Direction
 	) => {
 		const getTranslateWihtDirection = (translateDirection: Direction) => {
-			const { before, offset, scroll, page, inner, distance, getRect } =
-				getPropByDirection(translateDirection);
-			const pageValue = pagePosition[page];
-			const scrollValue = window[scroll];
-			const innerDistance = window[inner];
-			const distanceValue = getRect(element)[distance];
+			const pageValue = getPageValue(translateDirection, pagePosition);
+			const scrollValue = getScrollValue(translateDirection, window);
+			const innerDistance = getInnerDistance(translateDirection, window);
+			const [distanceValue] = getDistanceValue(translateDirection, getRect(element));
 			const border = getBorderBeforeWidthValue(translateDirection, element);
 			const margin = getBeforeMarginValue(translateDirection, element);
-			const elementPosittion = pageValue - currentOffset[offset];
+			const elementPosittion = pageValue - getOffsetValue(translateDirection, currentOffset);
 
 			const beforefixecParentValue = getNearestFixedParentPosition(element, translateDirection);
 			if (
@@ -54,7 +59,7 @@ export const usePositioning = (
 			) {
 				const newTranslate =
 					elementPosittion -
-					position[before] -
+					getBefore(translateDirection, position) -
 					border -
 					margin -
 					scrollValue -
@@ -99,10 +104,9 @@ export const usePositioning = (
 };
 
 const getOffsetWithDraggable = (direction: Direction, element: Element, draggable: Element) => {
-	const { before, getRect } = getPropByDirection(direction);
 	return (
-		getRect(element)[before] -
-		getRect(draggable)[before] -
+		getBefore(direction, getRect(element)) -
+		getBefore(direction, getRect(draggable)) -
 		getBorderBeforeWidthValue(direction, draggable)
 	);
 };
@@ -136,16 +140,14 @@ const getPositionByDistance = (
 		offsetY: number;
 	}
 ) => {
-	const { offset, page, scroll } = getPropByDirection(direction);
-
 	const beforefixecParentValue = getNearestFixedParentPosition(element, direction);
 
 	return (
-		event[page] -
-		offsetEvent[offset] -
+		getPageValue(direction, event) -
+		getOffsetValue(direction, offsetEvent) -
 		getBeforeMarginValue(direction, element) -
 		getBorderBeforeWidthValue(direction, element) -
-		window[scroll] -
+		getScrollValue(direction, window) -
 		beforefixecParentValue
 	);
 };

@@ -1,6 +1,12 @@
 import { Direction, HORIZONTAL, VERTICAL } from '..';
-import { DragMouseTouchEvent, fixedSize } from '../../../index';
-import { getBorderBeforeWidthValue, getPropByDirection, getRect } from './GetStyles';
+import { DragMouseTouchEvent, fixedSize, Translate } from '../../../index';
+import {
+	getBefore,
+	getBorderBeforeWidthValue,
+	getPageValue,
+	getRect,
+	getScrollValue
+} from './GetStyles';
 import { IsHTMLElement, IsMouseEvent, isTouchEvent } from './typesCheckers';
 
 type onTouchEvent = 'ontouchstart' | 'ontouchmove' | 'ontouchend';
@@ -13,37 +19,31 @@ type MouseEventType = (typeof mouseEvents)[number];
 type DragEventCallback = (event: DragMouseTouchEvent) => void;
 type TouchEventCallback = (event: TouchEvent) => void;
 
-export const setSizeStyles = (
-	element: HTMLElement | undefined | null,
-	height: number,
-	width: number
-) => {
+export const setSizeStyles = (element: HTMLElement | undefined | null, translate: Translate) => {
 	if (!element) {
 		return;
 	}
-	element.style.height = `${height}px`;
-	element.style.width = `${width}px`;
+	element.style.height = `${translate.height}px`;
+	element.style.width = `${translate.width}px`;
 };
 
 export const fixSizeStyle = (element: HTMLElement | undefined | null) => {
 	if (!element) {
 		return;
 	}
-	const { height, width } = getRect(element);
-	setSizeStyles(element, height, width);
+	setSizeStyles(element, getRect(element));
 };
 export const moveTranslate = (
 	element: Element | undefined | null,
-	height: number,
-	width: number
+	translation: Translate = { height: 0, width: 0 }
 ) => {
 	if (!element || !IsHTMLElement(element)) {
 		return;
 	}
-	if (width == 0 && height == 0) {
+	if (translation.width == 0 && translation.height == 0) {
 		element.style.transform = '';
 	} else {
-		element.style.transform = `translate(${width}px,${height}px)`;
+		element.style.transform = `translate(${translation.width}px,${translation.height}px)`;
 	}
 };
 const assignDraggingTouchEvent = (
@@ -161,12 +161,11 @@ const getOffset = (
 	direction: Direction,
 	element: Element
 ) => {
-	const { page, scroll, before, getRect } = getPropByDirection(direction);
 	const boundingClientRect = getRect(element);
 	return (
-		event[page] -
-		window[scroll] -
-		boundingClientRect[before] -
+		getPageValue(direction, event) -
+		getScrollValue(direction, window) -
+		getBefore(direction, boundingClientRect) -
 		getBorderBeforeWidthValue(direction, element)
 	);
 };

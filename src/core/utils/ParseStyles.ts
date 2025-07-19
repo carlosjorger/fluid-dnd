@@ -32,9 +32,12 @@ export const getBeforeStyles = (element: HTMLElement): [number, number] => {
 	const { top, left } = getComputedStyle(element);
 	return [getNumberFromPixels(top), getNumberFromPixels(left)];
 };
-export const getGapPixels = (element: HTMLElement, direction: Direction) => {
+export const getGapInfo = (element: HTMLElement | null, direction: Direction) => {
 	const { gap: gapStyle } = getPropByDirection(direction);
-	const [gap, hasGaps] = gapAndDisplayInformation(element, gapStyle);
+	return gapAndDisplayInformation(element, gapStyle);
+};
+export const getGapPixels = (element: HTMLElement, direction: Direction) => {
+	const [gap, hasGaps] = getGapInfo(element, direction);
 	if (hasGaps) {
 		return gap;
 	}

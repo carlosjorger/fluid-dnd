@@ -56,8 +56,7 @@ export default function useRemoveEvents<T>(
 	};
 
 	const startDragEventOverElement = (element: Element, translation: Translate) => {
-		const { width, height } = translation;
-		moveTranslate(element, height, width);
+		moveTranslate(element, translation);
 	};
 
 	const removeTranslateFromSiblings = (element: HTMLElement, parent: HTMLElement) => {

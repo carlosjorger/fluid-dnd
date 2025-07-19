@@ -3,7 +3,12 @@ import { CoreConfig } from '..';
 import HandlerPublisher from '../HandlerPublisher';
 import { DRAGGING_CLASS, DRAGGING_HANDLER_CLASS, GRABBING_CLASS } from '../utils/classes';
 import { toggleClass } from '../utils/dom/classList';
-import { moveTranslate, removeTranslateWhitoutTransition, setCustomFixedSize, setTranistion } from '../utils/SetStyles';
+import {
+	moveTranslate,
+	removeTranslateWhitoutTransition,
+	setCustomFixedSize,
+	setTranistion
+} from '../utils/SetStyles';
 import { draggableTargetTimingFunction } from '../utils';
 export const useChangeDraggableStyles = <T>(
 	currentConfig: CoreConfig<T>,
@@ -38,8 +43,7 @@ export const useChangeDraggableStyles = <T>(
 		}
 	};
 	const dragEventOverElement = (element: Element, translation: Translate) => {
-		const { width, height } = translation;
-		moveTranslate(element, height, width);
+		moveTranslate(element, translation);
 		setTranistion(element, animationDuration, draggableTargetTimingFunction);
 	};
 	return [removeElementDraggingStyles, toggleDraggingClass, dragEventOverElement] as const;

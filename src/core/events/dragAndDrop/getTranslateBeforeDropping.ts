@@ -1,17 +1,20 @@
 import { Direction, HORIZONTAL, VERTICAL } from '../..';
-import { Distance, ScrollElement, Translate, WindowScroll } from '../../../../index';
+import { Translate, WindowScroll } from '../../../../index';
 import {
 	getAfterMargin,
 	getAxisValue,
 	getBeforeMargin,
 	getBorderBeforeWidthValue,
+	getDistanceValue,
 	getPropByDirection,
 	getRect,
+	getScrollElementValue,
+	getScrollValue,
 	getValueFromProperty
 } from '../../utils/GetStyles';
-import { gapAndDisplayInformation, getBeforeStyles } from '../../utils/ParseStyles';
+import { getBeforeStyles, getGapInfo } from '../../utils/ParseStyles';
 const getContentPosition = (direction: Direction, droppable: HTMLElement) => {
-	const { paddingBefore, getRect } = getPropByDirection(direction);
+	const { paddingBefore } = getPropByDirection(direction);
 
 	const borderBeforeWidthDroppable = getBorderBeforeWidthValue(direction, droppable);
 	const paddingBeforeDroppable = getValueFromProperty(droppable, paddingBefore);
@@ -64,8 +67,7 @@ export default function getTranslateBeforeDropping(
 		width += x;
 	}
 
-	const { scrollElement, distance: spaceProp, gap: gapStyle } = getPropByDirection(direction);
-	const [gap, hasGaps] = gapAndDisplayInformation(droppable, gapStyle);
+	const [gap, hasGaps] = getGapInfo(droppable, direction);
 
 	const [afterMarginOutside, beforeMarginOutside, spaceBeforeDraggedElement] =
 		getBeforeAfterMarginBaseOnDraggedDirection(
@@ -77,7 +79,6 @@ export default function getTranslateBeforeDropping(
 			direction
 		);
 	const [beforeSpace, space, afterSpace] = spaceWithMargins(
-		spaceProp,
 		siblingsBetween,
 		gap,
 		hasGaps,
@@ -91,9 +92,10 @@ export default function getTranslateBeforeDropping(
 		afterMarginOutside,
 		gap
 	);
+	const [scrollElementValue] = getScrollElementValue(direction, droppable);
 	const scrollChange = isGroupDropping
-		? droppable[scrollElement]
-		: getScrollChange(scrollElement, droppable, previousScroll);
+		? scrollElementValue
+		: getScrollChange(droppable, previousScroll, direction);
 	const spaceCalc = isDraggedFoward
 		? spaceBetween - spaceBeforeDraggedElement
 		: spaceBeforeDraggedElement - spaceBetween;
@@ -114,12 +116,12 @@ export default function getTranslateBeforeDropping(
 }
 
 const getScrollChange = (
-	scrollElement: ScrollElement,
 	parentElement: HTMLElement,
-	previousScroll: { scrollLeft: number; scrollTop: number }
+	previousScroll: { scrollLeft: number; scrollTop: number },
+	direction: Direction
 ) => {
-	const scrollParent = parentElement[scrollElement];
-	const previousScrollValue = previousScroll[scrollElement];
+	const [scrollParent] = getScrollElementValue(direction, parentElement);
+	const [previousScrollValue] = getScrollElementValue(direction, previousScroll);
 	return scrollParent - previousScrollValue;
 };
 const getSpaceBetween = (
@@ -156,7 +158,6 @@ const getElementsRange = (
 	return [sourceElement, targetElement, siblingsBetween, isDraggedFoward] as const;
 };
 const spaceWithMargins = (
-	distance: Distance,
 	siblings: Element[],
 	gap: number,
 	hasGaps: boolean,
@@ -169,7 +170,7 @@ const spaceWithMargins = (
 	let afterSpace = 0;
 	let space = -beforeSpace;
 	for (const [index, sibling] of siblings.entries()) {
-		const siblingSpace = getRect(sibling)[distance];
+		const [siblingSpace] = getDistanceValue(direction, getRect(sibling));
 		const siblingBeforeMargin = getBeforeMargin(direction, sibling);
 		if (hasGaps) {
 			afterSpace += siblingBeforeMargin;
@@ -191,12 +192,12 @@ const addScrollToTranslate = (
 	initialWindowScroll: WindowScroll,
 	isGroupDropping: Boolean
 ) => {
-	const { scroll, distance } = getPropByDirection(direction);
-	const actualWindowScroll = window[scroll];
-	const initialScrollProp = initialScroll[scroll];
+	const actualWindowScroll = getScrollValue(direction, window);
+	const initialScrollProp = getScrollValue(direction, initialScroll);
 	const scrollChange = isGroupDropping
 		? 0
-		: initialScrollProp - 2 * actualWindowScroll + initialWindowScroll[scroll];
+		: initialScrollProp - 2 * actualWindowScroll + getScrollValue(direction, initialWindowScroll);
+	const [, distance] = getDistanceValue(direction, translate);
 	translate[distance] += scrollChange;
 	return translate;
 };

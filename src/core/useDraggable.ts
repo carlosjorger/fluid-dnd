@@ -179,7 +179,7 @@ export default function useDraggable<T>(
 	const removeTranslates = (droppable: Element) => {
 		const drgagables = droppable.querySelectorAll(`.${DRAGGABLE_CLASS}`);
 		for (const draggable of drgagables) {
-			moveTranslate(draggable, 0, 0);
+			moveTranslate(draggable);
 		}
 	};
 	const changeDroppable = (
@@ -401,7 +401,7 @@ export default function useDraggable<T>(
 	};
 	const removeDraggingStyles = (element: Element) => {
 		setTranistion(element, animationDuration, draggableTargetTimingFunction);
-		moveTranslate(element, 0, 0);
+		moveTranslate(element);
 	};
 	const setDraggingStyles = (element: HTMLElement) => {
 		const { height, width } = getRect(element);

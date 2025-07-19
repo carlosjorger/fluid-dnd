@@ -1,7 +1,13 @@
 import { DroppableConfig } from './config/configHandler';
 import { ElementScroll, Translate } from '../../index';
 import { Direction, HORIZONTAL, VERTICAL } from '.';
-import { getDistanceValue, getPropByDirection, getRect, isSameNode } from './utils/GetStyles';
+import {
+	getDistanceValue,
+	getPropByDirection,
+	getRect,
+	getScrollElementValue,
+	isSameNode
+} from './utils/GetStyles';
 import { getGapPixels } from './utils/ParseStyles';
 import { setSizeStyles, setTranistion } from './utils/SetStyles';
 import { observeMutation } from './utils/observer';
@@ -16,7 +22,7 @@ const DELAY_TIME = 50;
 const getDistance = (droppable: HTMLElement, draggedElement: HTMLElement, direction: Direction) => {
 	let distances = getTranslationByDragging(draggedElement, START_DRAG_EVENT, direction, droppable);
 	const gap = getGapPixels(droppable, direction);
-	const { distance } = getPropByDirection(direction);
+	const [, distance] = getDistanceValue(direction, distances);
 	distances[distance] -= gap;
 	const [large, largeDistance] = getlarge(direction, draggedElement);
 	distances[largeDistance] = large;
@@ -27,9 +33,9 @@ const getlarge = (direction: Direction, draggedElement: HTMLElement) => {
 	const distanceValue = getDistanceValue(largeDirection, getRect(draggedElement));
 	return distanceValue;
 };
-const setSizes = (element: HTMLElement, height: number, width: number) => {
-	setSizeStyles(element, height, width);
-	element.style.minWidth = `${width}px`;
+const setSizes = (element: HTMLElement, translate: Translate = { height: 0, width: 0 }) => {
+	setSizeStyles(element, translate);
+	element.style.minWidth = `${translate.width}px`;
 };
 const updateChildAfterCreated = (
 	child: HTMLElement,
@@ -40,17 +46,21 @@ const updateChildAfterCreated = (
 		if (!droppable.contains(child)) {
 			return;
 		}
-		setSizes(child, distances.height, distances.width);
+		setSizes(child, distances);
 		observer.disconnect();
 	};
+};
+const overflowScroll = (droppable: HTMLElement, direction: Direction) => {
+	const { scrollDistance, clientDistance } = getPropByDirection(direction);
+	return droppable[scrollDistance] - droppable[clientDistance];
 };
 const scrollPercent = (
 	direction: Direction,
 	droppable: HTMLElement,
 	droppableScroll: ElementScroll
 ) => {
-	const { scrollDistance, clientDistance, scrollElement } = getPropByDirection(direction);
-	return droppableScroll[scrollElement] / (droppable[scrollDistance] - droppable[clientDistance]);
+	const [scrollElementValue] = getScrollElementValue(direction, droppableScroll);
+	return scrollElementValue / overflowScroll(droppable, direction);
 };
 const fixScrollInitialChange = <T>(
 	droppableConfig: DroppableConfig<T>,
@@ -63,9 +73,10 @@ const fixScrollInitialChange = <T>(
 	const { direction } = config;
 
 	const scrollCompleted = scrollPercent(config.direction, droppable, scroll) > 0.99;
-	const { scrollDistance, clientDistance, scrollElement } = getPropByDirection(direction);
+	const [, scrollElement] = getScrollElementValue(direction, droppable);
+
 	if (scrollCompleted) {
-		droppable[scrollElement] = droppable[scrollDistance] - droppable[clientDistance];
+		droppable[scrollElement] = overflowScroll(droppable, direction);
 	}
 };
 const getTempChild = <T>(
@@ -89,7 +100,7 @@ const getTempChild = <T>(
 	var tempChildTag = draggedElement.tagName == 'LI' ? 'DIV' : draggedElement.tagName;
 	var child = document.createElement(tempChildTag);
 	addClass(child, TEMP_CHILD_CLASS);
-	setSizes(child, 0, 0);
+	setSizes(child);
 	const distances = getDistance(droppable, draggedElement, direction);
 	setTranistion(
 		child,
@@ -117,7 +128,7 @@ export const addTempChild = <T>(
 	}
 	const [child, distances, droppable] = result;
 	if (isSameNode(parent, droppable)) {
-		setSizes(child, distances.height, distances.width);
+		setSizes(child, distances);
 	}
 	observeMutation(updateChildAfterCreated(child, droppable, distances), droppable, {
 		childList: true,
@@ -140,7 +151,7 @@ export const addTempChildOnInsert = <T>(
 };
 const setSizeAfterAppendChild = (child: HTMLElement, size: Translate) => {
 	return requestAnimationFrame(() => {
-		setSizes(child, size.height, size.width);
+		setSizes(child, size);
 		requestAnimationFrame(() => {
 			setTranistion(child, 0, timingFunction, 'width, min-width, height');
 		});
@@ -169,7 +180,7 @@ export const removeTempChildrens = (
 			return;
 		}
 		const tempChildElement = tempChild as HTMLElement;
-		setSizes(tempChildElement, 0, 0);
+		setSizes(tempChildElement);
 		setTimeout(() => {
 			tempChild.parentNode?.removeChild(tempChild);
 		}, animationDuration + DELAY_TIME);
@@ -185,7 +196,7 @@ export const removeTempChild = (
 	lastChildren.forEach((lastChild) => {
 		const tempChildElement = lastChild as HTMLElement;
 		if (isAnimated) {
-			setSizes(tempChildElement, 0, 0);
+			setSizes(tempChildElement);
 			setTimeout(() => {
 				if (parent.contains(tempChildElement)) {
 					parent.removeChild(tempChildElement);

@@ -4,9 +4,10 @@ import {
 	draggableIsOutside,
 	getAfterMargin,
 	getBeforeMarginValue,
-	getPropByDirection
+	getDistanceValue,
+	getRect
 } from '../../utils/GetStyles';
-import { gapAndDisplayInformation } from '../../utils/ParseStyles';
+import { getGapInfo } from '../../utils/ParseStyles';
 
 export default function getTranslationByDraggingAndEvent(
 	current: HTMLElement,
@@ -36,15 +37,12 @@ const getTranslationByDragging = (
 	previous: Element | null,
 	nextElement: Element | null
 ) => {
-	const { distance, gap: gapStyle, getRect } = getPropByDirection(direction);
-
 	const after = getAfterMargin(direction, current);
 	const before = getBeforeMarginValue(direction, current);
 	const nextBefore = getBeforeMarginValue(direction, nextElement);
 
-	const [gap, hasGaps] = gapAndDisplayInformation(current.parentElement, gapStyle);
-
-	const space = getRect(current)[distance];
+	const [gap, hasGaps] = getGapInfo(current.parentElement, direction);
+	const [space] = getDistanceValue(direction, getRect(current));
 	if (hasGaps) {
 		return getTranslation(space, before, after, gap, 0, direction);
 	}

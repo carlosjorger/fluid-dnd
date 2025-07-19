@@ -6,7 +6,10 @@ import {
 	PaddingBefore,
 	Before,
 	Translate,
-	Coordinate
+	Coordinate,
+	ElementPosition,
+	ElementScroll,
+	WindowScroll
 } from '../../../index';
 import { DRAGGABLE_CLASS } from './classes';
 import { containClass } from './dom/classList';
@@ -138,6 +141,42 @@ export const getAfterMargin = (direction: Direction, element: Element | null) =>
 	const { afterMargin } = getPropByDirection(direction);
 	return getValueFromProperty(element, afterMargin);
 };
+export const getBefore = (direction: Direction, elementPosition: ElementPosition) => {
+	const { before } = getPropByDirection(direction);
+	return elementPosition[before];
+};
+export const getScrollElementValue = (direction: Direction, element: ElementScroll) => {
+	const { scrollElement } = getPropByDirection(direction);
+	return [element[scrollElement], scrollElement] as const;
+};
+export const getScrollValue = (direction: Direction, elementScroll: WindowScroll) => {
+	const { scroll } = getPropByDirection(direction);
+	return elementScroll[scroll];
+};
+export const getInnerDistance = (
+	direction: Direction,
+	innerElement: {
+		innerWidth: number;
+		innerHeight: number;
+	}
+) => {
+	const { inner } = getPropByDirection(direction);
+	return innerElement[inner];
+};
+
+export const getPageValue = (direction: Direction, event: { pageX: number; pageY: number }) => {
+	const { page } = getPropByDirection(direction);
+	return event[page];
+};
+
+export const getOffsetValue = (
+	direction: Direction,
+	event: { offsetX: number; offsetY: number }
+) => {
+	const { offset } = getPropByDirection(direction);
+	return event[offset];
+};
+
 export const getPropByDirection = (direction: Direction) => {
 	const ifHorizontal = direction == HORIZONTAL;
 	return {
@@ -145,7 +184,6 @@ export const getPropByDirection = (direction: Direction) => {
 		afterMargin: ifHorizontal ? 'marginRight' : 'marginBottom',
 		borderBeforeWidth: ifHorizontal ? 'borderLeftWidth' : 'borderTopWidth',
 		before: ifHorizontal ? 'left' : 'top',
-		after: ifHorizontal ? 'right' : 'down',
 		gap: ifHorizontal ? 'columnGap' : 'rowGap',
 		distance: ifHorizontal ? 'width' : 'height',
 		axis: ifHorizontal ? 'x' : 'y',
@@ -154,7 +192,6 @@ export const getPropByDirection = (direction: Direction) => {
 		scrollElement: ifHorizontal ? 'scrollLeft' : 'scrollTop',
 		page: ifHorizontal ? 'pageX' : 'pageY',
 		inner: ifHorizontal ? 'innerWidth' : 'innerHeight',
-		offsetElement: ifHorizontal ? 'offsetLeft' : 'offsetTop',
 		scrollDistance: ifHorizontal ? 'scrollWidth' : 'scrollHeight',
 		clientDistance: ifHorizontal ? 'clientWidth' : 'clientHeight',
 		paddingBefore: ifHorizontal ? 'paddingLeft' : 'paddingTop',
@@ -201,10 +238,9 @@ const getNearestFixedParent = (element: Element) => {
 };
 
 export const getNearestFixedParentPosition = (element: Element, direction: Direction) => {
-	const { before } = getPropByDirection(direction);
 	const fixedParent = getNearestFixedParent(element);
 	return fixedParent
-		? getRect(fixedParent)[before] + getBorderBeforeWidthValue(direction, fixedParent)
+		? getBefore(direction, getRect(fixedParent)) + getBorderBeforeWidthValue(direction, fixedParent)
 		: 0;
 };
 export const isSameNode = (element1: Element | null | undefined, element2: Element | null) => {

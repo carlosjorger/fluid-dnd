@@ -1,8 +1,9 @@
 import {
 	draggableIsOutside,
 	getAxisValue,
+	getBefore,
 	getDistanceValue,
-	getPropByDirection,
+	getRect,
 	getSiblings,
 	getTransform,
 	getWindowScroll,
@@ -35,7 +36,7 @@ export default function useDragAndDropEvents<T>(
 	endDraggingAction: () => void
 ) {
 	let actualIndex = index;
-	const { direction, onRemoveAtEvent, animationDuration, draggingClass } = currentConfig;
+	const { onRemoveAtEvent, animationDuration, draggingClass } = currentConfig;
 
 	const [removeElementDraggingStyles, toggleDraggingClass, dragEventOverElement] =
 		useChangeDraggableStyles(currentConfig, handlerPublisher, endDraggingAction);
@@ -116,14 +117,13 @@ export default function useDragAndDropEvents<T>(
 		targetElement: Element,
 		translation: Translate
 	) => {
-		const { before, distance, getRect } = getPropByDirection(direction);
 		const currentBoundingClientRect = getRect(sourceElement);
 		const targetBoundingClientRect = getRect(targetElement);
 
-		const currentPosition = currentBoundingClientRect[before];
+		const currentPosition = getBefore(direction, currentBoundingClientRect);
 
-		const targetPosition = targetBoundingClientRect[before];
-		const targetSize = targetBoundingClientRect[distance];
+		const targetPosition = getBefore(direction, targetBoundingClientRect);
+		const [targetSize] = getDistanceValue(direction, targetBoundingClientRect);
 		const targetMiddle = targetPosition + targetSize / 2;
 
 		const targetTransform = getAxisValue(direction, getTransform(targetElement));
@@ -151,8 +151,7 @@ export default function useDragAndDropEvents<T>(
 		actualIndex = Math.min(actualIndex, itemsCount);
 	};
 	const startDragEventOverElement = (element: Element, translation: Translate) => {
-		const { width, height } = translation;
-		moveTranslate(element, height, width);
+		moveTranslate(element, translation);
 	};
 	// #region Drop events
 	const emitDroppingEventToSiblings = (
@@ -242,8 +241,8 @@ export default function useDragAndDropEvents<T>(
 		element: HTMLElement,
 		sourceElementTranlation: Translate
 	) => {
-		moveTranslate(targetElement, translation.height, translation.width);
-		moveTranslate(element, sourceElementTranlation.height, sourceElementTranlation.width);
+		moveTranslate(targetElement, translation);
+		moveTranslate(element, sourceElementTranlation);
 	};
 	const dropEventOverElement = (
 		targetIndex: number,
@@ -314,9 +313,9 @@ export default function useDragAndDropEvents<T>(
 		if (!lastChildren) {
 			return;
 		}
-		const { distance } = getPropByDirection(direction);
 		if (IsHTMLElement(lastChildren)) {
-			lastChildren.style[distance] = '0px';
+			lastChildren.style.height = '0px';
+			lastChildren.style.width = '0px';
 		}
 	};
 	const removeTranslateFromSiblings = (element: HTMLElement, parent: HTMLElement) => {

@@ -1,6 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from 'react';
 import { CoreConfig, ListCondig } from '../../core';
-import { insertToListEmpty as insertToListEmptyEvent } from '../../core/events/insert';
 // @ts-ignore
 import { flushSync } from 'react-dom';
 
@@ -41,7 +40,9 @@ export function useReactListConfig<T, E extends HTMLElement>(items: T[], parent:
 		return itemsState[index];
 	}
 	function insertToListEmpty(config: CoreConfig<T>, index: number, value: T) {
-		insertToListEmptyEvent(config, parent.current, index, value);
+		import('../../core/events/insert').then(({ insertToListEmpty }) => {
+			insertToListEmpty(config, parent.current, index, value);
+		});
 	}
 	const actions: ListCondig<T> = {
 		removeAtEvent,

@@ -9,12 +9,18 @@ import {
 	getWindowScroll,
 	isSameNode
 } from '../../utils/GetStyles';
-import { Translate, WindowScroll } from '../../../../index';
+import { ElementScroll, Translate, WindowScroll } from '../../../../index';
 import { moveTranslate, removeTranslateWhitoutTransition } from '../../utils/SetStyles';
 import { CoreConfig, Direction } from '../..';
 import getTranslationByDragging from './getTranslationByDraggingAndEvent';
 import getTranslateBeforeDropping from './getTranslateBeforeDropping';
-import { DRAG_EVENT, START_DRAG_EVENT, START_DROP_EVENT, TEMP_CHILD_CLASS } from '../../utils';
+import {
+	DRAG_EVENT,
+	NONE_TRANSLATE,
+	START_DRAG_EVENT,
+	START_DROP_EVENT,
+	TEMP_CHILD_CLASS
+} from '../../utils';
 import { DroppableConfig } from '../../config/configHandler';
 import { IsHTMLElement } from '../../utils/typesCheckers';
 import { removeTempChild } from '../../tempChildren';
@@ -51,7 +57,7 @@ export default function useDragAndDropEvents<T>(
 		}
 		const { droppable, config } = droppableConfig;
 		const tranlation = getTranslationByDragging(draggedElement, event, config.direction, droppable);
-		emitDraggingEventToSiblings(draggedElement, event, tranlation, droppableConfig);
+		emitDraggingEventToSiblings(draggedElement, event, tranlation, droppable, config);
 	};
 	const emitDroppingEvent = (
 		draggedElement: HTMLElement,
@@ -63,14 +69,16 @@ export default function useDragAndDropEvents<T>(
 		if (!droppableConfig) {
 			return;
 		}
-		const { droppable, config } = droppableConfig;
+		const { droppable, scroll, config } = droppableConfig;
 		const tranlation = getTranslationByDragging(draggedElement, event, config.direction, droppable);
 		emitDroppingEventToSiblings(
 			draggedElement,
 			event,
 			tranlation,
 			initialWindowScroll,
-			droppableConfig,
+			droppable,
+			scroll,
+			config,
 			positionOnSourceDroppable
 		);
 	};
@@ -79,33 +87,29 @@ export default function useDragAndDropEvents<T>(
 		draggedElement: HTMLElement,
 		event: DraggingEvent,
 		translation: Translate,
-		droppableConfig: DroppableConfig<T>
+		droppable: HTMLElement,
+		config: CoreConfig<T>
 	) => {
-		const { config, droppable } = droppableConfig;
 		const [siblings] = getSiblings(draggedElement, droppable);
 		const isOutside = draggableIsOutside(draggedElement, droppable);
+		const { direction } = config;
 		if (siblings.length == 0) {
-			updateActualIndexBaseOnTranslation(translation, 1, config.direction, siblings);
+			updateActualIndexBaseOnTranslation(translation, 1, direction, siblings);
 		}
 		for (const [index, sibling] of siblings.entries()) {
 			if (!containClass(sibling, DRAGGABLE_CLASS)) {
 				continue;
 			}
-			const siblingTransition = canChangeDraggable(
-				config.direction,
-				draggedElement,
-				sibling,
-				translation
-			);
+			const siblingTransition = canChangeDraggable(direction, draggedElement, sibling, translation);
 			if (!isOutside && siblingTransition) {
 				translation = siblingTransition;
 			} else if (!isOutside) {
 				continue;
 			}
 			const siblingRealIndex = siblings.length - index;
-			updateActualIndexBaseOnTranslation(translation, siblingRealIndex, config.direction, siblings);
+			updateActualIndexBaseOnTranslation(translation, siblingRealIndex, direction, siblings);
 			if (event === START_DRAG_EVENT) {
-				startDragEventOverElement(sibling, translation);
+				moveTranslate(sibling, translation);
 			} else if (event === DRAG_EVENT) {
 				dragEventOverElement(sibling, translation);
 			}
@@ -130,7 +134,7 @@ export default function useDragAndDropEvents<T>(
 		const targetMiddleWithoutTransform = targetMiddle - targetTransform;
 
 		if (currentPosition > targetMiddleWithoutTransform) {
-			return { height: 0, width: 0 };
+			return NONE_TRANSLATE;
 		}
 		return translation;
 	};
@@ -150,19 +154,17 @@ export default function useDragAndDropEvents<T>(
 		}
 		actualIndex = Math.min(actualIndex, itemsCount);
 	};
-	const startDragEventOverElement = (element: Element, translation: Translate) => {
-		moveTranslate(element, translation);
-	};
 	// #region Drop events
 	const emitDroppingEventToSiblings = (
 		draggedElement: HTMLElement,
 		event: DropEvent,
 		translation: Translate,
 		initialWindowScroll: WindowScroll,
-		droppableConfig: DroppableConfig<T>,
+		droppable: HTMLElement,
+		scroll: ElementScroll,
+		config: CoreConfig<T>,
 		positionOnSourceDroppable?: number
 	) => {
-		const { droppable, scroll, config } = droppableConfig;
 		const [siblings, positionOnDroppable] = getSiblings(draggedElement, droppable);
 		const allSiblings = siblings.toReversed();
 		const realPositionOnDroppable =
@@ -203,7 +205,7 @@ export default function useDragAndDropEvents<T>(
 		for (const [index, sibling] of siblings.toReversed().entries()) {
 			let newTranslation = translation;
 			if (targetIndex - 1 >= index) {
-				newTranslation = { height: 0, width: 0 };
+				newTranslation = NONE_TRANSLATE;
 			}
 			if (event === START_DROP_EVENT && !containClass(sibling, TEMP_CHILD_CLASS)) {
 				startDropEventOverElement(sibling, newTranslation, draggedElement, draggableTranslation);

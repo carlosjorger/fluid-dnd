@@ -31,7 +31,6 @@ export default class ConfigHandler {
 	static updateScrolls(currentDroppable: Element, droppableGroupClass: string | null) {
 		for (const configHandler of ConfigHandler.configs) {
 			const { droppable } = configHandler;
-
 			if (
 				(droppableGroupClass && containstClasses(droppable, droppableGroupClass)) ||
 				isSameNode(currentDroppable, droppable)

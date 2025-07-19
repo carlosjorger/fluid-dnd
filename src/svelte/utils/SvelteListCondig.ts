@@ -1,4 +1,3 @@
-import { insertToListEmpty } from '../../core/events/insert';
 import { CoreConfig } from '../../core';
 import { ListCondig } from '../../core';
 
@@ -30,6 +29,8 @@ export class SvelteListCondig<T> implements ListCondig<T> {
 		return this.items[index];
 	}
 	insertToListEmpty(config: CoreConfig<T>, index: number, value: T) {
-		insertToListEmpty(config, this.parent, index, value);
+		import('../../core/events/insert').then(({ insertToListEmpty }) => {
+			insertToListEmpty(config, this.parent, index, value);
+		});
 	}
 }

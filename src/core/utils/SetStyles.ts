@@ -1,3 +1,4 @@
+import { NONE_TRANSLATE } from '.';
 import { Direction, HORIZONTAL, VERTICAL } from '..';
 import { DragMouseTouchEvent, fixedSize, Translate } from '../../../index';
 import {
@@ -35,7 +36,7 @@ export const fixSizeStyle = (element: HTMLElement | undefined | null) => {
 };
 export const moveTranslate = (
 	element: Element | undefined | null,
-	translation: Translate = { height: 0, width: 0 }
+	translation: Translate = NONE_TRANSLATE
 ) => {
 	if (!element || !IsHTMLElement(element)) {
 		return;

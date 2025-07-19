@@ -146,9 +146,10 @@ export default function useDraggable<T>(
 				'ontouchstart',
 				onmousedown('touchmove', 'touchend'),
 				(event) => {
+					const touch = event.touches[0];
 					initialTouch = {
-						x: event.touches[0].clientX,
-						y: event.touches[0].clientY
+						x: touch.clientX,
+						y: touch.clientY
 					};
 				}
 			);
@@ -247,8 +248,9 @@ export default function useDraggable<T>(
 	};
 	const cursorWasNotMoved = (event: MouseEvent | TouchEvent) => {
 		if (isTouchEvent(event) && initialTouch && draggingState == DraggingState.START_DRAGGING) {
-			const movedX = Math.abs(event.touches[0].clientX - initialTouch.x);
-			const movedY = Math.abs(event.touches[0].clientY - initialTouch.y);
+			const touch = event.touches[0];
+			const movedX = Math.abs(touch.clientX - initialTouch.x);
+			const movedY = Math.abs(touch.clientY - initialTouch.y);
 			if (Math.abs(movedX) > 5 && Math.abs(movedY) > 5) {
 				clearTimeout(delayTimeout);
 				return false;

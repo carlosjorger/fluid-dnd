@@ -1,5 +1,4 @@
 import { getSiblings } from '../utils/GetStyles';
-import { Translate } from '../../../index';
 import { moveTranslate, removeTranslateWhitoutTransition } from '../utils/SetStyles';
 import { CoreConfig } from '..';
 import getTranslationByDragging from './dragAndDrop/getTranslationByDraggingAndEvent';
@@ -40,7 +39,7 @@ export default function useRemoveEvents<T>(
 		);
 		for (const [index, sibling] of siblings.entries()) {
 			if (index >= targetIndex) {
-				startDragEventOverElement(sibling, translation);
+				moveTranslate(sibling, translation);
 				setTimeout(() => {
 					onFinishRemoveEvent(sibling as HTMLElement);
 				}, animationDuration);
@@ -53,10 +52,6 @@ export default function useRemoveEvents<T>(
 			removeElementDraggingStyles(draggedElement);
 			removeTranslateFromSiblings(draggedElement, parent);
 		}, animationDuration);
-	};
-
-	const startDragEventOverElement = (element: Element, translation: Translate) => {
-		moveTranslate(element, translation);
 	};
 
 	const removeTranslateFromSiblings = (element: HTMLElement, parent: HTMLElement) => {

@@ -51,7 +51,7 @@ export class DroppableConfigurator<T> {
 		this.groupClass = droppableGroupClass;
 		this.dragEvent = setTransformDragEvent;
 		this.mapFrom = mapFrom;
-		this.initial = parent ? ConfigHandler.getConfig(parent) : undefined;
+		this.initial = ConfigHandler.getConfig(parent);
 		this.changeDroppable = changeDroppable;
 	}
 	private getDraggableAncestor(clientX: number, clientY: number, draggable: Element | null) {

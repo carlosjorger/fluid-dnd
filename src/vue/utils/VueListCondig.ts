@@ -3,7 +3,6 @@ import { ListCondig } from '../../core';
 // @ts-ignore
 import { Ref } from 'vue';
 import { getLength, getValue, onInsertEventOnList, removeAtEventOnList } from './DropMethods';
-import { insertToListEmpty } from '../../core/events/insert';
 
 export class VueListCondig<T> implements ListCondig<T> {
 	private items: Ref<T[]>;
@@ -25,6 +24,8 @@ export class VueListCondig<T> implements ListCondig<T> {
 		return getValue(this.items, index);
 	}
 	insertToListEmpty(config: CoreConfig<T>, index: number, value: T) {
-		insertToListEmpty(config, this.parent.value, index, value);
+		import('../../core/events/insert').then(({ insertToListEmpty }) => {
+			insertToListEmpty(config, this.parent.value, index, value);
+		});
 	}
 }

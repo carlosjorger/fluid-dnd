@@ -1,6 +1,6 @@
 import { DroppableConfig } from './config/configHandler';
 import { ElementScroll, Translate } from '../../index';
-import { Direction, HORIZONTAL, VERTICAL } from '.';
+import { CoreConfig, Direction, HORIZONTAL, VERTICAL } from '.';
 import {
 	getDistanceValue,
 	getPropByDirection,
@@ -12,12 +12,13 @@ import { getGapPixels } from './utils/ParseStyles';
 import { setSizeStyles, setTranistion } from './utils/SetStyles';
 import { observeMutation } from './utils/observer';
 import getTranslationByDragging from './events/dragAndDrop/getTranslationByDraggingAndEvent';
-import { TEMP_CHILD_CLASS } from './utils';
+import { NONE_TRANSLATE, TEMP_CHILD_CLASS } from './utils';
 import { addClass, getClassesSelector } from './utils/dom/classList';
 
 const START_DRAG_EVENT = 'startDrag';
 const timingFunction = 'cubic-bezier(0.2, 0, 0, 1)';
 const DELAY_TIME = 50;
+const TRANSITION_PROPERTY = 'width, min-width, height';
 
 const getDistance = (droppable: HTMLElement, draggedElement: HTMLElement, direction: Direction) => {
 	let distances = getTranslationByDragging(draggedElement, START_DRAG_EVENT, direction, droppable);
@@ -33,7 +34,7 @@ const getlarge = (direction: Direction, draggedElement: HTMLElement) => {
 	const distanceValue = getDistanceValue(largeDirection, getRect(draggedElement));
 	return distanceValue;
 };
-const setSizes = (element: HTMLElement, translate: Translate = { height: 0, width: 0 }) => {
+const setSizes = (element: HTMLElement, translate: Translate = NONE_TRANSLATE) => {
 	setSizeStyles(element, translate);
 	element.style.minWidth = `${translate.width}px`;
 };
@@ -63,16 +64,17 @@ const scrollPercent = (
 	return scrollElementValue / overflowScroll(droppable, direction);
 };
 const fixScrollInitialChange = <T>(
-	droppableConfig: DroppableConfig<T>,
+	droppable: HTMLElement,
+	config: CoreConfig<T>,
+	scroll: ElementScroll,
 	ifStartDragging: boolean
 ) => {
 	if (!ifStartDragging) {
 		return;
 	}
-	const { droppable, config, scroll } = droppableConfig;
 	const { direction } = config;
 
-	const scrollCompleted = scrollPercent(config.direction, droppable, scroll) > 0.99;
+	const scrollCompleted = scrollPercent(direction, droppable, scroll) > 0.99;
 	const [, scrollElement] = getScrollElementValue(direction, droppable);
 
 	if (scrollCompleted) {
@@ -88,10 +90,10 @@ const getTempChild = <T>(
 	if (!droppableConfig) {
 		return;
 	}
-	const { droppable, config } = droppableConfig;
+	const { droppable, config, scroll } = droppableConfig;
 	const { direction, animationDuration } = config;
 
-	fixScrollInitialChange(droppableConfig, ifStartDragging);
+	fixScrollInitialChange(droppable, config, scroll, ifStartDragging);
 
 	if (droppable.querySelector(`.${TEMP_CHILD_CLASS}`) || !draggedElement) {
 		return;
@@ -106,7 +108,7 @@ const getTempChild = <T>(
 		child,
 		addingAnimationDuration ?? animationDuration,
 		timingFunction,
-		'width, min-width, height'
+		TRANSITION_PROPERTY
 	);
 	return [child, distances, droppable] as const;
 };
@@ -153,7 +155,7 @@ const setSizeAfterAppendChild = (child: HTMLElement, size: Translate) => {
 	return requestAnimationFrame(() => {
 		setSizes(child, size);
 		requestAnimationFrame(() => {
-			setTranistion(child, 0, timingFunction, 'width, min-width, height');
+			setTranistion(child, 0, timingFunction, TRANSITION_PROPERTY);
 		});
 	});
 };

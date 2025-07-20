@@ -15,9 +15,7 @@ import {
 } from './utils/classes';
 
 const setDroppableGroupClass = (droppableGroupClass: string, droppable: HTMLElement) => {
-	if (droppableGroupClass) {
-		addMultipleClasses(droppable, droppableGroupClass);
-	}
+	droppableGroupClass && addMultipleClasses(droppable, droppableGroupClass);
 };
 const createDraggableCssStyles = () => {
 	AddCssStylesToElement(document.body, [

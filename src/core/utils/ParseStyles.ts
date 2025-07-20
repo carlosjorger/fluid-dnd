@@ -2,8 +2,8 @@ import { GapStyle } from '../../../index';
 import { getPropByDirection, getRect, parseFloatEmpty } from './GetStyles';
 import { Direction } from '..';
 
-export const getNumberFromPixels = (pixels: string | undefined) => {
-	if (!pixels || pixels.length == 0) {
+export const getNumberFromPixels = (pixels: string) => {
+	if (pixels.length == 0) {
 		return 0;
 	}
 	return parseFloatEmpty(pixels.replace('px', ''));

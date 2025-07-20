@@ -28,7 +28,7 @@ export default function useInsertEvents<T>(
 		draggedElement: HTMLElement,
 		droppable: HTMLElement,
 		value: T,
-		droppableConfigurator: DroppableConfig<T> | undefined
+		droppableConfigurator: DroppableConfig<T>
 	) => {
 		const translation = getTranslationByDragging(
 			draggedElement,

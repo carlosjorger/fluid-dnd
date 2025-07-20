@@ -50,12 +50,9 @@ export default function useDragAndDropEvents<T>(
 	const emitDraggingEvent = (
 		draggedElement: HTMLElement,
 		event: DraggingEvent,
-		droppableConfig: DroppableConfig<T> | undefined
+		droppable: HTMLElement,
+		config: CoreConfig<T>
 	) => {
-		if (!droppableConfig) {
-			return;
-		}
-		const { droppable, config } = droppableConfig;
 		const tranlation = getTranslationByDragging(draggedElement, event, config.direction, droppable);
 		emitDraggingEventToSiblings(draggedElement, event, tranlation, droppable, config);
 	};

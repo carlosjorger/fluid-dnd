@@ -14,26 +14,14 @@ type onTouchEvent = 'ontouchstart' | 'ontouchmove' | 'ontouchend';
 const onMouseEvents = ['onmouseup', 'onmousedown', 'onmousemove'] as const;
 type onMouseEvent = (typeof onMouseEvents)[number];
 
-type TouchEventType = 'touchstart' | 'touchmove' | 'touchend';
-const mouseEvents = ['mouseup', 'mousedown', 'mousemove'] as const;
-type MouseEventType = (typeof mouseEvents)[number];
 type DragEventCallback = (event: DragMouseTouchEvent) => void;
 type TouchEventCallback = (event: TouchEvent) => void;
 
-export const setSizeStyles = (element: HTMLElement | undefined | null, translate: Translate) => {
-	if (!element) {
-		return;
-	}
+export const setSizeStyles = (element: HTMLElement, translate: Translate) => {
 	element.style.height = `${translate.height}px`;
 	element.style.width = `${translate.width}px`;
 };
 
-export const fixSizeStyle = (element: HTMLElement | undefined | null) => {
-	if (!element) {
-		return;
-	}
-	setSizeStyles(element, getRect(element));
-};
 export const moveTranslate = (
 	element: Element | undefined | null,
 	translation: Translate = NONE_TRANSLATE
@@ -77,25 +65,8 @@ export const assignDraggingEvent = (
 		assignDraggingTouchEvent(element, onEvent, callback, touchCallback);
 	}
 };
-export const addDragMouseToucEventListener = (
-	event: TouchEventType | MouseEventType,
-	callback: DragEventCallback | null
-) => {
-	if (!callback) {
-		return;
-	}
-	if (isMouseEvent(event)) {
-		document.addEventListener(event, callback);
-	} else {
-		document.addEventListener(event, (event: TouchEvent) => {
-			const dragMouseTouchEvent = convetEventToDragMouseTouchEvent(event);
-			callback(dragMouseTouchEvent);
-		});
-	}
-};
 
 const isOnMouseEvent = (x: any): x is onMouseEvent => onMouseEvents.includes(x);
-const isMouseEvent = (x: any): x is MouseEventType => mouseEvents.includes(x);
 const getDefaultEvent = (event: TouchEvent | MouseEvent) => {
 	const { target } = event;
 	return {
@@ -222,10 +193,7 @@ export const AddCssStylesToElement = (node: ParentNode, cssCodes: string[]) => {
 
 const AddCssStyleToElement = (node: ParentNode, cssCode: string) => {
 	var style = getStyles(node);
-	if (!style.sheet) {
-		return;
-	}
-	if (!containRule(style.sheet, cssCode)) {
+	if (style.sheet && !containRule(style.sheet, cssCode)) {
 		style.sheet?.insertRule(cssCode, style.sheet.cssRules.length);
 	}
 };

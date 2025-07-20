@@ -84,12 +84,9 @@ const fixScrollInitialChange = <T>(
 const getTempChild = <T>(
 	draggedElement: HTMLElement | undefined,
 	ifStartDragging: boolean,
-	droppableConfig?: DroppableConfig<T>,
+	droppableConfig: DroppableConfig<T>,
 	addingAnimationDuration?: number
 ) => {
-	if (!droppableConfig) {
-		return;
-	}
 	const { droppable, config, scroll } = droppableConfig;
 	const { direction, animationDuration } = config;
 
@@ -116,7 +113,7 @@ export const addTempChild = <T>(
 	draggedElement: HTMLElement | undefined,
 	parent: Element,
 	ifStartDragging: boolean,
-	droppableConfig?: DroppableConfig<T>,
+	droppableConfig: DroppableConfig<T>,
 	addingAnimationDuration?: number
 ) => {
 	const result = getTempChild(
@@ -141,7 +138,7 @@ export const addTempChild = <T>(
 export const addTempChildOnInsert = <T>(
 	draggedElement: HTMLElement | undefined,
 	ifStartDragging: boolean,
-	droppableConfig?: DroppableConfig<T>
+	droppableConfig: DroppableConfig<T>
 ) => {
 	const result = getTempChild(draggedElement, ifStartDragging, droppableConfig);
 	if (!result) {

@@ -8,7 +8,7 @@ import {
 } from './utils/SetStyles';
 import { usePositioning } from './positioning/usePositioning';
 import { Coordinate, DragMouseTouchEvent, MoveEvent, OnLeaveEvent } from '../../index';
-import { CoreConfig, DraggingState, DragStartEventData } from '.';
+import { CoreConfig, DragStartEventData } from '.';
 import {
 	DRAG_EVENT,
 	draggableTargetTimingFunction,
@@ -32,7 +32,12 @@ import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
 import { getRect, isSameNode } from './utils/GetStyles';
 
 const ON_MOUSEDOWN = 'onmousedown';
-
+const enum DraggingState {
+	NOT_DRAGGING,
+	START_DRAGGING,
+	DRAGING,
+	END_DRAGGING
+}
 export default function useDraggable<T>(
 	draggableElement: HTMLElement,
 	index: number,
@@ -54,6 +59,7 @@ export default function useDraggable<T>(
 	const droppableGroupClass = getClassesList(droppableGroup)
 		.map((classGroup) => `droppable-group-${classGroup}`)
 		.join(' ');
+
 	let draggingState: DraggingState = DraggingState.NOT_DRAGGING;
 	let windowScroll = {
 		scrollX: 0,
@@ -151,7 +157,7 @@ export default function useDraggable<T>(
 		}
 		const { droppable, config } = droppableConfigurator.current;
 		setTransform(draggableElement, droppable, pagePosition, config.direction);
-		emitDraggingEvent(draggableElement, DRAG_EVENT, droppableConfigurator.current);
+		emitDraggingEvent(draggableElement, DRAG_EVENT, droppable, config);
 	};
 	const removeTranslates = (droppable: Element) => {
 		const drgagables = droppable.querySelectorAll(`.${DRAGGABLE_CLASS}`);
@@ -168,7 +174,12 @@ export default function useDraggable<T>(
 			draggingState == DraggingState.DRAGING &&
 			!isSameNode(newdDroppableConfig?.droppable, oldDroppableConfig.droppable)
 		) {
-			emitDraggingEvent(draggableElement, DRAG_EVENT, oldDroppableConfig);
+			emitDraggingEvent(
+				draggableElement,
+				DRAG_EVENT,
+				oldDroppableConfig.droppable,
+				oldDroppableConfig.config
+			);
 			removeTranslates(oldDroppableConfig.droppable);
 		}
 	};
@@ -180,7 +191,6 @@ export default function useDraggable<T>(
 		changeDroppable,
 		config.mapFrom
 	);
-
 	const toggleDroppableClass = (isOutside: boolean) => {
 		if (!droppableConfigurator.current) {
 			return;
@@ -335,14 +345,21 @@ export default function useDraggable<T>(
 		}
 	};
 	const startDragging = (event: DragMouseTouchEvent) => {
-		addTempChild(
-			draggableElement,
-			parent,
-			draggingState == DraggingState.START_DRAGGING,
-			droppableConfigurator.current
-		);
+		droppableConfigurator.current &&
+			addTempChild(
+				draggableElement,
+				parent,
+				draggingState == DraggingState.START_DRAGGING,
+				droppableConfigurator.current
+			);
 		updateDraggingStateBeforeDragging();
-		emitDraggingEvent(draggableElement, START_DRAG_EVENT, droppableConfigurator.current);
+		droppableConfigurator.current &&
+			emitDraggingEvent(
+				draggableElement,
+				START_DRAG_EVENT,
+				droppableConfigurator.current.droppable,
+				droppableConfigurator.current.config
+			);
 		setDraggingStyles(draggableElement);
 		updateTransformState(event, draggableElement);
 	};
@@ -395,10 +412,8 @@ export default function useDraggable<T>(
 	const removeAtFromElement = (targetIndex: number) => {
 		import('./events/remove').then((module) => {
 			const [removeAt] = module.default<T>(config, parent, handlerPublisher, endDraggingState);
-			if (!droppableConfigurator.initial) {
-				return;
-			}
-			removeAt(index, targetIndex, draggableElement, draggingState, droppableConfigurator.initial);
+			droppableConfigurator.initial &&
+				removeAt(index, targetIndex, draggableElement, droppableConfigurator.initial);
 		});
 	};
 
@@ -414,13 +429,14 @@ export default function useDraggable<T>(
 					handlerPublisher,
 					endDraggingState
 				);
-				emitInsertEventToSiblings(
-					targetIndex,
-					draggableElement,
-					parent,
-					value,
-					droppableConfigurator.initial
-				);
+				droppableConfigurator.initial &&
+					emitInsertEventToSiblings(
+						targetIndex,
+						draggableElement,
+						parent,
+						value,
+						droppableConfigurator.initial
+					);
 			});
 		}
 	};

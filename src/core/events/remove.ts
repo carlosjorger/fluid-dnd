@@ -1,6 +1,6 @@
 import { getSiblings } from '../utils/GetStyles';
 import { moveTranslate, removeTranslateWhitoutTransition, setTranistion } from '../utils/SetStyles';
-import { CoreConfig, DraggingState } from '..';
+import { CoreConfig } from '..';
 import getTranslationByDragging from './dragAndDrop/getTranslationByDraggingAndEvent';
 import { DroppableConfig } from '../config/configHandler';
 import { addTempChild, removeTempChild } from '../tempChildren';
@@ -66,7 +66,6 @@ export default function useRemoveEvents<T>(
 		index: number,
 		targetIndex: number,
 		draggableElement: HTMLElement,
-		draggingState: DraggingState,
 		config: DroppableConfig<T>
 	) => {
 		const { removingClass, delayBeforeRemove } = currentConfig;
@@ -74,7 +73,7 @@ export default function useRemoveEvents<T>(
 		if (targetIndex == index) {
 			addClass(draggableElement, removingClass);
 			setTimeout(() => {
-				removeAfterRemovingClass(index, targetIndex, draggableElement, draggingState, config);
+				removeAfterRemovingClass(index, targetIndex, draggableElement, config);
 			}, delayBeforeRemove);
 		}
 	};
@@ -82,12 +81,11 @@ export default function useRemoveEvents<T>(
 		index: number,
 		targetIndex: number,
 		draggableElement: HTMLElement,
-		draggingState: DraggingState,
 		config: DroppableConfig<T>
 	) => {
 		const { removingClass, onRemoveAtEvent } = currentConfig;
 		removeClass(draggableElement, removingClass);
-		addTempChild(draggableElement, parent, draggingState == DraggingState.START_DRAGGING, config);
+		addTempChild(draggableElement, parent, false, config);
 		emitRemoveEventToSiblings(targetIndex, draggableElement, config, (sibling) => {
 			removeDraggingStyles(sibling);
 			emitFinishRemoveEventToSiblings(draggableElement);

@@ -8,8 +8,7 @@ import {
 } from './utils/SetStyles';
 import { usePositioning } from './positioning/usePositioning';
 import { Coordinate, DragMouseTouchEvent, MoveEvent, OnLeaveEvent } from '../../index';
-import { CoreConfig, DragStartEventData } from '.';
-import useRemoveEvents from './events/remove';
+import { CoreConfig, DraggingState, DragStartEventData } from '.';
 import {
 	DRAG_EVENT,
 	draggableTargetTimingFunction,
@@ -18,28 +17,19 @@ import {
 } from './utils';
 import ConfigHandler, { DroppableConfig } from './config/configHandler';
 import { IsHTMLElement, isTouchEvent } from './utils/typesCheckers';
-import { addTempChild, addTempChildOnInsert, removeTempChildrens } from './tempChildren';
+import { addTempChild, removeTempChildrens } from './tempChildren';
 import { DroppableConfigurator } from './config/droppableConfigurator';
 import {
 	addClass,
 	containClass,
 	getClassesList,
 	getClassesSelector,
-	removeClass,
 	toggleClass
 } from './utils/dom/classList';
 import { DRAGGABLE_CLASS, DRAGGING_CLASS, DROPPABLE_CLASS, HANDLER_CLASS } from './utils/classes';
 import HandlerPublisher from './HandlerPublisher';
 import useDragAndDropEvents from './events/dragAndDrop/dragAndDrop';
-import useInsertEvents from './events/insert';
 import { getRect, isSameNode } from './utils/GetStyles';
-
-const enum DraggingState {
-	NOT_DRAGGING,
-	START_DRAGGING,
-	DRAGING,
-	END_DRAGGING
-}
 
 const ON_MOUSEDOWN = 'onmousedown';
 
@@ -55,10 +45,7 @@ export default function useDraggable<T>(
 		isDraggable,
 		droppableGroup,
 		animationDuration,
-		delayBeforeRemove,
 		draggingClass,
-		removingClass,
-		onRemoveAtEvent,
 		droppableClass,
 		onDragStart,
 		delayBeforeTouchMoveEvent,
@@ -82,12 +69,6 @@ export default function useDraggable<T>(
 	const endDraggingState = () => {
 		draggingState = DraggingState.NOT_DRAGGING;
 	};
-	const [emitRemoveEventToSiblings, emitFinishRemoveEventToSiblings] = useRemoveEvents<T>(
-		config,
-		parent,
-		handlerPublisher,
-		endDraggingState
-	);
 	const [emitDraggingEvent, emitDroppingEvent, toggleDraggingClass] = useDragAndDropEvents<T>(
 		config,
 		index,
@@ -96,12 +77,7 @@ export default function useDraggable<T>(
 		handlerPublisher,
 		endDraggingState
 	);
-	const [emitInsertEventToSiblings] = useInsertEvents(
-		config,
-		parent,
-		handlerPublisher,
-		endDraggingState
-	);
+
 	const setDraggable = () => {
 		addClass(draggableElement, DRAGGABLE_CLASS);
 	};
@@ -415,41 +391,34 @@ export default function useDraggable<T>(
 		toggleClass(element, draggingClass, true);
 		element.style.transition = '';
 	};
-	const removeAfterRemovingClass = (targetIndex: number, config: DroppableConfig<T>) => {
-		removeClass(draggableElement, removingClass);
-		addTempChild(
-			draggableElement,
-			parent,
-			draggingState == DraggingState.START_DRAGGING,
-			droppableConfigurator.initial
-		);
-		emitRemoveEventToSiblings(targetIndex, draggableElement, config, (sibling) => {
-			removeDraggingStyles(sibling);
-			emitFinishRemoveEventToSiblings(draggableElement);
-		});
-		onRemoveAtEvent(index, true);
-	};
+
 	const removeAtFromElement = (targetIndex: number) => {
-		if (!droppableConfigurator.initial) {
-			return;
-		}
-		const config = droppableConfigurator.initial as DroppableConfig<T>;
-		if (targetIndex == index) {
-			addClass(draggableElement, removingClass);
-			setTimeout(() => {
-				removeAfterRemovingClass(targetIndex, config);
-			}, delayBeforeRemove);
-		}
+		import('./events/remove').then((module) => {
+			const [removeAt] = module.default<T>(config, parent, handlerPublisher, endDraggingState);
+			if (!droppableConfigurator.initial) {
+				return;
+			}
+			removeAt(index, targetIndex, draggableElement, draggingState, droppableConfigurator.initial);
+		});
 	};
+
 	const insertAtFromElement = (targetIndex: number, value: T) => {
 		if (
 			targetIndex === index ||
 			(targetIndex === config.onGetLegth() && index === targetIndex - 1)
 		) {
-			emitInsertEventToSiblings(targetIndex, draggableElement, parent, value, () => {
-				addTempChildOnInsert(
+			import('./events/insert').then((module) => {
+				const [emitInsertEventToSiblings] = module.default(
+					config,
+					parent,
+					handlerPublisher,
+					endDraggingState
+				);
+				emitInsertEventToSiblings(
+					targetIndex,
 					draggableElement,
-					draggingState == DraggingState.START_DRAGGING,
+					parent,
+					value,
 					droppableConfigurator.initial
 				);
 			});

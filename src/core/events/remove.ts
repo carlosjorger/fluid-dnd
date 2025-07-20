@@ -1,11 +1,13 @@
 import { getSiblings } from '../utils/GetStyles';
-import { moveTranslate, removeTranslateWhitoutTransition } from '../utils/SetStyles';
-import { CoreConfig } from '..';
+import { moveTranslate, removeTranslateWhitoutTransition, setTranistion } from '../utils/SetStyles';
+import { CoreConfig, DraggingState } from '..';
 import getTranslationByDragging from './dragAndDrop/getTranslationByDraggingAndEvent';
 import { DroppableConfig } from '../config/configHandler';
-import { removeTempChild } from '../tempChildren';
+import { addTempChild, removeTempChild } from '../tempChildren';
 import { useChangeDraggableStyles } from './changeDraggableStyles';
 import HandlerPublisher from '@/core/HandlerPublisher';
+import { addClass, removeClass } from '../utils/dom/classList';
+import { draggableTargetTimingFunction } from '../utils';
 
 export default function useRemoveEvents<T>(
 	currentConfig: CoreConfig<T>,
@@ -60,6 +62,41 @@ export default function useRemoveEvents<T>(
 			removeTranslateWhitoutTransition(sibling);
 		}
 	};
+	const removeAt = (
+		index: number,
+		targetIndex: number,
+		draggableElement: HTMLElement,
+		draggingState: DraggingState,
+		config: DroppableConfig<T>
+	) => {
+		const { removingClass, delayBeforeRemove } = currentConfig;
 
-	return [emitRemoveEventToSiblings, emitFinishRemoveEventToSiblings] as const;
+		if (targetIndex == index) {
+			addClass(draggableElement, removingClass);
+			setTimeout(() => {
+				removeAfterRemovingClass(index, targetIndex, draggableElement, draggingState, config);
+			}, delayBeforeRemove);
+		}
+	};
+	const removeAfterRemovingClass = (
+		index: number,
+		targetIndex: number,
+		draggableElement: HTMLElement,
+		draggingState: DraggingState,
+		config: DroppableConfig<T>
+	) => {
+		const { removingClass, onRemoveAtEvent } = currentConfig;
+		removeClass(draggableElement, removingClass);
+		addTempChild(draggableElement, parent, draggingState == DraggingState.START_DRAGGING, config);
+		emitRemoveEventToSiblings(targetIndex, draggableElement, config, (sibling) => {
+			removeDraggingStyles(sibling);
+			emitFinishRemoveEventToSiblings(draggableElement);
+		});
+		onRemoveAtEvent(index, true);
+	};
+	const removeDraggingStyles = (element: Element) => {
+		setTranistion(element, animationDuration, draggableTargetTimingFunction);
+		moveTranslate(element);
+	};
+	return [removeAt] as const;
 }

@@ -43,8 +43,8 @@ export const useChangeDraggableStyles = <T>(
 		}
 	};
 	const dragEventOverElement = (element: Element, translation: Translate) => {
-		moveTranslate(element, translation);
 		setTranistion(element, animationDuration, draggableTargetTimingFunction);
+		moveTranslate(element, translation);
 	};
 	return [removeElementDraggingStyles, toggleDraggingClass, dragEventOverElement] as const;
 };

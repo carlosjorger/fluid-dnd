@@ -42,7 +42,7 @@ export const useChangeDraggableStyles = <T>(
 			toggleClass(element, DRAGGING_HANDLER_CLASS, force);
 		}
 	};
-	const dragEventOverElement = (element: Element, translation: Translate) => {
+	const dragEventOverElement = (element: Element, translation?: Translate) => {
 		setTranistion(element, animationDuration, draggableTargetTimingFunction);
 		moveTranslate(element, translation);
 	};

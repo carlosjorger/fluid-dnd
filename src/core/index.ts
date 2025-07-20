@@ -201,7 +201,7 @@ export type CoreConfig<T> = {
 	 */
 	coordinateTransform: CoordinateMap[];
 };
-export enum DraggingState {
+export const enum DraggingState {
 	NOT_DRAGGING,
 	START_DRAGGING,
 	DRAGING,

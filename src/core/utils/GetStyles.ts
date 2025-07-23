@@ -246,3 +246,6 @@ export const getNearestFixedParentPosition = (element: Element, direction: Direc
 export const isSameNode = (element1: Element | null | undefined, element2: Element | null) => {
 	return element1?.isSameNode(element2);
 };
+export const hasTransform = (element: HTMLElement | null) => {
+	return element && getComputedStyle(element).transform !== 'none';
+};

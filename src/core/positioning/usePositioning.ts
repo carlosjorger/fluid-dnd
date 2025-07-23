@@ -18,6 +18,7 @@ import {
 	getPropByDirection,
 	getRect,
 	getScrollValue,
+	hasTransform,
 	isSameNode
 } from '../utils/GetStyles';
 import { CoordinateMap, Direction, HORIZONTAL, VERTICAL } from '..';
@@ -65,13 +66,15 @@ export const usePositioning = (
 				elementPosittion >= scrollValue - distanceValue / 2 &&
 				elementPosittion <= scrollValue + innerDistance
 			) {
+				const parentPosition = getParentPosition(translateDirection, parent);
 				const newTranslate =
 					elementPosittion -
 					getBefore(translateDirection, position) -
 					border -
 					margin -
 					scrollValue -
-					beforefixecParentValue;
+					beforefixecParentValue -
+					parentPosition;
 				updateScroll(translateDirection);
 				return newTranslate;
 			}
@@ -143,6 +146,8 @@ const getPositionByDistance = (
 	offsetEvent: OffsetCoordinate
 ) => {
 	const beforefixecParentValue = getNearestFixedParentPosition(element, direction);
+	const parent = element.parentElement;
+	const parentPosition = getParentPosition(direction, parent);
 
 	return (
 		getPageValue(direction, event) -
@@ -150,8 +155,23 @@ const getPositionByDistance = (
 		getBeforeMarginValue(direction, element) -
 		getBorderBeforeWidthValue(direction, element) -
 		getScrollValue(direction, window) -
-		beforefixecParentValue
+		beforefixecParentValue -
+		parentPosition
 	);
+};
+const getParentPosition = (direction: Direction, element: HTMLElement | null) => {
+	return element && hasAncestorTransform(element) ? getBefore(direction, getRect(element)) : 0;
+};
+const hasAncestorTransform = (element: HTMLElement) => {
+	let current: HTMLElement | null = element;
+	while (current) {
+		const currentElementHasTransform = hasTransform(current);
+		if (currentElementHasTransform) {
+			return true;
+		}
+		current = current.parentElement;
+	}
+	return false;
 };
 export const getTransformState = (
 	event: TransformEvent,

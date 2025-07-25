@@ -66,7 +66,7 @@ export default function useInsertEvents<T>(
 	return [emitInsertEventToSiblings] as const;
 }
 const childrenMutationFilter = (mutation: MutationRecord) => {
-	const addedNodes = mutation.addedNodes
+	const addedNodes = Array.from(mutation.addedNodes ?? [])
 		.values()
 		.filter((element) => !isTempElement(element))
 		.toArray();

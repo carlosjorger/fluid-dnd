@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:chrome": "npx playwright test --headed --browser=chromium",
+    "test:firefox": "npx playwright test --headed --browser=firefox",
+    "test:safari": "npx playwright test --headed --browser=webkit"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.3",
@@ -20,6 +23,7 @@
     "vue": "^3.4.21"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.1",
     "@types/node": "^20.11.28",
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.2.2",

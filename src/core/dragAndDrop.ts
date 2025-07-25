@@ -88,11 +88,11 @@ export default function dragAndDrop<T>(
 		insertAtFromElements = insertAtFromElementList;
 	};
 	const childrenMutationFilter = (mutation: MutationRecord) => {
-		const addedNodes = mutation.addedNodes
+		const addedNodes = Array.from(mutation.addedNodes??[])
 			.values()
 			.filter((element) => !isTempElement(element))
 			.toArray();
-		const removedNodes = mutation.removedNodes
+		const removedNodes =  Array.from(mutation.removedNodes??[])
 			.values()
 			.filter((element) => !isTempElement(element))
 			.toArray();

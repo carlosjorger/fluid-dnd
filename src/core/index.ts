@@ -17,6 +17,14 @@ export interface DragEndEventData<T> {
 	index: number;
 	value: T;
 }
+
+export interface DragOverEventData<T> {
+	index: number;
+	element: Element;
+	value: T;
+	droppable: Element;
+}
+
 export const HORIZONTAL = 'horizontal';
 export const VERTICAL = 'vertical';
 /**
@@ -82,6 +90,10 @@ export interface Config<T> {
 	 */
 	onDragEnd?: (element: DragEndEventData<T>) => void;
 	/**
+	 * A function that is called when the draggable element is dragged over a droppable element.
+	 */
+	onDragOver?: (element: DragOverEventData<T>) => void;
+	/**
 	 * Name of the group of the share droppables.
 	 */
 	droppableGroup?: string;
@@ -116,6 +128,7 @@ export interface Config<T> {
  * @public
  */
 export type OnDropEvent = (source: DraggableElement, destination: DraggableElement) => void;
+export type OnDragOverEvent = (source: DraggableElement) => void;
 
 export type OnRemoveAtEvent<T> = (index: number, sync?: boolean) => T | undefined;
 export type OnInsertEvent<T> = (index: number, value: T, sync?: boolean) => void;
@@ -167,6 +180,10 @@ export type CoreConfig<T> = {
 	 * A function that is called when the draggable element is dropped.
 	 */
 	onDragEnd: (element: DragEndEventData<T>) => void;
+	/**
+	 * A function that is called when the draggable element is dragged over a droppable element.
+	 */
+	onDragOver: (element: DragOverEventData<T>) => void;
 	/**
 	 * Name of the group of the share droppables
 	 */

@@ -89,7 +89,13 @@ export default function useDragAndDropEvents<T>(
 	) => {
 		const [siblings] = getSiblings(draggedElement, droppable);
 		const isOutside = draggableIsOutside(draggedElement, droppable);
-		const { direction } = config;
+		const { direction, onDragOver } = config;
+		onDragOver({
+			element: draggedElement,
+			index: index,
+			value: currentConfig.onGetValue(index),
+			droppable
+		});
 		if (siblings.length == 0) {
 			updateActualIndexBaseOnTranslation(translation, 1, direction, siblings);
 		}

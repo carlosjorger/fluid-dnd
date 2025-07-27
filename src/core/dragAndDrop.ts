@@ -35,6 +35,7 @@ const getConfig = <T>(listCondig: ListCondig<T>, config?: Config<T>): CoreConfig
 		isDraggable: config?.isDraggable ?? (() => true),
 		onDragStart: config?.onDragStart ?? (() => {}),
 		onDragEnd: config?.onDragEnd ?? (() => {}),
+		onDragOver: config?.onDragOver ?? (() => {}),
 		droppableGroup: config?.droppableGroup,
 		onRemoveAtEvent,
 		onInsertEvent,
@@ -47,7 +48,7 @@ const getConfig = <T>(listCondig: ListCondig<T>, config?: Config<T>): CoreConfig
 		delayBeforeInsert: config?.delayBeforeInsert ?? 200,
 		mapFrom: config?.mapFrom ?? defaultMapFrom,
 		delayBeforeTouchMoveEvent: config?.delayBeforeTouchMoveEvent ?? 150,
-		coordinateTransform: config?.coordinateTransform ?? [(coordinate) => coordinate]
+		coordinateTransform: config?.coordinateTransform ?? [(coordinate) => coordinate],
 	};
 };
 

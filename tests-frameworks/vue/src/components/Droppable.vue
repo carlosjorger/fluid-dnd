@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { PropType, ref } from "vue";
 import useDragAndDrop from "../../../../src/vue/useDragAndDrop";
-import { DragEndEventData } from "../../../../src/core";
+import { DragEndEventData, DragStartEventData } from "../../../../src/core";
 
 const list = ref([] as string[])
-const { droppableGroup, elements, onDragEnd, onDragStart } = defineProps({
+const { droppableGroup, elements, onDragEnd, onDragOver, onDragStart } = defineProps({
     droppableGroup: String,
     elements: {
       type: Array<string>,
@@ -18,13 +18,18 @@ const { droppableGroup, elements, onDragEnd, onDragStart } = defineProps({
       type: Function as PropType<(data: DragEndEventData<string>) => void>,
       default: () => {}
     },
+    onDragOver: {
+      type: Function as PropType<(data: DragStartEventData<string>) => void>,
+      default: () => {}
+    },
 });
 list.value = elements
 const [ parent ] = useDragAndDrop<string>(list as any,
   {
     droppableGroup,
     onDragEnd,
-    onDragStart
+    onDragStart,
+    onDragOver
   }
 );
 </script>

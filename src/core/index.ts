@@ -20,6 +20,7 @@ export interface DragEndEventData<T> {
 
 export interface DragOverEventData<T> {
 	index: number;
+	targetIndex: number;
 	element: Element;
 	value: T;
 	droppable: Element;
@@ -90,7 +91,7 @@ export interface Config<T> {
 	 */
 	onDragEnd?: (element: DragEndEventData<T>) => void;
 	/**
-	 * A function that is called when the draggable element is dragged over a droppable element.
+	 * A function that is called when the draggable element is dragged over a droppable.
 	 */
 	onDragOver?: (element: DragOverEventData<T>) => void;
 	/**
@@ -181,7 +182,7 @@ export type CoreConfig<T> = {
 	 */
 	onDragEnd: (element: DragEndEventData<T>) => void;
 	/**
-	 * A function that is called when the draggable element is dragged over a droppable element.
+	 * A function that is called when the draggable element is dragged over a droppable.
 	 */
 	onDragOver: (element: DragOverEventData<T>) => void;
 	/**

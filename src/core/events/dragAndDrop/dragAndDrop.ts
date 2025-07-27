@@ -92,7 +92,8 @@ export default function useDragAndDropEvents<T>(
 		const { direction, onDragOver } = config;
 		onDragOver({
 			element: draggedElement,
-			index: index,
+			index,
+			targetIndex: actualIndex,
 			value: currentConfig.onGetValue(index),
 			droppable
 		});

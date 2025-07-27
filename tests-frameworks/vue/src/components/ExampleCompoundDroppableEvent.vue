@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import useDragAndDrop from "../../../../src/vue/useDragAndDrop";
 import Droppable from "./Droppable.vue";
-import { DragEndEventData, DragStartEventData } from "../../../../src/core";
+import { DragEndEventData, DragOverEventData } from "../../../../src/core";
 
 const droppables = ref(['A', 'B']);
 const [ parent, insertAt ] = useDragAndDrop<string>(droppables as any, {
@@ -30,8 +30,8 @@ function onDragEnd (data: DragEndEventData<string>){
     droppable.classList.toggle('marked-droppable',false)
   }
 }
-function onDragOver(data: DragStartEventData<string>){
-  console.log({data})
+function onDragOver(data: DragOverEventData<string>){
+  console.log(data.targetIndex)
 }
 function addDroppable(){
   const lasValue = [...Object.keys(dict)].pop()

@@ -1,10 +1,11 @@
 ---
 title: OnDrag events
-description: A guide on how to use Fluid DnD calling onDragStart and onDragEnd events.
+description: A guide on how to use Fluid DnD calling onDragStart, onDragEnd, and onDragOver events.
 ---
 
 import OnDragEvents from "@/components/svelte/OnDragEvents.svelte";
 import OnDragEventsWithMoreInfo from "@/components/svelte/OnDragEventsWithMoreInfo.svelte"
+import OnDragOverEvents from "@/components/svelte/OnDragOverEvents.svelte";
 import { Code, Aside } from "@astrojs/starlight/components";
 
 ### List of number example
@@ -100,4 +101,92 @@ export const highlightsOnDragParams = ["draggedElement", "lastDroppedElement", "
 
 <div class="p-8 bg-[var(--sl-color-gray-6)]">
   <OnDragEventsWithMoreInfo client:load  />
+</div>
+
+### onDragOver event
+
+The `onDragOver` event is triggered continuously while a draggable element is being dragged over a droppable area. This event provides real-time feedback during the drag operation and can be used to display information about the current drag state.
+
+<Aside type="note">The `onDragOver` event receives a `DragOverEventData` object containing information about the element being dragged, the target droppable, and the current position.</Aside>
+
+export const onDragOverExample = `<script lang="ts">
+import { type DragOverEventData } from "fluid-dnd";
+//...
+let currentDragOver = $state<string>('')
+
+function onDragOver(data: DragOverEventData<number>){
+  const droppableElement = data.droppable as HTMLElement
+  const droppableId = droppableElement.id || 'Unknown'
+  currentDragOver = \`Dragging \${data.value} over \${droppableId} at position \${data.targetIndex}\`
+}
+
+const [ parent1 ] = useDragAndDrop<number>(list, {
+  droppableGroup: "group1",
+  onDragOver,
+});
+
+const list2 = $state([5, 6, 7, 8]);
+const [ parent2 ] = useDragAndDrop(list2, { 
+  droppableGroup: "group1",
+  direction: "horizontal",
+  onDragOver,
+});
+</script>`;
+
+export const highlightsOnDragOver = ["onDragOver", "DragOverEventData", "data.value", "data.targetIndex", "data.droppable"];
+
+<Code code={onDragOverExample} lang="svelte" mark={highlightsOnDragOver} />
+
+### DragOverEventData interface
+
+The `DragOverEventData` interface provides detailed information about the drag over event:
+
+export const dragOverEventData = `interface DragOverEventData<T> {
+  index: number;        // Index of the dragged element in its original list
+  targetIndex: number;  // Index where the element would be dropped
+  element: Element;     // The dragged element
+  value: T;            // The value of the dragged element
+  droppable: Element;   // The droppable element being dragged over
+}`;
+
+<Code code={dragOverEventData} lang="typescript" />
+
+### Creating the view with onDragOver
+
+You can display the current drag over information in your template:
+
+export const onDragOverTemplate = `<div class="my-6">
+  <h4>Current drag over: <span class="!text-[var(--sl-color-white)]">{currentDragOver || 'None'}</span></h4>
+</div>
+
+<div bind:this={droppableGroup} class="group-list bg-[var(--sl-color-gray-6)]">
+  <h5 class="mb-2">List 1</h5>
+  <ul use:parent1 id="list1" class="number-list">
+    {#each list as element, index (element) }
+      <li class="number" data-index={index}>
+        { element }
+      </li>
+    {/each}
+  </ul>
+  <h5 class="mb-2">List 2</h5>
+  <div use:parent2 id="list2" class="number-list-h">
+    {#each list2 as element, index (element) }
+      <div
+        class="number"
+        data-index={index}
+      >
+        { element }
+      </div>
+    {/each}
+  </div>
+</div>`;
+
+export const highlightsOnDragOverTemplate = ["currentDragOver", "droppableGroup"];
+
+<Code code={onDragOverTemplate} lang="svelte" mark={highlightsOnDragOverTemplate} />
+
+### Preview
+
+<div class="p-8 bg-[var(--sl-color-gray-6)]">
+  <OnDragOverEvents client:load  />
 </div>

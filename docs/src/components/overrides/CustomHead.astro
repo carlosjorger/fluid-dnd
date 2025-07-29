@@ -1,0 +1,16 @@
+---
+import Default from "@astrojs/starlight/components/Head.astro";
+import { generateStructuredData } from "../../utils/structuredData";
+
+// Generate structured data using the utility function
+// The utility function handles both entry data (when available) and URL-based fallbacks
+const structuredData = generateStructuredData({
+  entry: Astro.props.entry,
+  url: Astro.url
+});
+---
+
+<Default {...Astro.props} />
+
+<!-- Add structured data to head -->
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />

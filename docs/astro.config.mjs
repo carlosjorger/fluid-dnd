@@ -214,10 +214,19 @@ export default defineConfig({
 			components: {
 				Pagination: "./src/components/Sidebar.astro",
 				SiteTitle: "./src/components/CustomTitle.astro",
-				SocialIcons: "./src/components/overrides/CustomSocialIcons.astro"
+				SocialIcons: "./src/components/overrides/CustomSocialIcons.astro",
+				Head: "./src/components/overrides/CustomHead.astro"
 			},
 
 			head: [
+				{
+					tag: "meta",
+					attrs: { name: "description", content: "Official documentation for Fluid DnD, a fluid, agnostic and versatile drag and drop library for lists with Vue, React, and Svelte. Learn how to implement smooth drag and drop functionality in your web applications." }
+				},
+				{
+					tag: "meta",
+					attrs: { property: "og:description", content: "Official documentation for Fluid DnD, a fluid, agnostic and versatile drag and drop library for lists with Vue, React, and Svelte. Learn how to implement smooth drag and drop functionality in your web applications." }
+				},
 				{
 					tag: "meta",
 					attrs: { property: "og:image", content: site + "org.webp?v=1" }
@@ -225,6 +234,10 @@ export default defineConfig({
 				{
 					tag: "meta",
 					attrs: { property: "twitter:image", content: site + "og.webp?v=1" }
+				},
+				{
+					tag: "meta",
+					attrs: { property: "twitter:card", content: "summary_large_image" }
 				}
 			],
 			customCss: [

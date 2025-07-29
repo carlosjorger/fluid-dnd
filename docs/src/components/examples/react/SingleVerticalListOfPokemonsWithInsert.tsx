@@ -17,7 +17,6 @@ export const SingleVerticalListOfPokemonsWithInsert: React.FC = () => {
     const lastPosition = listOfPokemons.length
     if (pokemonToAdd) {
       insertAt(lastPosition, pokemonToAdd)
-      console.log(lastPosition)
     }
   }
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

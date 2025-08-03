@@ -223,12 +223,12 @@ export const getSiblingsByParent = (current: HTMLElement, parent: HTMLElement) =
 	return [siblings, positionOnDroppable, parent] as const;
 };
 
-const getNearestFixedParent = (element: Element) => {
+const getNearestParentWithTranslate = (element: Element) => {
 	let parent = element.parentElement;
 
 	while (parent) {
-		const position = window.getComputedStyle(parent).position;
-		if (position === 'fixed') {
+		const transformValue = window.getComputedStyle(parent).translate;
+		if (transformValue !== 'none') {
 			return parent;
 		}
 		parent = parent.parentElement;
@@ -237,12 +237,13 @@ const getNearestFixedParent = (element: Element) => {
 	return null; // No fixed parent found
 };
 
-export const getNearestFixedParentPosition = (element: Element, direction: Direction) => {
-	const fixedParent = getNearestFixedParent(element);
+export const getNearestParentPositionWithTranslate = (element: Element, direction: Direction) => {
+	const fixedParent = getNearestParentWithTranslate(element);
 	return fixedParent
 		? getBefore(direction, getRect(fixedParent)) + getBorderBeforeWidthValue(direction, fixedParent)
 		: 0;
 };
+
 export const isSameNode = (element1: Element | null | undefined, element2: Element | null) => {
 	return element1?.isSameNode(element2);
 };

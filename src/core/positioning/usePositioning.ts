@@ -12,7 +12,7 @@ import {
 	getBorderBeforeWidthValue,
 	getDistanceValue,
 	getInnerDistance,
-	getNearestFixedParentPosition,
+	getNearestParentPositionWithTranslate,
 	getOffsetValue,
 	getPageValue,
 	getPropByDirection,
@@ -61,7 +61,7 @@ export const usePositioning = (
 			const margin = getBeforeMarginValue(translateDirection, element);
 			const elementPosittion = pageValue - getOffsetValue(translateDirection, currentOffset);
 
-			const beforefixecParentValue = getNearestFixedParentPosition(element, translateDirection);
+			const beforefixecParentValue = getNearestParentPositionWithTranslate(element, translateDirection);
 			if (
 				elementPosittion >= scrollValue - distanceValue / 2 &&
 				elementPosittion <= scrollValue + innerDistance
@@ -145,10 +145,9 @@ const getPositionByDistance = (
 	element: HTMLElement,
 	offsetEvent: OffsetCoordinate
 ) => {
-	const beforefixecParentValue = getNearestFixedParentPosition(element, direction);
+	const beforefixecParentValue = getNearestParentPositionWithTranslate(element, direction);
 	const parent = element.parentElement;
 	const parentPosition = getParentPosition(direction, parent);
-
 	return (
 		getPageValue(direction, event) -
 		getOffsetValue(direction, offsetEvent) -

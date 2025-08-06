@@ -46,7 +46,7 @@ const [ parent ] = useDragAndDrop<number>(numbers as any);
         </div>
     </DialogContent>
   </Dialog>
-  <div class="fixed top-0 left-0">
+  <div class="fixed  bottom-0  left-0 parent-container">
     <div
       ref="parentRef"
       class="px-5"
@@ -75,5 +75,8 @@ const [ parent ] = useDragAndDrop<number>(numbers as any);
   border-style: solid;
   border-width: 0.8rem;
   width: 100px;
+}
+.parent-container {
+    will-change: transform;
 }
 </style>

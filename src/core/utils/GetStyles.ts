@@ -227,8 +227,8 @@ const getNearestParentWithTranslate = (element: Element) => {
 	let parent = element.parentElement;
 
 	while (parent) {
-		const transformValue = window.getComputedStyle(parent).translate;
-		if (transformValue !== 'none') {
+		const computedStyles = window.getComputedStyle(parent);
+		if (computedStyles.translate !== 'none' || computedStyles.willChange === 'transform') {
 			return parent;
 		}
 		parent = parent.parentElement;

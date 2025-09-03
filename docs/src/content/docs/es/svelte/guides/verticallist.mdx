@@ -14,7 +14,7 @@ Primero, vamos a crear una lista de números:
 export const listOfNumbers = `<script setup lang="ts">
 import { useDragAndDrop } from "fluid-dnd/svelte";
 
-const list = state([1, 2, 3]);
+const list = $state([1, 2, 3]);
 const [ parent ] = useDragAndDrop(list);
 
 </script>`;

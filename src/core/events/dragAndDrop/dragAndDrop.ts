@@ -265,9 +265,12 @@ export default function useDragAndDropEvents<T>(
 				const value = onRemoveAtEvent(positionOnSourceDroppable, true);
 				if (value != undefined) {
 					onInsertEvent(targetIndex, value, true);
-					onDragEnd({ value, index: targetIndex });
 				}
-				manageDraggingClass(element);
+				manageDraggingClass(element,
+					() => {
+						(value != undefined) && onDragEnd({ value, index: targetIndex });
+					}
+				);
 				clearExcessTranslateStyles();
 			}
 		});
@@ -283,9 +286,13 @@ export default function useDragAndDropEvents<T>(
 			removeTranslateWhitoutTransition(element);
 		}
 	};
-	const manageDraggingClass = (element: HTMLElement) => {
+	const manageDraggingClass = (
+		element: HTMLElement, 
+		func?: () => void
+	) => {
 		setTimeout(() => {
 			removeClass(element, draggingClass);
+			func && func();
 		}, DELAY_TIME_TO_SWAP);
 	};
 	const removeStytes = (

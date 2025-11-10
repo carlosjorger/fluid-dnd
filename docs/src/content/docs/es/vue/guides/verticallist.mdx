@@ -46,9 +46,12 @@ export const listOfNumbersHTML = `
 
 <Code code={listOfNumbersHTML} lang="vue" />
 
+### Precaución con algunos estilos CSS
+
 :::caution
-Evita añadir la propiedad `transform` o las propiedades de `transition` a los elementos **draggable** debido a que **Fluid DnD** cambia estas propiedades automáticamente.
+Evita añadir la propiedad `transform` o las propiedades de `transition` (`transition-property`, `transition-timing-function`, `transition-duration`, etc) a los elementos **draggable** debido a que **Fluid DnD** cambia estas propiedades automáticamente y puede causar un comportamiento inesperado.
 :::
+
 
 ### Añadiendo referencia al elemento padre
 

@@ -47,8 +47,10 @@ export const listOfNumbersHTML = `
 
 <Code code={listOfNumbersHTML} lang="svelte" />
 
+### Caret about draggable CSS styles
+
 :::caution
-Avoid to setting _css_ `transform` property or `transitions` to **draggable** elements because **Fluid DnD** update those properties automagically.
+Avoid to setting _css_ `transform` property or `transitions` (`transition-property`, `transition-timing-function`, `transition-duration`, etc) to **draggable** elements because **Fluid DnD** update those properties automatically and can cause unexpected behavior.
 :::
 
 ### Adding reference to parent element

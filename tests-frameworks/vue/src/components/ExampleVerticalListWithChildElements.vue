@@ -13,7 +13,24 @@ const numbers = ref([
 const { id } = defineProps<{
   id: string;
 }>();
-const [parent] = useDragAndDrop<number>(numbers as any);
+ const toggleChildrenClass = (element :HTMLElement | undefined, className: string, force?: boolean)=>{
+  const children = element?.children
+    if(children){
+      for (const child of children) {
+       child.classList.toggle(className, force) 
+      }
+    }
+}
+const [parent] = useDragAndDrop<number>(numbers as any, {
+  draggingClass: "dragging-number",
+  droppableClass: "hover",
+  onDragStart: () => {
+    toggleChildrenClass(parent.value, 'transition-transform', false)
+  },
+  onDragEnd: () => {
+    toggleChildrenClass(parent.value, 'transition-transform', true)
+  }
+});
 const triggerClick = () => {
   console.log("click");
 };
@@ -23,8 +40,9 @@ const triggerClick = () => {
     <li
       v-for="(element, index) in numbers"
       :index="index"
-      :id="'child-with-children-' + +element.label.toString()"
-      class="number"
+      :id="'child-with-children-' +element.label.toString()"
+      :key="element.value"
+      class="number hover:-translate-y-2 transition-transform"
     >
       {{ element.label }}
       <div style="display: flex; flex-direction: column">
@@ -37,7 +55,6 @@ const triggerClick = () => {
 .vertical-list {
   display: block;
   padding-inline: 10px;
-  transform: scale(1.2);
   transform-origin: 0 0
 }
 .number {

@@ -36,11 +36,13 @@ return (
 
 <Code code={listOfNumbersHTML} lang="tsx" />
 
+### Precaución con algunos estilos CSS
+
 :::caution
-Evita añadir la propiedad `transform` o las propiedades de `transition` a los elementos **draggable** debido a que **Fluid DnD** cambia estas propiedades automáticamente.
+Evita añadir la propiedad `transform` o las propiedades de `transition` (`transition-property`, `transition-timing-function`, `transition-duration`, etc) a los elementos **draggable** debido a que **Fluid DnD** cambia estas propiedades automáticamente y puede causar un comportamiento inesperado.
 :::
 
-### Adding reference to parent element
+### Añadiendo referencia al elemento padre
 
 Primero, añademos la _referencia_ `parent`creado de `useDragAndDrop`:
 

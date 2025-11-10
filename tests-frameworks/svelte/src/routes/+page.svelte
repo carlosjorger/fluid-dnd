@@ -4,6 +4,8 @@
 	import ExampleOfPokemonList from '../components/ExampleOfPokemonList.svelte';
 	import ListGroup from '../components/ListGroup.svelte';
 	import Tasks from '../components/Tasks.svelte';
+	import NumberListWithContext from '../components/NumberListWithContext.svelte';
+	import NumberContextConsumer from '../components/NumberContextConsumer.svelte';
 </script>
 
 <h1>Drag and drop example with SvelteKit</h1>
@@ -12,3 +14,5 @@
 <ListGroup />
 <ExampleOfPokemonList render={false} />
 <Tasks />
+<NumberListWithContext />
+<NumberContextConsumer />

@@ -14,7 +14,7 @@ First, we're going to create a list of numbers:
 export const listOfNumbers = `<script setup lang="ts">
 import { useDragAndDrop } from "fluid-dnd/vue";
 
-const list = state([1, 2, 3]);
+const list = $state([1, 2, 3]);
 const [ parent ] = useDragAndDrop(list);
 
 </script>`;

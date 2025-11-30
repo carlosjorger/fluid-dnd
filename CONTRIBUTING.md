@@ -18,4 +18,18 @@ ultra install
 pnpm install
 ```
 
-- Open [http://localhost:5173](http://localhost:3000) with your browser to see app.
+3. Run the testing projects for each JavaScript framework:
+```bash
+# for vue
+cd .\tests-frameworks\vue\
+npm run dev
+
+# for react
+cd .\tests-frameworks\react\
+npm run dev
+
+# for svelte
+cd .\tests-frameworks\svelte\
+npm run dev
+```
+

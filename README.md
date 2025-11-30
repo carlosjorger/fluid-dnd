@@ -56,7 +56,7 @@ library for lists; with support for **Vue**, **React** and **Svelte**. It's a **
 
 ## 📚 Libraries Support
 
-- **Vue** >=3.0.0
+- **Vue** >= 3.0.0
 - **React** >= 18.0.0
 - **Svelte** >= 5.0.0
 
